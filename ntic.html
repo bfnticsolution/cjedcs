@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow, noarchive" />
+<title>Any AI · Assistant NTIC Solution</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked@11.0.0/marked.min.js"></script>
+<style>
+:root{--bleu:#0B3FA5;--bleu-profond:#072a6e;--bleu-clair:#e8f0fe;--orange:#FF6B35;--vert:#059669;--violet:#7c3aed;--rouge:#dc2626;--texte:#1e293b;--texte-sec:#475569;--bordure:#e2e8f0;--fond:#f4f6fa}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--fond);color:var(--texte);height:100vh;overflow:hidden;-webkit-user-select:none;user-select:none}
+input,textarea{-webkit-user-select:text;user-select:text}
+body{display:flex;flex-direction:column}
+header{background:linear-gradient(135deg,var(--bleu) 0%,var(--bleu-profond) 100%);color:#fff;padding:.85rem 1.5rem;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 20px rgba(0,0,0,.15);z-index:10;flex-shrink:0}
+.brand{display:flex;align-items:center;gap:.8rem}
+.logo{background:#fff;color:var(--bleu);width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.95rem;letter-spacing:-.5px}
+.brand-text h1{font-size:1.1rem;font-weight:800;letter-spacing:-.3px}
+.brand-text p{font-size:.72rem;color:rgba(255,255,255,.7);margin-top:.1rem}
+.header-actions{display:flex;gap:.5rem}
+.header-btn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;width:40px;height:40px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s;font-size:.9rem}
+.header-btn:hover{background:rgba(255,255,255,.22)}
+.chat-container{flex:1;overflow-y:auto;padding:1.5rem}
+.chat-inner{max-width:900px;margin:0 auto}
+.message{display:flex;gap:.8rem;margin-bottom:1.2rem;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.message.user{flex-direction:row-reverse}
+.avatar{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex-shrink:0}
+.avatar.ai{background:linear-gradient(135deg,var(--bleu),var(--violet));color:#fff}
+.avatar.user{background:var(--orange);color:#fff}
+.bubble{background:#fff;padding:.85rem 1.15rem;border-radius:14px;font-size:.95rem;line-height:1.65;max-width:80%;box-shadow:0 2px 8px rgba(0,0,0,.04);word-wrap:break-word;overflow-wrap:break-word}
+.message.user .bubble{background:var(--bleu);color:#fff}
+.bubble p{margin:.4rem 0}
+.bubble p:first-child{margin-top:0}
+.bubble p:last-child{margin-bottom:0}
+.bubble h1,.bubble h2,.bubble h3,.bubble h4{margin:.7rem 0 .4rem;color:var(--bleu);font-weight:700}
+.bubble h2{font-size:1.15rem}
+.bubble h3{font-size:1.02rem}
+.bubble ul,.bubble ol{margin:.4rem 0 .4rem 1.3rem}
+.bubble li{margin-bottom:.25rem}
+.bubble strong{font-weight:700}
+.bubble code{background:#f1f5f9;padding:.15rem .4rem;border-radius:4px;font-family:'Consolas',monospace;font-size:.86em;color:#db2777}
+.message.user .bubble code{background:rgba(255,255,255,.15);color:#fff}
+.bubble pre{background:#1e293b;color:#e2e8f0;padding:.9rem;border-radius:8px;overflow-x:auto;margin:.5rem 0;font-family:'Consolas',monospace;font-size:.83rem;line-height:1.55}
+.bubble pre code{background:none;color:inherit;padding:0}
+.bubble a{color:var(--orange);text-decoration:underline}
+.bubble img{max-width:100%;border-radius:10px;margin-top:.5rem;display:block}
+.bubble table{width:100%;border-collapse:collapse;margin:.5rem 0;font-size:.85rem}
+.bubble th{background:var(--bleu-clair);padding:.5rem;text-align:left;font-weight:700}
+.bubble td{padding:.4rem .5rem;border-bottom:1px solid var(--bordure)}
+.typing{display:flex;gap:4px;padding:.7rem 0}
+.typing span{width:8px;height:8px;background:var(--bleu);border-radius:50%;animation:bounce 1.2s infinite}
+.typing span:nth-child(2){animation-delay:.15s}
+.typing span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-6px);opacity:1}}
+.welcome{text-align:center;padding:2.5rem 1rem}
+.welcome-logo{width:80px;height:80px;border-radius:24px;background:linear-gradient(135deg,var(--bleu),var(--violet));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.7rem;margin:0 auto 1.2rem}
+.welcome h2{font-size:1.55rem;font-weight:800;color:var(--bleu);margin-bottom:.5rem}
+.welcome p{color:var(--texte-sec);max-width:520px;margin:0 auto 1.8rem;font-size:.93rem}
+.suggestions{display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem;max-width:620px;margin:0 auto}
+.suggestion{background:#fff;border:1px solid var(--bordure);border-radius:12px;padding:.85rem 1rem;text-align:left;cursor:pointer;transition:.2s;font-size:.87rem;font-family:inherit;color:var(--texte)}
+.suggestion:hover{border-color:var(--bleu);transform:translateY(-2px);box-shadow:0 4px 12px rgba(11,63,165,.1)}
+.suggestion i{color:var(--orange);margin-right:.5rem}
+.input-zone{background:#fff;border-top:1px solid var(--bordure);padding:.9rem 1.5rem 1.1rem;box-shadow:0 -4px 20px rgba(0,0,0,.05);flex-shrink:0}
+.input-inner{max-width:900px;margin:0 auto}
+.input-actions{display:flex;gap:.5rem;margin-bottom:.6rem;flex-wrap:wrap}
+.action-btn{background:var(--bleu-clair);color:var(--bleu);border:none;padding:.45rem .9rem;border-radius:8px;font-size:.78rem;font-weight:600;font-family:inherit;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:.4rem}
+.action-btn:hover{background:var(--bleu);color:#fff}
+.input-row{display:flex;gap:.6rem;align-items:flex-end}
+#userInput{flex:1;border:2px solid var(--bordure);border-radius:12px;padding:.75rem 1rem;font-family:inherit;font-size:.95rem;resize:none;max-height:150px;min-height:46px;line-height:1.5;transition:.2s;color:var(--texte)}
+#userInput:focus{outline:none;border-color:var(--bleu);box-shadow:0 0 0 4px rgba(11,63,165,.08)}
+.send-btn{background:var(--bleu);color:#fff;border:none;width:46px;height:46px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s;font-size:1rem;flex-shrink:0}
+.send-btn:hover:not(:disabled){background:var(--orange);transform:translateY(-2px)}
+.send-btn:disabled{opacity:.5;cursor:not-allowed}
+.file-preview{background:var(--bleu-clair);border-radius:10px;padding:.55rem .9rem;display:flex;align-items:center;gap:.7rem;margin-bottom:.6rem;font-size:.85rem}
+.file-preview img{width:42px;height:42px;border-radius:6px;object-fit:cover}
+.file-preview .remove{margin-left:auto;color:var(--orange);cursor:pointer;background:none;border:none;font-size:1rem}
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--texte);color:#fff;padding:.85rem 1.2rem;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.25);font-size:.88rem;display:none;z-index:9999;max-width:400px}
+.toast.show{display:block;animation:slideIn .3s ease}
+.toast.error{background:var(--rouge)}
+.toast.success{background:var(--vert)}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+@media (max-width:768px){.bubble{max-width:88%;font-size:.9rem}.suggestions{grid-template-columns:1fr}.input-zone{padding:.7rem 1rem}.brand-text h1{font-size:.98rem}.logo{width:38px;height:38px;font-size:.85rem}}
+</style>
+</head>
+<body>
+
+<header>
+    <div class="brand">
+        <div class="logo">AI</div>
+        <div class="brand-text">
+            <h1>Any AI</h1>
+            <p>Assistant intelligent · NTIC Solution</p>
+        </div>
+    </div>
+    <div class="header-actions">
+        <button class="header-btn" id="btnNew" title="Nouvelle conversation"><i class="fas fa-plus"></i></button>
+        <button class="header-btn" id="btnSettings" title="Paramètres"><i class="fas fa-cog"></i></button>
+    </div>
+</header>
+
+<div class="chat-container" id="chatContainer">
+    <div class="chat-inner" id="chatInner"></div>
+</div>
+
+<div class="input-zone">
+    <div class="input-inner">
+        <div class="input-actions">
+            <button class="action-btn" id="btnUpload"><i class="fas fa-paperclip"></i> Joindre un document</button>
+            <button class="action-btn" id="btnImage"><i class="fas fa-image"></i> Générer une image</button>
+            <button class="action-btn" id="btnChart"><i class="fas fa-chart-bar"></i> Graphique</button>
+            <input type="file" id="fileInput" accept="image/*" style="display:none" />
+        </div>
+        <div id="filePreviewZone"></div>
+        <div class="input-row">
+            <textarea id="userInput" placeholder="Posez votre question à Any AI..." rows="1"></textarea>
+            <button class="send-btn" id="btnSend"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   PROTECTION ANTI-CODE SOURCE
+   ============================================================ */
+(function(){
+    'use strict';
+    document.addEventListener('contextmenu',e=>{e.preventDefault();return false});
+    document.addEventListener('keydown',function(e){
+        const k=e.key,c=e.ctrlKey,s=e.shiftKey;
+        if(k==='F12'||e.keyCode===123){e.preventDefault();e.stopPropagation();return false}
+        if(c&&(k==='u'||k==='U'||e.keyCode===85)){e.preventDefault();e.stopPropagation();return false}
+        if(c&&(k==='s'||k==='S'||e.keyCode===83)){e.preventDefault();e.stopPropagation();return false}
+        if(c&&s&&(k==='I'||k==='i'||e.keyCode===73)){e.preventDefault();e.stopPropagation();return false}
+        if(c&&s&&(k==='J'||k==='j'||e.keyCode===74)){e.preventDefault();e.stopPropagation();return false}
+        if(c&&s&&(k==='C'||k==='c'||e.keyCode===67)){e.preventDefault();e.stopPropagation();return false}
+        if(c&&s&&(k==='K'||k==='k'||e.keyCode===75)){e.preventDefault();e.stopPropagation();return false}
+        if(c&&(k==='p'||k==='P'||e.keyCode===80)){e.preventDefault();return false}
+    },true);
+    let devtoolsOpen=false;
+    setInterval(function(){
+        const wDiff=window.outerWidth-window.innerWidth;
+        const hDiff=window.outerHeight-window.innerHeight;
+        const isOpen=(wDiff>160||hDiff>160);
+        if(isOpen&&!devtoolsOpen){
+            devtoolsOpen=true;
+            document.body.innerHTML='<div style="position:fixed;inset:0;z-index:99999;background:#0d1117;color:white;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:2rem;text-align:center;font-family:system-ui,sans-serif"><div style="font-size:4rem;margin-bottom:1rem">&#128274;</div><h1 style="font-size:1.5rem;margin-bottom:1rem;color:#FF6B35">Acces restreint</h1><p style="max-width:500px;color:#94a3b8;line-height:1.6">Les outils de developpement sont desactives sur cette page.</p></div>';
+        } else if(!isOpen&&devtoolsOpen){
+            devtoolsOpen=false;
+            location.reload();
+        }
+    },500);
+    document.addEventListener('selectstart',function(e){
+        const t=e.target;
+        if(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable)return true;
+        e.preventDefault();return false;
+    });
+    document.addEventListener('dragstart',function(e){
+        if(e.target.tagName!=='INPUT'&&e.target.tagName!=='TEXTAREA'){e.preventDefault();return false}
+    });
+    window.onerror=function(){return true};
+})();
+
+/* ============================================================
+   CONFIGURATION — CLÉ API GROK (encodée)
+   ============================================================ */
+const _k1='eGFpLXhhaS1Zb3VyQ2xlR3Jva0ljaURlbW9Qb3VyQW55QUk=';
+const _k2='TlRJQy1Tb2x1dGlvbi1BbnktQUktMjAyNi1LZXk=';
+
+function _dk(){
+    try{
+        const a=atob(_k1),b=atob(_k2);
+        let r='';
+        for(let i=0;i<a.length;i++){
+            r+=String.fromCharCode(a.charCodeAt(i)^b.charCodeAt(i%b.length));
+        }
+        return atob(r);
+    }catch(e){return ''}
+}
+
+const GROK_API_KEY=_dk();
+const MODEL_CHAT='grok-3-latest';
+const MODEL_VISION='grok-2-vision-1212';
+const MODEL_IMAGE='grok-2-image-1212';
+const URL_CHAT='https://api.x.ai/v1/chat/completions';
+const URL_IMAGE='https://api.x.ai/v1/images/generations';
+
+const SYSTEM_PROMPT=`Tu es **Any AI**, l'assistant intelligent officiel de NTIC Solution.
+
+# Identité
+- Ton nom est **Any AI**
+- Tu es chaleureux, professionnel, patient, pédagogue
+- Tu parles français, tutoies les apprenants, vouvoies les clients
+
+# NTIC Solution
+- Entreprise burkinabè de services numériques à Banfora
+- Secteur 15, Quartier Tatana, Burkina Faso
+- Fondée et dirigée par **Kévin Kiessé Sanou**, expert Full-Stack (8+ ans)
+- Téléphone : +226 05 58 58 68
+- WhatsApp : +226 69 69 69 24
+- Email : nticsolution.bf@gmail.com
+- Site : https://nticsolution.org
+- Facebook : facebook.com/bfnticsolution
+- Instagram : instagram.com/bfnticsolution
+- LinkedIn : linkedin.com/company/bfnticsolution
+
+# Projets phares
+1. **CAVOR** (cav-or.com) — Plateforme d'investissement en or digital, PHP 8.3, MySQL, PWA, YengaPay
+2. **Menu QR** (menusqr.online) — Digitalisation de restaurants par QR code, commandes en ligne, 1000 FCFA/mois
+3. **myvivo.online** — Plateforme événementielle (billets, dons, formations), Laravel
+4. **Faso24** (faso24.info) — Média d'actualité avec IA
+5. **AfricaBox TV** — Application Android de streaming TV
+6. **WariPay** — Transfert d'argent mobile multi-opérateurs
+7. **PCode** — Recharge téléphonique multi-opérateurs
+
+# Formation actuelle
+- Formation **Développement Web** — 7 jours, 20 heures
+- Public : étudiants, commerçants, enseignants, animateurs, entrepreneurs
+- Programme : HTML (J1-J2) → CSS (J3-J4) → Multi-pages (J5) → Formulaires & JS (J6) → Mise en ligne (J7)
+- Outils : VS Code, Git, GitHub Pages, DeepSeek
+- Code d'accès : WEB2026
+- Lieu : Banfora, Burkina Faso
+
+# Capacités
+- Répondre aux questions sur le développement web (HTML, CSS, JavaScript)
+- Expliquer les concepts simplement, avec des exemples
+- Aider à déboguer du code
+- Résumer et analyser des documents (images, captures d'écran)
+- Générer des images
+- Générer des graphiques
+
+# Format
+- Réponses courtes (2-4 phrases) pour les questions simples
+- Réponses structurées (titres, listes, blocs de code) pour les questions complexes
+- Utilise **Markdown** (gras, listes, titres, code)
+- Termine par une suggestion pour aller plus loin`;
+
+let conversation=[];
+let pendingFile=null;
+let isStreaming=false;
+
+const $=id=>document.getElementById(id);
+const chatInner=$('chatInner');
+const chatContainer=$('chatContainer');
+const userInput=$('userInput');
+const btnSend=$('btnSend');
+const btnNew=$('btnNew');
+const btnUpload=$('btnUpload');
+const btnImage=$('btnImage');
+const btnChart=$('btnChart');
+const fileInput=$('fileInput');
+const filePreviewZone=$('filePreviewZone');
+const toastEl=$('toast');
+
+function showToast(msg,type=''){
+    toastEl.textContent=msg;
+    toastEl.className='toast show '+type;
+    setTimeout(()=>toastEl.className='toast '+type,3500);
+}
+
+function escapeHtml(t){
+    const d=document.createElement('div');
+    d.textContent=t;
+    return d.innerHTML;
+}
+
+function scrollToBottom(){
+    chatContainer.scrollTop=chatContainer.scrollHeight;
+}
+
+function renderMarkdown(text){
+    try{
+        return marked.parse(text,{breaks:true,gfm:true});
+    }catch(e){
+        return escapeHtml(text).replace(/\n/g,'<br>');
+    }
+}
+
+function addMessage(role,content){
+    const div=document.createElement('div');
+    div.className='message '+role;
+    const avatarHtml='<div class="avatar '+role+'">'+(role==='user'?'<i class="fas fa-user"></i>':'AI')+'</div>';
+    const bubbleContent=role==='assistant'?renderMarkdown(content):escapeHtml(content).replace(/\n/g,'<br>');
+    div.innerHTML=avatarHtml+'<div class="bubble">'+bubbleContent+'</div>';
+    chatInner.appendChild(div);
+    scrollToBottom();
+}
+
+function addTypingIndicator(){
+    const div=document.createElement('div');
+    div.className='message assistant';
+    div.id='typingIndicator';
+    div.innerHTML='<div class="avatar ai">AI</div><div class="bubble" style="padding:0.5rem 1rem"><div class="typing"><span></span><span></span><span></span></div></div>';
+    chatInner.appendChild(div);
+    scrollToBottom();
+}
+
+function removeTypingIndicator(){
+    const el=$('typingIndicator');
+    if(el)el.remove();
+}
+
+function renderWelcome(){
+    chatInner.innerHTML=`
+        <div class="welcome">
+            <div class="welcome-logo">AI</div>
+            <h2>Bonjour, je suis Any AI</h2>
+            <p>L'assistant intelligent de NTIC Solution. Je peux t'aider sur le développement web, analyser des documents, générer des images ou créer des graphiques.</p>
+            <div class="suggestions">
+                <button class="suggestion" data-prompt="Explique-moi la différence entre HTML, CSS et JavaScript"><i class="fas fa-code"></i> Explique HTML, CSS et JavaScript</button>
+                <button class="suggestion" data-prompt="Quels sont les projets de NTIC Solution ?"><i class="fas fa-building"></i> Les projets de NTIC Solution</button>
+                <button class="suggestion" data-prompt="Comment publier mon site sur GitHub Pages ?"><i class="fas fa-rocket"></i> Publier sur GitHub Pages</button>
+                <button class="suggestion" data-prompt="Donne-moi un exemple de formulaire HTML avec validation JavaScript"><i class="fas fa-file-code"></i> Formulaire HTML + JS</button>
+            </div>
+        </div>`;
+    document.querySelectorAll('.suggestion').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+            userInput.value=btn.dataset.prompt;
+            sendMessage();
+        });
+    });
+}
+
+async function callGrokChat(messages,model){
+    const response=await fetch(URL_CHAT,{
+        method:'POST',
+        headers:{
+            'Content-Type':'application/json',
+            'Authorization':'Bearer '+GROK_API_KEY
+        },
+        body:JSON.stringify({
+            model:model,
+            messages:messages,
+            temperature:0.7,
+            max_tokens:2048,
+            stream:false
+        })
+    });
+    if(!response.ok){
+        const err=await response.text();
+        throw new Error('Grok API error '+response.status+' : '+err);
+    }
+    const data=await response.json();
+    return data.choices[0].message.content;
+}
+
+async function sendMessage(){
+    if(isStreaming)return;
+    const text=userInput.value.trim();
+    if(!text&&!pendingFile)return;
+
+    if(chatInner.querySelector('.welcome'))chatInner.innerHTML='';
+    addMessage('user',text||'(document joint)');
+    userInput.value='';
+    userInput.style.height='auto';
+    btnSend.disabled=true;
+    isStreaming=true;
+    addTypingIndicator();
+
+    try{
+        let reply;
+        if(pendingFile){
+            const base64=pendingFile.base64.split(',')[1];
+            const mime=pendingFile.mime;
+            reply=await callGrokChat([
+                {role:'system',content:SYSTEM_PROMPT},
+                {
+                    role:'user',
+                    content:[
+                        {type:'text',text:text||'Analyse ce document : résume-le, identifie les points clés.'},
+                        {type:'image_url',image_url:{url:'data:'+mime+';base64,'+base64,detail:'high'}}
+                    ]
+                }
+            ],MODEL_VISION);
+            conversation.push({role:'user',content:text||'(document joint)'});
+            conversation.push({role:'assistant',content:reply});
+            pendingFile=null;
+            filePreviewZone.innerHTML='';
+        }else{
+            conversation.push({role:'user',content:text});
+            const messages=[{role:'system',content:SYSTEM_PROMPT}].concat(conversation);
+            reply=await callGrokChat(messages,MODEL_CHAT);
+            conversation.push({role:'assistant',content:reply});
+        }
+        removeTypingIndicator();
+        addMessage('assistant',reply);
+    }catch(err){
+        removeTypingIndicator();
+        addMessage('assistant','⚠️ **Erreur** : '+err.message+'\n\nVérifie que ta clé API Grok est correcte et que tu as du crédit.');
+        showToast('Erreur de connexion à Grok','error');
+    }finally{
+        btnSend.disabled=false;
+        isStreaming=false;
+        scrollToBottom();
+    }
+}
+
+btnUpload.addEventListener('click',()=>fileInput.click());
+
+fileInput.addEventListener('change',(e)=>{
+    const file=e.target.files[0];
+    if(!file)return;
+    if(file.size>5*1024*1024){showToast('Fichier trop volumineux (max 5 Mo)','error');return}
+    if(!file.type.startsWith('image/')){showToast('Format non supporté (JPG, PNG)','error');return}
+
+    const reader=new FileReader();
+    reader.onload=(ev)=>{
+        pendingFile={base64:ev.target.result,mime:file.type,name:file.name};
+        filePreviewZone.innerHTML=`
+            <div class="file-preview">
+                <img src="${ev.target.result}" alt="aperçu">
+                <div><strong>${escapeHtml(file.name)}</strong><br><span style="color:var(--texte-sec);font-size:.78rem">${(file.size/1024).toFixed(1)} Ko</span></div>
+                <button class="remove" id="btnRemoveFile"><i class="fas fa-times"></i></button>
+            </div>`;
+        $('btnRemoveFile').addEventListener('click',()=>{
+            pendingFile=null;
+            filePreviewZone.innerHTML='';
+            fileInput.value='';
+        });
+        showToast('Document prêt à être analysé','success');
+    };
+    reader.readAsDataURL(file);
+});
+
+btnImage.addEventListener('click',()=>{
+    const prompt=window.prompt("Décrivez l'image que vous voulez générer :");
+    if(!prompt||prompt.trim().length<5)return;
+    generateImage(prompt.trim());
+});
+
+async function generateImage(prompt){
+    if(chatInner.querySelector('.welcome'))chatInner.innerHTML='';
+    addMessage('user','🖼️ Génère une image : '+prompt);
+    addTypingIndicator();
+    btnSend.disabled=true;
+    isStreaming=true;
+
+    try{
+        const response=await fetch(URL_IMAGE,{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json',
+                'Authorization':'Bearer '+GROK_API_KEY
+            },
+            body:JSON.stringify({
+                model:MODEL_IMAGE,
+                prompt:prompt,
+                n:1,
+                response_format:'url'
+            })
+        });
+        if(!response.ok){
+            const err=await response.text();
+            throw new Error('Erreur '+response.status+' : '+err);
+        }
+        const data=await response.json();
+        const imageUrl=data.data[0].url;
+        removeTypingIndicator();
+
+        const div=document.createElement('div');
+        div.className='message assistant';
+        div.innerHTML=`
+            <div class="avatar ai">AI</div>
+            <div class="bubble">
+                <p><strong>Image générée :</strong></p>
+                <img src="${imageUrl}" alt="${escapeHtml(prompt)}" />
+                <p style="margin-top:0.6rem;font-size:0.8rem;color:var(--texte-sec)">
+                    <i class="fas fa-info-circle"></i> <a href="${imageUrl}" target="_blank">Ouvrir dans un nouvel onglet</a>
+                </p>
+            </div>`;
+        chatInner.appendChild(div);
+        conversation.push({role:'user',content:'Génère une image : '+prompt});
+        conversation.push({role:'assistant',content:'Image générée : '+imageUrl});
+    }catch(err){
+        removeTypingIndicator();
+        addMessage('assistant','⚠️ **Erreur de génération** : '+err.message);
+        showToast('Erreur de génération image','error');
+    }finally{
+        btnSend.disabled=false;
+        isStreaming=false;
+        scrollToBottom();
+    }
+}
+
+btnChart.addEventListener('click',()=>{
+    const data=window.prompt('Collez vos données au format CSV :\n\nExemple :\nJanvier,120\nFévrier,190\nMars,150');
+    if(!data)return;
+    generateChart(data);
+});
+
+async function generateChart(csv){
+    const lines=csv.trim().split('\n').filter(l=>l.trim());
+    const labels=[],values=[];
+    for(const line of lines){
+        const parts=line.split(',');
+        if(parts.length>=2){
+            const label=parts[0].trim();
+            const value=parseFloat(parts[1].trim());
+            if(label&&!isNaN(value)){labels.push(label);values.push(value)}
+        }
+    }
+    if(labels.length===0){showToast('Données invalides','error');return}
+
+    if(chatInner.querySelector('.welcome'))chatInner.innerHTML='';
+    const dataText=labels.map((l,i)=>l+' : '+values[i]).join('\n');
+    addMessage('user','📊 Génère un graphique :\n'+dataText);
+
+    const div=document.createElement('div');
+    div.className='message assistant';
+    const canvasId='chart_'+Date.now();
+    div.innerHTML=`
+        <div class="avatar ai">AI</div>
+        <div class="bubble" style="width:100%;max-width:100%">
+            <p><strong>Graphique généré :</strong></p>
+            <div style="position:relative;height:320px;margin-top:0.6rem">
+                <canvas id="${canvasId}"></canvas>
+            </div>
+        </div>`;
+    chatInner.appendChild(div);
+    scrollToBottom();
+
+    new Chart(document.getElementById(canvasId),{
+        type:'bar',
+        data:{
+            labels:labels,
+            datasets:[{
+                label:'Valeurs',
+                data:values,
+                backgroundColor:'rgba(11,63,165,0.7)',
+                borderColor:'#0B3FA5',
+                borderWidth:2,
+                borderRadius:6
+            }]
+        },
+        options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
+    });
+
+    addTypingIndicator();
+    try{
+        const analyse=await callGrokChat([
+            {role:'system',content:SYSTEM_PROMPT},
+            {role:'user',content:'Analyse ces données en 3-4 phrases (tendance, max, min, observation) :\n'+dataText}
+        ],MODEL_CHAT);
+        removeTypingIndicator();
+        addMessage('assistant',analyse);
+        conversation.push({role:'user',content:'Données :\n'+dataText});
+        conversation.push({role:'assistant',content:analyse});
+    }catch(err){
+        removeTypingIndicator();
+        addMessage('assistant','⚠️ Graphique créé, analyse indisponible : '+err.message);
+    }
+}
+
+btnSend.addEventListener('click',sendMessage);
+
+userInput.addEventListener('keydown',(e)=>{
+    if(e.key==='Enter'&&!e.shiftKey){
+        e.preventDefault();
+        sendMessage();
+    }
+});
+
+userInput.addEventListener('input',()=>{
+    userInput.style.height='auto';
+    userInput.style.height=Math.min(userInput.scrollHeight,150)+'px';
+});
+
+btnNew.addEventListener('click',()=>{
+    if(!confirm('Démarrer une nouvelle conversation ?'))return;
+    conversation=[];
+    pendingFile=null;
+    filePreviewZone.innerHTML='';
+    fileInput.value='';
+    renderWelcome();
+    showToast('Nouvelle conversation','success');
+});
+
+btnSettings.addEventListener('click',()=>{
+    showToast('Any AI · Modèle : '+MODEL_CHAT+' · NTIC Solution 2026');
+});
+
+renderWelcome();
+
+if(!GROK_API_KEY||GROK_API_KEY.includes('VOTRE_CLE')||GROK_API_KEY.includes('Demo')){
+    setTimeout(()=>showToast('⚠️ Configurez la clé API (procédure dans le message)','error'),1000);
+}
+</script>
+
+</body>
+</html>
