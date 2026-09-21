@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Formation Développement Web · Jour 7 — Mise en ligne</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        /* ===== VARIABLES ===== */
+        :root {
+            --bleu: #0B3FA5;
+            --bleu-profond: #072a6e;
+            --bleu-clair: #e8f0fe;
+            --orange: #FF6B35;
+            --orange-clair: #fff4e5;
+            --vert: #059669;
+            --vert-clair: #ecfdf5;
+            --violet: #7c3aed;
+            --violet-clair: #f3e8ff;
+            --rouge: #dc2626;
+            --rouge-clair: #fef2f2;
+            --jaune: #f59e0b;
+            --jaune-clair: #fffbeb;
+            --texte: #1e293b;
+            --texte-secondaire: #475569;
+            --blanc: #ffffff;
+            --bordure: #e2e8f0;
+            --transition: 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background: #0d1117;
+            color: var(--texte);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            -webkit-font-smoothing: antialiased;
+            user-select: none;
+        }
+
+        /* ===== ÉCRAN DE CODE D'ACCÈS ===== */
+        .access-overlay {
+            position: fixed; inset: 0; z-index: 99999;
+            background: linear-gradient(135deg, var(--rouge) 0%, #7f1d1d 100%);
+            display: flex; align-items: center; justify-content: center;
+            transition: opacity 0.7s ease, visibility 0.7s ease;
+        }
+        .access-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .access-card {
+            background: var(--blanc); border-radius: 2rem; padding: 3rem 2.5rem;
+            text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            max-width: 420px; width: 90%; animation: floatIn 0.8s ease;
+        }
+        @keyframes floatIn {
+            from { opacity: 0; transform: translateY(40px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .access-card .logo-symbol {
+            background: var(--rouge); color: white; width: 64px; height: 64px;
+            border-radius: 18px; display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 1.4rem; margin: 0 auto 1.2rem;
+        }
+        .access-card h2 { color: var(--rouge); font-size: 1.4rem; margin-bottom: 0.5rem; }
+        .access-card p { color: #475569; margin-bottom: 1.8rem; font-size: 0.9rem; }
+        .access-input {
+            width: 100%; padding: 0.9rem 1.3rem; border: 2px solid var(--bordure);
+            border-radius: 14px; font-family: inherit; font-size: 1rem;
+            text-align: center; letter-spacing: 2px; transition: var(--transition); margin-bottom: 1rem;
+        }
+        .access-input:focus { outline: none; border-color: var(--rouge); box-shadow: 0 0 0 4px rgba(220,38,38,0.1); }
+        .access-btn {
+            width: 100%; padding: 0.9rem; background: var(--bleu); color: white;
+            border: none; border-radius: 14px; font-weight: 700; font-size: 1rem;
+            font-family: inherit; cursor: pointer; transition: var(--transition);
+        }
+        .access-btn:hover { background: var(--bleu-profond); transform: translateY(-2px); }
+        .access-error {
+            color: #dc2626; font-size: 0.85rem; margin-top: 0.5rem;
+            display: none; font-weight: 600;
+        }
+        .access-error.visible { display: block; animation: shake 0.5s ease; }
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        /* ===== CONTAINER PROJECTION ===== */
+        .presentation-container {
+            display: none; position: fixed; inset: 0; background: #0d1117; z-index: 100;
+        }
+        .presentation-container.active { display: block; }
+        .slide-stage {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .slide-content {
+            background: white; width: 100%; height: 100%;
+            overflow-y: auto; padding: 3rem 4.5rem;
+            position: relative; animation: slideIn 0.4s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: scale(0.97); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .slide-header {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(8px);
+            padding: 0.6rem 1.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--bordure);
+            font-size: 0.8rem; font-weight: 600;
+        }
+        .slide-header .bloc-tag {
+            background: var(--rouge); color: white; padding: 0.25rem 0.75rem;
+            border-radius: 999px; font-size: 0.7rem; letter-spacing: 0.5px;
+        }
+        .slide-header .type-tag {
+            padding: 0.25rem 0.75rem; border-radius: 999px;
+            font-size: 0.7rem; letter-spacing: 0.5px; font-weight: 700;
+        }
+        .type-cours { background: var(--bleu-clair); color: var(--bleu); }
+        .type-pratique { background: var(--vert-clair); color: var(--vert); }
+        .type-exercice { background: var(--orange-clair); color: var(--orange); }
+        .type-synthese { background: var(--violet-clair); color: var(--violet); }
+        .slide-header .num { color: var(--texte-secondaire); }
+
+        .nav-hint {
+            position: fixed; bottom: 1rem; right: 1rem; z-index: 500;
+            color: rgba(255,255,255,0.3); font-size: 0.7rem;
+            font-weight: 600; letter-spacing: 0.5px; pointer-events: none;
+        }
+
+        /* ===== ANIMATIONS ===== */
+        .anim-item { opacity: 0; transform: translateY(15px); animation: fadeUp 0.5s ease forwards; }
+        .anim-item:nth-child(1) { animation-delay: 0.05s; }
+        .anim-item:nth-child(2) { animation-delay: 0.15s; }
+        .anim-item:nth-child(3) { animation-delay: 0.25s; }
+        .anim-item:nth-child(4) { animation-delay: 0.35s; }
+        .anim-item:nth-child(5) { animation-delay: 0.45s; }
+        .anim-item:nth-child(6) { animation-delay: 0.55s; }
+        .anim-item:nth-child(7) { animation-delay: 0.65s; }
+        .anim-item:nth-child(8) { animation-delay: 0.75s; }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+        /* ===== TYPOGRAPHIE ===== */
+        h1 { font-size: 3rem; font-weight: 800; letter-spacing: -1px; color: var(--bleu); line-height: 1.1; }
+        h2 { font-size: 2.1rem; font-weight: 700; color: var(--bleu); line-height: 1.2; margin-bottom: 1rem; }
+        h3 { font-size: 1.4rem; font-weight: 700; color: var(--texte); }
+        h4 { font-size: 1.15rem; font-weight: 700; }
+        p { font-size: 1.25rem; line-height: 1.55; color: var(--texte); }
+        li { font-size: 1.15rem; line-height: 1.65; }
+        .lead { font-size: 1.4rem; color: var(--texte-secondaire); line-height: 1.5; }
+
+        /* ===== SLIDE DE TITRE ===== */
+        .slide-title {
+            background: linear-gradient(135deg, #dc2626 0%, #7f1d1d 100%);
+            color: white; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; text-align: center;
+        }
+        .slide-title h1 { color: white; font-size: 3.2rem; }
+        .slide-title .lead { color: rgba(255,255,255,0.85); margin-top: 1rem; }
+        .slide-title .meta {
+            color: rgba(255,255,255,0.6); font-size: 1rem; margin-top: 2rem;
+            letter-spacing: 1px;
+        }
+
+        /* ===== SLIDE PLAN ===== */
+        .bloc-plan {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 1rem; margin-top: 2rem;
+        }
+        .bloc-item {
+            background: #f8fafc; border-radius: 16px; padding: 1.5rem 1.2rem;
+            border-top: 5px solid var(--rouge); text-align: left;
+        }
+        .bloc-item .num {
+            font-size: 0.75rem; font-weight: 800; color: var(--rouge);
+            letter-spacing: 1.5px; margin-bottom: 0.5rem;
+        }
+        .bloc-item h4 { color: var(--texte); margin-bottom: 0.4rem; font-size: 1.05rem; }
+        .bloc-item p { font-size: 0.9rem; color: var(--texte-secondaire); }
+        .bloc-item .duree {
+            font-size: 0.75rem; font-weight: 700; color: var(--bleu);
+            margin-top: 0.6rem; display: block;
+        }
+
+        /* ===== SLIDE COURS ===== */
+        .cours-content { max-width: 1000px; margin: 0 auto; }
+        .cours-content h2 { margin-bottom: 1.2rem; }
+        .cours-content p { margin-bottom: 1rem; }
+        .cours-content ul { padding-left: 1.5rem; margin-bottom: 1rem; }
+        .cours-content li { margin-bottom: 0.4rem; }
+
+        /* ===== CODE ===== */
+        pre {
+            background: #1e293b; color: #e2e8f0;
+            padding: 1.3rem 1.5rem; border-radius: 12px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 1rem; line-height: 1.65;
+            overflow-x: auto; margin: 1rem 0;
+            border-left: 4px solid var(--rouge);
+        }
+        pre .tag { color: #7dd3fc; }
+        pre .attr { color: #fbbf24; }
+        pre .val { color: #86efac; }
+        pre .txt { color: #e2e8f0; }
+        pre .com { color: #64748b; font-style: italic; }
+        pre .kw { color: #f472b6; font-weight: 600; }
+        pre .cmd { color: #fbbf24; font-weight: 600; }
+        code {
+            background: #f1f5f9; padding: 0.15rem 0.4rem;
+            border-radius: 4px; font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.9em; color: #db2777;
+        }
+
+        /* ===== BOXES ===== */
+        .box {
+            border-radius: 12px; padding: 1rem 1.4rem; margin: 1rem 0;
+            font-size: 1.05rem; border-left: 5px solid;
+            display: flex; align-items: flex-start; gap: 0.7rem;
+        }
+        .box i { font-size: 1.2rem; flex-shrink: 0; margin-top: 0.15rem; }
+        .box-tip { background: var(--bleu-clair); border-color: var(--bleu); color: #0a2c5c; }
+        .box-important { background: var(--orange-clair); border-color: var(--orange); color: #6b3a1f; }
+        .box-success { background: var(--vert-clair); border-color: var(--vert); color: #064e3b; }
+        .box-warning { background: var(--rouge-clair); border-color: var(--rouge); color: #7f1d1d; }
+        .box-info { background: var(--violet-clair); border-color: var(--violet); color: #3b0764; }
+
+        /* ===== SLIDE PRATIQUE ===== */
+        .slide-pratique { background: #f0fdf4; }
+        .pratique-etapes {
+            background: white; border-radius: 14px; padding: 1.5rem 2rem;
+            border: 2px solid var(--vert); margin-top: 1.2rem;
+        }
+        .pratique-etapes ol { padding-left: 1.5rem; }
+        .pratique-etapes li { margin-bottom: 0.7rem; font-size: 1.1rem; }
+        .check-item {
+            display: flex; align-items: flex-start; gap: 0.7rem;
+            padding: 0.6rem 0; border-bottom: 1px dashed var(--bordure);
+        }
+        .check-item:last-child { border-bottom: none; }
+        .check-item .num-circle {
+            background: var(--vert); color: white; width: 28px; height: 28px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
+        }
+        .check-item .txt { font-size: 1.05rem; }
+
+        /* ===== SLIDE EXERCICE ===== */
+        .slide-exercice { background: #fff7ed; }
+
+        /* ===== SLIDE SYNTHÈSE ===== */
+        .slide-synthese { background: #f5f3ff; }
+
+        /* ===== TABLEAU ===== */
+        .table-simple {
+            width: 100%; border-collapse: collapse; font-size: 1.05rem;
+            background: white; border-radius: 12px; overflow: hidden;
+            margin: 1rem 0;
+        }
+        .table-simple th {
+            background: var(--rouge); color: white; padding: 0.8rem 1.1rem;
+            text-align: left; font-weight: 700; font-size: 1rem;
+        }
+        .table-simple td { padding: 0.65rem 1.1rem; border-bottom: 1px solid var(--bordure); }
+        .table-simple tr:last-child td { border-bottom: none; }
+
+        /* ===== DÉMO APERÇU FINAL ===== */
+        .final-demo {
+            background: linear-gradient(135deg, #0B3FA5 0%, #7c3aed 100%);
+            color: white; border-radius: 16px; padding: 2.5rem;
+            text-align: center; margin: 1rem 0;
+        }
+        .final-demo h3 { color: white; font-size: 1.6rem; margin-bottom: 1rem; }
+        .final-demo p { color: rgba(255,255,255,0.85); }
+        .final-demo .url {
+            background: rgba(255,255,255,0.15); border-radius: 8px;
+            padding: 0.7rem 1.2rem; font-family: 'Consolas', monospace;
+            font-size: 1.1rem; display: inline-block; margin-top: 1rem;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .slide-content { padding: 2rem 1.5rem; }
+            h1 { font-size: 1.8rem; }
+            h2 { font-size: 1.4rem; }
+            p, li { font-size: 1rem; }
+            .bloc-plan { grid-template-columns: 1fr 1fr; }
+            .access-card { padding: 2rem 1.5rem; }
+            pre { font-size: 0.85rem; }
+            .slide-header { font-size: 0.7rem; padding: 0.5rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- =========================================================
+         ÉCRAN DE CODE D'ACCÈS
+         Mot de passe : WEB2026 (base64 : V0VCMjAyNg==)
+         ========================================================= -->
+    <div class="access-overlay" id="accessOverlay">
+        <div class="access-card">
+            <div class="logo-symbol">WEB</div>
+            <h2>Jour 7 — Mise en ligne</h2>
+            <p>Formation Développement Web<br>Saisissez le code d'accès.</p>
+            <input type="password" class="access-input" id="accessInput" placeholder="Code d'accès" autocomplete="off" />
+            <button class="access-btn" id="accessBtn"><i class="fas fa-rocket"></i> Dernière étape</button>
+            <div class="access-error" id="accessError">Code incorrect. Réessayez.</div>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         CONTENEUR PROJECTION
+         ========================================================= -->
+    <div class="presentation-container" id="presentationContainer">
+        <div class="slide-header" id="slideHeader" style="display:none;">
+            <div>
+                <span class="bloc-tag" id="blocTag">BLOC 1</span>
+                <span class="type-tag" id="typeTag">Cours</span>
+            </div>
+            <div class="num"><span id="slideNum">1</span> / <span id="slideTotal">20</span></div>
+        </div>
+        <div class="slide-stage" id="slideStage"></div>
+        <div class="nav-hint">← → · Échap pour quitter</div>
+    </div>
+
+    <script>
+        // ============================================================
+        // DONNÉES DES SLIDES — JOUR 7 : MISE EN LIGNE
+        // ============================================================
+        const slidesData = [
+
+        // ---------- SLIDE 1 : TITRE ----------
+        {
+            type: 'title',
+            bloc: '—',
+            content: `
+                <h1>Mise en ligne</h1>
+                <p class="lead">Jour 7 — Le monde entier peut voir votre site</p>
+                <p class="lead" style="font-size:1.15rem; margin-top:1.5rem;">
+                    GitHub · Hébergement · Publication · Présentation finale
+                </p>
+                <p class="meta">DURÉE : 2 HEURES · DERNIÈRE SÉANCE</p>
+            `,
+            className: 'slide-title'
+        },
+
+        // ---------- SLIDE 2 : PLAN ----------
+        {
+            type: 'cours',
+            bloc: '—',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Programme des 2 heures</h2>
+                    <p class="anim-item">Dernière ligne droite. À la fin, votre site sera accessible depuis n'importe quel appareil, dans le monde entier.</p>
+                    <div class="bloc-plan">
+                        <div class="bloc-item anim-item">
+                            <div class="num">BLOC 1</div>
+                            <h4>Comprendre l'hébergement</h4>
+                            <p>Serveurs, hébergeurs, GitHub Pages.</p>
+                            <span class="duree">30 min</span>
+                        </div>
+                        <div class="bloc-item anim-item">
+                            <div class="num">BLOC 2</div>
+                            <h4>Compte GitHub & Git</h4>
+                            <p>Créer un compte, installer Git, premier dépôt.</p>
+                            <span class="duree">30 min</span>
+                        </div>
+                        <div class="bloc-item anim-item">
+                            <div class="num">BLOC 3</div>
+                            <h4>Publier avec GitHub Pages</h4>
+                            <p>Activer la publication, tester en ligne.</p>
+                            <span class="duree">30 min</span>
+                        </div>
+                        <div class="bloc-item anim-item">
+                            <div class="num">BLOC 4</div>
+                            <h4>Présentation finale</h4>
+                            <p>Préparer et présenter son projet.</p>
+                            <span class="duree">30 min</span>
+                        </div>
+                    </div>
+                    <div class="box box-important anim-item" style="margin-top:1.5rem;">
+                        <i class="fas fa-trophy"></i>
+                        <div><strong>C'est le jour de la consécration.</strong> À la fin, vous serez capable de dire : « J'ai créé un site web, il est en ligne ».</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 3 : COURS — QU'EST-CE QU'HÉBERGER ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Qu'est-ce qu'héberger un site ?</h2>
+                    <p class="anim-item">Héberger, c'est placer les fichiers de votre site sur un serveur accessible 24h/24 depuis Internet.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Situation</th><th>Qui peut voir le site ?</th></tr></thead>
+                        <tbody>
+                            <tr><td>Fichiers sur votre PC</td><td>Vous seul, sur votre PC</td></tr>
+                            <tr><td>Fichiers sur une clé USB</td><td>Ceux qui ont la clé</td></tr>
+                            <tr><td>Fichiers sur un serveur (hébergement)</td><td><strong>Le monde entier</strong>, à toute heure</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Analogie :</strong> héberger un site = exposer une œuvre dans un musée accessible à tous, plutôt que la garder chez soi.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 4 : COURS — HÉBERGEURS ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Aperçu des hébergeurs</h2>
+                    <p class="anim-item">Il existe deux grandes familles d'hébergement : statique (gratuit, simple) et dynamique (payant, puissant).</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Service</th><th>Type</th><th>Prix</th><th>Idéal pour</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>GitHub Pages</strong></td><td>Statique</td><td>Gratuit</td><td>Sites HTML/CSS/JS — notre choix</td></tr>
+                            <tr><td><strong>Netlify</strong></td><td>Statique</td><td>Gratuit</td><td>Sites modernes, JAMstack</td></tr>
+                            <tr><td><strong>Vercel</strong></td><td>Statique + Node.js</td><td>Gratuit / Payant</td><td>Applications React, Next.js</td></tr>
+                            <tr><td><strong>InfinityFree</strong></td><td>Dynamique (PHP)</td><td>Gratuit</td><td>Sites PHP + MySQL</td></tr>
+                            <tr><td><strong>Hostinger</strong></td><td>Dynamique</td><td>~1 500 FCFA/mois</td><td>Sites professionnels complets</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-important anim-item">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>Notre formation :</strong> HTML + CSS + JS uniquement → <strong>GitHub Pages</strong> est parfait. Gratuit, rapide, professionnel.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 5 : COURS — POURQUOI GITHUB PAGES ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pourquoi GitHub Pages ?</h2>
+                    <p class="anim-item">GitHub Pages héberge gratuitement vos sites statiques à partir d'un dépôt Git.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Avantage</th><th>Explication</th></tr></thead>
+                        <tbody>
+                            <tr><td>Gratuit à vie</td><td>Aucune carte bancaire, aucun abonnement</td></tr>
+                            <tr><td>HTTPS automatique</td><td>Le cadenas de sécurité sans configuration</td></tr>
+                            <tr><td>Rapide</td><td>Servi par un réseau mondial (CDN)</td></tr>
+                            <tr><td>Lié à Git</td><td>Chaque modification peut être publiée en 1 commande</td></tr>
+                            <tr><td>Professionnel</td><td>Adresse du type <code>votrepseudo.github.io/mon-site</code></td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Limite :</strong> GitHub Pages sert uniquement des fichiers statiques. Pas de PHP, pas de base de données. Pour cela, il faudra un hébergeur dynamique plus tard.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 6 : COURS — CRÉER UN COMPTE GITHUB ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Créer un compte GitHub</h2>
+                    <p class="anim-item">GitHub est la plus grande plateforme de code au monde. Un compte est gratuit en 2 minutes.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Champ</th><th>Recommandation</th></tr></thead>
+                        <tbody>
+                            <tr><td>Nom d'utilisateur</td><td>Court, sans espaces, professionnel (ex : <code>nticsolution</code>)</td></tr>
+                            <tr><td>Email</td><td>Une adresse que vous consultez souvent</td></tr>
+                            <tr><td>Mot de passe</td><td>Long (12+ caractères), unique, stocké dans un gestionnaire</td></tr>
+                            <tr><td>Vérification</td><td>Un code envoyé par email</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-warning anim-item">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div><strong>Sécurité :</strong> notez votre nom d'utilisateur et votre mot de passe GitHub quelque part de sûr. Sans cela, vous perdrez l'accès à vos sites publiés.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 7 : PRATIQUE — CRÉER UN COMPTE ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 2',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : créer un compte GitHub</h2>
+                    <p class="anim-item">On crée le compte pas à pas.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Ouvrez le navigateur et allez sur <code>github.com</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Cliquez sur <strong>Sign up</strong> en haut à droite.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Entrez votre email, un mot de passe long, puis un nom d'utilisateur.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Résolvez le puzzle de vérification.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Consultez votre email : cliquez sur le lien de confirmation ou entrez le code reçu.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="txt" style="border-top:none; padding-top:0;"><strong>6</strong> — Sur la page de personnalisation, cliquez « Skip personalization » ou « Continue for free ».</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Votre compte est créé.</strong> Notez précieusement : email + mot de passe + nom d'utilisateur.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 8 : COURS — GIT VS GITHUB ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 2',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Git et GitHub : la différence</h2>
+                    <p class="anim-item">Deux choses différentes, souvent confondues.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Git</th><th>GitHub</th></tr></thead>
+                        <tbody>
+                            <tr><td>Un logiciel installé sur votre PC</td><td>Un site web (github.com)</td></tr>
+                            <tr><td>Gère l'historique de votre code</td><td>Héberge et partage les dépôts</td></tr>
+                            <tr><td>Fonctionne hors ligne</td><td>Nécessite Internet</td></tr>
+                            <tr><td>Créé en 2005 par Linus Torvalds</td><td>Créé en 2008, racheté par Microsoft</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Analogie :</strong> Git est un carnet de notes. GitHub est le cloud où l'on range et partage ce carnet. On peut utiliser Git sans GitHub — et GitHub sans installer Git (via l'interface web).</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 9 : COURS — 3 COMMANDES GIT ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 2',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Les 3 commandes Git essentielles</h2>
+                    <p class="anim-item">Trois commandes suffisent pour publier un site.</p>
+                    <pre class="anim-item"><span class="com"># 1. Préparer tous les fichiers modifiés</span>
+<span class="cmd">git add .</span>
+
+<span class="com"># 2. Enregistrer les modifications avec un message</span>
+<span class="cmd">git commit -m "Ajout de la page d'accueil"</span>
+
+<span class="com"># 3. Envoyer vers GitHub</span>
+<span class="cmd">git push</span></pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Commande</th><th>Rôle</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>git add .</code></td><td>Sélectionne tous les fichiers à enregistrer</td></tr>
+                            <tr><td><code>git commit -m "..."</code></td><td>Enregistre un instantané avec un message</td></tr>
+                            <tr><td><code>git push</code></td><td>Envoie les modifications vers GitHub</td></tr>
+                            <tr><td><code>git status</code></td><td>Affiche l'état des fichiers (utile)</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>On peut aussi publier sans Git</strong> : en glissant-déposant les fichiers directement sur le site web de GitHub. Nous verrons cette méthode plus simple.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 10 : PRATIQUE — INSTALLER GIT ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 2',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : installer Git sur Windows</h2>
+                    <p class="anim-item">Git est un logiciel gratuit, à installer une seule fois.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Allez sur <code>git-scm.com</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Cliquez sur <strong>Download for Windows</strong> → <strong>64-bit Git for Windows Setup</strong>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Ouvrez le fichier téléchargé et suivez les étapes par défaut (tout est bien configuré).</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Une fois installé, ouvrez l'invite de commandes Windows (<code>cmd</code>).</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Tapez <code>git --version</code>. Vous devez voir un numéro de version.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">6</div>
+                            <div class="txt">Configurez votre identité :<br><code>git config --global user.name "Votre Nom"</code><br><code>git config --global user.email "votre@email.com"</code></div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Git est installé et configuré.</strong> Si vous voyez la version, tout va bien.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 11 : PRATIQUE — PREMIER DÉPÔT ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 2',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : créer son premier dépôt GitHub</h2>
+                    <p class="anim-item">Un dépôt (repository) est un dossier partagé sur GitHub.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Sur github.com, connecté, cliquez sur le <strong>+</strong> en haut à droite → <strong>New repository</strong>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Nom du dépôt : <code>mon-site</code> (ou un nom clair, sans espaces).</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Laissez Public. Cochez <strong>Add a README file</strong>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Cliquez <strong>Create repository</strong>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Vous arrivez sur la page du dépôt. Cliquez sur <strong>uploading an existing file</strong>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">6</div>
+                            <div class="txt">Glissez-déposez tous les fichiers de votre site (HTML + CSS + JS + dossier <code>images</code>). Cliquez <strong>Commit changes</strong>.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Votre code est sur GitHub.</strong> Il est sauvegardé, partagé, versionné. On va maintenant le publier.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 12 : COURS — PUBLIER AVEC GITHUB PAGES ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Publier avec GitHub Pages</h2>
+                    <p class="anim-item">GitHub Pages transforme un dépôt en site web accessible publiquement en 2 clics.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Étape</th><th>Action</th></tr></thead>
+                        <tbody>
+                            <tr><td>1</td><td>Sur la page du dépôt, cliquez sur l'onglet <strong>Settings</strong></td></tr>
+                            <tr><td>2</td><td>Dans le menu de gauche, cliquez sur <strong>Pages</strong></td></tr>
+                            <tr><td>3</td><td>Source : sélectionnez <strong>Deploy from a branch</strong></td></tr>
+                            <tr><td>4</td><td>Branch : sélectionnez <strong>main</strong> et <strong>/ (root)</strong></td></tr>
+                            <tr><td>5</td><td>Cliquez sur <strong>Save</strong></td></tr>
+                            <tr><td>6</td><td>Attendez 1-2 minutes. L'URL du site apparaît en haut de la page :<br><code>https://votrepseudo.github.io/mon-site/</code></td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-important anim-item">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>Important :</strong> le fichier d'accueil doit s'appeler <code>index.html</code> à la racine du dépôt. Sinon, la page d'accueil sera une erreur 404.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 13 : PRATIQUE — ACTIVER GITHUB PAGES ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : activer GitHub Pages</h2>
+                    <p class="anim-item">On publie le site. Le monde entier y aura accès dans 2 minutes.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Sur la page de votre dépôt, cliquez sur <strong>Settings</strong> (onglet en haut).</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Dans la barre latérale gauche, cliquez sur <strong>Pages</strong>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Sous « Build and deployment », source : <strong>Deploy from a branch</strong>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Branch : <strong>main</strong> + <strong>/ (root)</strong>. Cliquez <strong>Save</strong>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Attendez 1-2 minutes. Rechargez la page. L'URL du site apparaît.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">6</div>
+                            <div class="txt">Cliquez sur cette URL. <strong>Votre site s'ouvre, en ligne !</strong></div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-trophy"></i>
+                        <div><strong>Félicitations !</strong> Votre site est publié. Ouvrez-le sur votre téléphone pour tester : il fonctionne partout.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 14 : COURS — NOM DE DOMAINE ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Nom de domaine personnalisé (aperçu)</h2>
+                    <p class="anim-item">On peut remplacer l'adresse GitHub par un vrai nom de domaine comme <code>monsite.com</code>.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Type</th><th>Prix</th><th>Exemple</th></tr></thead>
+                        <tbody>
+                            <tr><td>Sous-domaine GitHub</td><td>Gratuit</td><td><code>pseudo.github.io/mon-site</code></td></tr>
+                            <tr><td>Domaine <code>.com</code></td><td>~7 000 FCFA/an</td><td><code>monsite.com</code></td></tr>
+                            <tr><td>Domaine <code>.bf</code></td><td>~15 000 FCFA/an</td><td><code>monsite.bf</code></td></tr>
+                        </tbody>
+                    </table>
+                    <p class="anim-item"><strong>Étapes générales (à approfondir plus tard) :</strong></p>
+                    <ul class="anim-item">
+                        <li>Acheter un nom de domaine chez un registrar (Namecheap, OVH, etc.)</li>
+                        <li>Configurer les DNS pour pointer vers GitHub</li>
+                        <li>Renseigner le domaine dans Settings → Pages de GitHub</li>
+                    </ul>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Pour commencer :</strong> utilisez le sous-domaine GitHub gratuit. Un domaine personnalisé viendra quand vous serez prêt.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 15 : COURS — CHECKLIST AVANT PRÉSENTATION ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Checklist avant la présentation</h2>
+                    <p class="anim-item">Dernier passage en revue. Tout doit être impeccable.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>#</th><th>Vérification</th></tr></thead>
+                        <tbody>
+                            <tr><td>1</td><td>Le site s'ouvre correctement avec l'URL GitHub Pages</td></tr>
+                            <tr><td>2</td><td>Tous les liens du menu fonctionnent en ligne</td></tr>
+                            <tr><td>3</td><td>Les images s'affichent (chemins relatifs corrects)</td></tr>
+                            <tr><td>4</td><td>Le CSS est appliqué partout</td></tr>
+                            <tr><td>5</td><td>Le formulaire de contact réagit (validation JS)</td></tr>
+                            <tr><td>6</td><td>Le site est lisible sur mobile</td></tr>
+                            <tr><td>7</td><td>La page 404 s'affiche en cas d'URL incorrecte</td></tr>
+                            <tr><td>8</td><td>Aucun texte « lorem ipsum » oublié</td></tr>
+                            <tr><td>9</td><td>Aucune faute d'orthographe visible</td></tr>
+                            <tr><td>10</td><td>La console (F12) ne montre pas d'erreur rouge</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 16 : PRATIQUE — TEST FINAL ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : test final du site en ligne</h2>
+                    <p class="anim-item">On teste le site comme un visiteur externe.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Ouvrez le site sur votre PC avec son URL GitHub Pages.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Parcourez toutes les pages en cliquant sur les liens du menu.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Ouvrez le site sur votre téléphone (via l'URL). Testez la navigation tactile.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Partagez l'URL à un camarade. Demandez-lui de tester.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Testez une URL incorrecte : <code>.../mon-site/nimportequoi</code> → la page 404 doit s'afficher.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">6</div>
+                            <div class="txt">Notez les bugs éventuels. Corrigez localement puis re-publiez.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Site validé en conditions réelles.</strong> C'est prêt pour la présentation.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 17 : COURS — PRÉSENTER SON PROJET ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 4',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Comment présenter son projet</h2>
+                    <p class="anim-item">Une présentation claire suit toujours la même structure.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Étape</th><th>Durée</th><th>Contenu</th></tr></thead>
+                        <tbody>
+                            <tr><td>1. Introduction</td><td>30 s</td><td>Votre nom, le nom du site, son objectif</td></tr>
+                            <tr><td>2. Démonstration</td><td>2 min</td><td>Ouvrir le site, naviguer, montrer chaque page</td></tr>
+                            <tr><td>3. Points forts</td><td>1 min</td><td>Ce que vous avez réussi : design, responsive, formulaire…</td></tr>
+                            <tr><td>4. Défis rencontrés</td><td>1 min</td><td>Une difficulté surmontée, une leçon apprise</td></tr>
+                            <tr><td>5. Conclusion</td><td>30 s</td><td>Bilan, ce que vous feriez différemment</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Conseil :</strong> ne lisez pas de notes. Parlez simplement. Vous avez créé ce site — vous le connaissez mieux que quiconque.</div>
+                    </div>
+                    <div class="box box-important anim-item">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>Erreur à éviter :</strong> ne dites pas « je suis débutant, c'est pas top ». Assumez : « voici mon premier site, voilà ce qu'il fait ».</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 18 : PRATIQUE — PRÉPARER SA PRÉSENTATION ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 4',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : préparer sa présentation</h2>
+                    <p class="anim-item">5 minutes pour structurer votre présentation.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Sur une feuille, notez le nom de votre site et sa raison d'être en 1 phrase.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Listez les 5 pages que vous avez créées. Vous les montrerez dans cet ordre.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Notez 2 points forts : « mon design est propre », « mon formulaire est fonctionnel », « le site est responsive ».</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Notez 1 difficulté surmontée. Ex : « le CSS ne s'appliquait pas, j'avais oublié le &lt;link&gt; ».</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Entraînez-vous une fois à voix haute. 4 minutes maximum.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">6</div>
+                            <div class="txt">Ouvrez le site en ligne dans un onglet, prêt à le montrer.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Présentation prête.</strong> Vous savez ce que vous allez dire et montrer.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 19 : EXERCICE — PRÉSENTATION AU GROUPE ----------
+        {
+            type: 'exercice',
+            bloc: 'BLOC 4',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Exercice final : présentation au groupe</h2>
+                    <p class="anim-item">Chaque apprenant présente son site en 4 minutes maximum.</p>
+                    <div class="pratique-etapes anim-item" style="border-color:var(--orange);">
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">1</div>
+                            <div class="txt">Le formateur appelle les apprenants un par un.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">2</div>
+                            <div class="txt">Chaque apprenant présente : nom du site, objectif, démonstration de 5 pages, 2 points forts, 1 difficulté.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">3</div>
+                            <div class="txt">Le groupe peut poser 1 question maximum par présentation.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">4</div>
+                            <div class="txt">Le formateur note les points forts de chaque site (feedback constructif, pas de note chiffrée).</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">5</div>
+                            <div class="txt">À la fin, chaque apprenant partage l'URL de son site avec le groupe.</div>
+                        </div>
+                    </div>
+                    <div class="box box-important anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-trophy"></i>
+                        <div><strong>Objectif :</strong> chaque apprenant quitte la salle avec un site publié, une URL à partager, et la fierté du travail accompli.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-exercice'
+        },
+
+        // ---------- SLIDE 20 : SYNTHÈSE FINALE ----------
+        {
+            type: 'synthese',
+            bloc: '—',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Bilan des 7 jours</h2>
+                    <p class="anim-item">Ce que vous avez accompli en 20 heures de formation :</p>
+                    <ul class="anim-item" style="font-size:1.15rem; line-height:1.7;">
+                        <li><strong>Jour 1 :</strong> Compris le Web, installé les outils, écrit votre première page HTML</li>
+                        <li><strong>Jour 2 :</strong> Structuré un contenu, créé plusieurs pages reliées</li>
+                        <li><strong>Jour 3 :</strong> Séparé HTML et CSS, appliqué couleurs, polices, mise en page</li>
+                        <li><strong>Jour 4 :</strong> Maîtrisé Grid, créé des cartes et une galerie responsive</li>
+                        <li><strong>Jour 5 :</strong> Structuré un vrai site multi-pages avec navigation commune</li>
+                        <li><strong>Jour 6 :</strong> Créé un formulaire fonctionnel et validé en JavaScript</li>
+                        <li><strong>Jour 7 :</strong> Publié le site en ligne et présenté votre travail</li>
+                    </ul>
+
+                    <div class="final-demo anim-item">
+                        <h3>🎉 Votre site est en ligne</h3>
+                        <p>Il est accessible depuis n'importe quel navigateur, dans le monde entier.</p>
+                        <div class="url">https://votrepseudo.github.io/mon-site/</div>
+                    </div>
+
+                    <h3 class="anim-item" style="margin-top:2rem; color:var(--bleu);">La suite</h3>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Pour progresser</th><th>Où aller</th></tr></thead>
+                        <tbody>
+                            <tr><td>Approfondir CSS</td><td>Flexbox Froggy, CSS Grid Garden (jeux en ligne)</td></tr>
+                            <tr><td>Apprendre JavaScript</td><td>MDN Web Docs, freeCodeCamp</td></tr>
+                            <tr><td>Dynamiser avec PHP</td><td>Formation backend — bases de données MySQL</td></tr>
+                            <tr><td>Créer un vrai domaine</td><td>Namecheap, OVH, ou un registrar local</td></tr>
+                            <tr><td>Publier un site pro</td><td>Hébergement mutualisé (Hostinger, InfinityFree)</td></tr>
+                        </tbody>
+                    </table>
+
+                    <div class="box box-success anim-item" style="margin-top:1.5rem;">
+                        <i class="fas fa-graduation-cap"></i>
+                        <div><strong>Félicitations.</strong> Vous êtes passé de « je ne sais pas coder » à « j'ai publié un site web ». C'est un vrai accomplissement.</div>
+                    </div>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Conseil pour continuer :</strong> codez au moins 30 minutes par jour. Un petit projet par semaine. C'est la régularité qui fait la maîtrise.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-synthese'
+        }
+
+        ];
+
+        // ============================================================
+        // ÉTAT
+        // ============================================================
+        let currentSlide = 0;
+        const totalSlides = slidesData.length;
+
+        // ============================================================
+        // AFFICHAGE
+        // ============================================================
+        function renderSlide(index) {
+            const stage = document.getElementById('slideStage');
+            const slide = slidesData[index];
+            stage.innerHTML = `<div class="slide-content ${slide.className || ''}">${slide.content}</div>`;
+
+            const header = document.getElementById('slideHeader');
+            if (slide.type === 'title') {
+                header.style.display = 'none';
+            } else {
+                header.style.display = 'flex';
+                document.getElementById('blocTag').textContent = slide.bloc || '—';
+                document.getElementById('slideNum').textContent = index + 1;
+                document.getElementById('slideTotal').textContent = totalSlides;
+
+                const typeTag = document.getElementById('typeTag');
+                const typeLabels = {
+                    'cours': 'Cours',
+                    'pratique': 'Pratique',
+                    'exercice': 'Exercice',
+                    'synthese': 'Synthèse'
+                };
+                typeTag.textContent = typeLabels[slide.type] || 'Cours';
+                typeTag.className = 'type-tag type-' + (slide.type || 'cours');
+            }
+        }
+
+        function goNext() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                renderSlide(currentSlide);
+            }
+        }
+
+        function goPrev() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                renderSlide(currentSlide);
+            }
+        }
+
+        // ============================================================
+        // CODE D'ACCÈS — WEB2026 (base64 : V0VCMjAyNg==)
+        // ============================================================
+        function checkAccess() {
+            const input = document.getElementById('accessInput');
+            const error = document.getElementById('accessError');
+            const expected = 'V0VCMjAyNg==';
+            const entered = btoa(input.value.trim());
+            if (entered === expected) {
+                document.getElementById('accessOverlay').classList.add('hidden');
+                document.getElementById('presentationContainer').classList.add('active');
+                renderSlide(currentSlide);
+            } else {
+                error.classList.add('visible');
+                input.value = '';
+                input.focus();
+                setTimeout(() => error.classList.remove('visible'), 2500);
+            }
+        }
+
+        document.getElementById('accessBtn').addEventListener('click', checkAccess);
+        document.getElementById('accessInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') checkAccess();
+        });
+
+        // ============================================================
+        // NAVIGATION CLAVIER
+        // ============================================================
+        document.addEventListener('keydown', function(e) {
+            const container = document.getElementById('presentationContainer');
+            if (!container.classList.contains('active')) return;
+            switch (e.key) {
+                case 'ArrowRight':
+                case ' ':
+                case 'PageDown':
+                    e.preventDefault();
+                    goNext();
+                    break;
+                case 'ArrowLeft':
+                case 'PageUp':
+                    e.preventDefault();
+                    goPrev();
+                    break;
+                case 'Escape':
+                    if (confirm('Quitter la projection ?')) {
+                        document.getElementById('presentationContainer').classList.remove('active');
+                        document.getElementById('accessOverlay').classList.remove('hidden');
+                        currentSlide = 0;
+                    }
+                    break;
+            }
+        });
+
+        // ============================================================
+        // NAVIGATION TACTILE
+        // ============================================================
+        let touchStartX = 0;
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        document.addEventListener('touchend', function(e) {
+            const deltaX = e.changedTouches[0].screenX - touchStartX;
+            if (Math.abs(deltaX) > 60) {
+                if (deltaX < 0) goNext();
+                else goPrev();
+            }
+        });
+    </script>
+
+</body>
+</html>

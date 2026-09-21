@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Formation Développement Web · Jour 4 — CSS avancé & galerie</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        /* ===== VARIABLES ===== */
+        :root {
+            --bleu: #0B3FA5;
+            --bleu-profond: #072a6e;
+            --bleu-clair: #e8f0fe;
+            --orange: #FF6B35;
+            --orange-clair: #fff4e5;
+            --vert: #059669;
+            --vert-clair: #ecfdf5;
+            --violet: #7c3aed;
+            --violet-clair: #f3e8ff;
+            --rouge: #dc2626;
+            --rouge-clair: #fef2f2;
+            --jaune: #f59e0b;
+            --jaune-clair: #fffbeb;
+            --texte: #1e293b;
+            --texte-secondaire: #475569;
+            --blanc: #ffffff;
+            --bordure: #e2e8f0;
+            --transition: 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background: #0d1117;
+            color: var(--texte);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            -webkit-font-smoothing: antialiased;
+            user-select: none;
+        }
+
+        /* ===== ÉCRAN DE CODE D'ACCÈS ===== */
+        .access-overlay {
+            position: fixed; inset: 0; z-index: 99999;
+            background: linear-gradient(135deg, var(--vert) 0%, #064e3b 100%);
+            display: flex; align-items: center; justify-content: center;
+            transition: opacity 0.7s ease, visibility 0.7s ease;
+        }
+        .access-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .access-card {
+            background: var(--blanc); border-radius: 2rem; padding: 3rem 2.5rem;
+            text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            max-width: 420px; width: 90%; animation: floatIn 0.8s ease;
+        }
+        @keyframes floatIn {
+            from { opacity: 0; transform: translateY(40px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .access-card .logo-symbol {
+            background: var(--vert); color: white; width: 64px; height: 64px;
+            border-radius: 18px; display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 1.6rem; margin: 0 auto 1.2rem;
+        }
+        .access-card h2 { color: var(--vert); font-size: 1.4rem; margin-bottom: 0.5rem; }
+        .access-card p { color: #475569; margin-bottom: 1.8rem; font-size: 0.9rem; }
+        .access-input {
+            width: 100%; padding: 0.9rem 1.3rem; border: 2px solid var(--bordure);
+            border-radius: 14px; font-family: inherit; font-size: 1rem;
+            text-align: center; letter-spacing: 2px; transition: var(--transition); margin-bottom: 1rem;
+        }
+        .access-input:focus { outline: none; border-color: var(--vert); box-shadow: 0 0 0 4px rgba(5,150,105,0.1); }
+        .access-btn {
+            width: 100%; padding: 0.9rem; background: var(--orange); color: white;
+            border: none; border-radius: 14px; font-weight: 700; font-size: 1rem;
+            font-family: inherit; cursor: pointer; transition: var(--transition);
+        }
+        .access-btn:hover { background: #e55a2b; transform: translateY(-2px); }
+        .access-error {
+            color: #dc2626; font-size: 0.85rem; margin-top: 0.5rem;
+            display: none; font-weight: 600;
+        }
+        .access-error.visible { display: block; animation: shake 0.5s ease; }
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        /* ===== CONTAINER PROJECTION ===== */
+        .presentation-container {
+            display: none; position: fixed; inset: 0; background: #0d1117; z-index: 100;
+        }
+        .presentation-container.active { display: block; }
+        .slide-stage {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .slide-content {
+            background: white; width: 100%; height: 100%;
+            overflow-y: auto; padding: 3rem 4.5rem;
+            position: relative; animation: slideIn 0.4s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: scale(0.97); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .slide-header {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(8px);
+            padding: 0.6rem 1.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--bordure);
+            font-size: 0.8rem; font-weight: 600;
+        }
+        .slide-header .bloc-tag {
+            background: var(--vert); color: white; padding: 0.25rem 0.75rem;
+            border-radius: 999px; font-size: 0.7rem; letter-spacing: 0.5px;
+        }
+        .slide-header .type-tag {
+            padding: 0.25rem 0.75rem; border-radius: 999px;
+            font-size: 0.7rem; letter-spacing: 0.5px; font-weight: 700;
+        }
+        .type-cours { background: var(--bleu-clair); color: var(--bleu); }
+        .type-pratique { background: var(--vert-clair); color: var(--vert); }
+        .type-exercice { background: var(--orange-clair); color: var(--orange); }
+        .type-synthese { background: var(--violet-clair); color: var(--violet); }
+        .slide-header .num { color: var(--texte-secondaire); }
+
+        .nav-hint {
+            position: fixed; bottom: 1rem; right: 1rem; z-index: 500;
+            color: rgba(255,255,255,0.3); font-size: 0.7rem;
+            font-weight: 600; letter-spacing: 0.5px; pointer-events: none;
+        }
+
+        /* ===== ANIMATIONS ===== */
+        .anim-item { opacity: 0; transform: translateY(15px); animation: fadeUp 0.5s ease forwards; }
+        .anim-item:nth-child(1) { animation-delay: 0.05s; }
+        .anim-item:nth-child(2) { animation-delay: 0.15s; }
+        .anim-item:nth-child(3) { animation-delay: 0.25s; }
+        .anim-item:nth-child(4) { animation-delay: 0.35s; }
+        .anim-item:nth-child(5) { animation-delay: 0.45s; }
+        .anim-item:nth-child(6) { animation-delay: 0.55s; }
+        .anim-item:nth-child(7) { animation-delay: 0.65s; }
+        .anim-item:nth-child(8) { animation-delay: 0.75s; }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+        /* ===== TYPOGRAPHIE ===== */
+        h1 { font-size: 3rem; font-weight: 800; letter-spacing: -1px; color: var(--bleu); line-height: 1.1; }
+        h2 { font-size: 2.1rem; font-weight: 700; color: var(--bleu); line-height: 1.2; margin-bottom: 1rem; }
+        h3 { font-size: 1.4rem; font-weight: 700; color: var(--texte); }
+        h4 { font-size: 1.15rem; font-weight: 700; }
+        p { font-size: 1.25rem; line-height: 1.55; color: var(--texte); }
+        li { font-size: 1.15rem; line-height: 1.65; }
+        .lead { font-size: 1.4rem; color: var(--texte-secondaire); line-height: 1.5; }
+
+        /* ===== SLIDE DE TITRE ===== */
+        .slide-title {
+            background: linear-gradient(135deg, #059669 0%, #064e3b 100%);
+            color: white; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; text-align: center;
+        }
+        .slide-title h1 { color: white; font-size: 3.2rem; }
+        .slide-title .lead { color: rgba(255,255,255,0.85); margin-top: 1rem; }
+        .slide-title .meta {
+            color: rgba(255,255,255,0.6); font-size: 1rem; margin-top: 2rem;
+            letter-spacing: 1px;
+        }
+
+        /* ===== SLIDE PLAN ===== */
+        .bloc-plan {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 1rem; margin-top: 2rem;
+        }
+        .bloc-item {
+            background: #f8fafc; border-radius: 16px; padding: 1.5rem 1.2rem;
+            border-top: 5px solid var(--vert); text-align: left;
+        }
+        .bloc-item .num {
+            font-size: 0.75rem; font-weight: 800; color: var(--vert);
+            letter-spacing: 1.5px; margin-bottom: 0.5rem;
+        }
+        .bloc-item h4 { color: var(--texte); margin-bottom: 0.4rem; font-size: 1.05rem; }
+        .bloc-item p { font-size: 0.9rem; color: var(--texte-secondaire); }
+        .bloc-item .duree {
+            font-size: 0.75rem; font-weight: 700; color: var(--orange);
+            margin-top: 0.6rem; display: block;
+        }
+
+        /* ===== SLIDE COURS ===== */
+        .cours-content { max-width: 1000px; margin: 0 auto; }
+        .cours-content h2 { margin-bottom: 1.2rem; }
+        .cours-content p { margin-bottom: 1rem; }
+        .cours-content ul { padding-left: 1.5rem; margin-bottom: 1rem; }
+        .cours-content li { margin-bottom: 0.4rem; }
+
+        /* ===== CODE ===== */
+        pre {
+            background: #1e293b; color: #e2e8f0;
+            padding: 1.3rem 1.5rem; border-radius: 12px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 1rem; line-height: 1.65;
+            overflow-x: auto; margin: 1rem 0;
+            border-left: 4px solid var(--vert);
+        }
+        pre .tag { color: #7dd3fc; }
+        pre .attr { color: #fbbf24; }
+        pre .val { color: #86efac; }
+        pre .txt { color: #e2e8f0; }
+        pre .com { color: #64748b; font-style: italic; }
+        pre .sel { color: #f472b6; }
+        pre .prop { color: #7dd3fc; }
+        code {
+            background: #f1f5f9; padding: 0.15rem 0.4rem;
+            border-radius: 4px; font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.9em; color: #db2777;
+        }
+
+        /* ===== BOXES ===== */
+        .box {
+            border-radius: 12px; padding: 1rem 1.4rem; margin: 1rem 0;
+            font-size: 1.05rem; border-left: 5px solid;
+            display: flex; align-items: flex-start; gap: 0.7rem;
+        }
+        .box i { font-size: 1.2rem; flex-shrink: 0; margin-top: 0.15rem; }
+        .box-tip { background: var(--bleu-clair); border-color: var(--bleu); color: #0a2c5c; }
+        .box-important { background: var(--orange-clair); border-color: var(--orange); color: #6b3a1f; }
+        .box-success { background: var(--vert-clair); border-color: var(--vert); color: #064e3b; }
+        .box-warning { background: var(--rouge-clair); border-color: var(--rouge); color: #7f1d1d; }
+        .box-info { background: var(--violet-clair); border-color: var(--violet); color: #3b0764; }
+
+        /* ===== SLIDE PRATIQUE ===== */
+        .slide-pratique { background: #f0fdf4; }
+        .pratique-etapes {
+            background: white; border-radius: 14px; padding: 1.5rem 2rem;
+            border: 2px solid var(--vert); margin-top: 1.2rem;
+        }
+        .pratique-etapes ol { padding-left: 1.5rem; }
+        .pratique-etapes li { margin-bottom: 0.7rem; font-size: 1.1rem; }
+        .check-item {
+            display: flex; align-items: flex-start; gap: 0.7rem;
+            padding: 0.6rem 0; border-bottom: 1px dashed var(--bordure);
+        }
+        .check-item:last-child { border-bottom: none; }
+        .check-item .num-circle {
+            background: var(--vert); color: white; width: 28px; height: 28px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
+        }
+        .check-item .txt { font-size: 1.05rem; }
+
+        /* ===== SLIDE EXERCICE ===== */
+        .slide-exercice { background: #fff7ed; }
+
+        /* ===== SLIDE SYNTHÈSE ===== */
+        .slide-synthese { background: #f5f3ff; }
+
+        /* ===== TABLEAU ===== */
+        .table-simple {
+            width: 100%; border-collapse: collapse; font-size: 1.05rem;
+            background: white; border-radius: 12px; overflow: hidden;
+            margin: 1rem 0;
+        }
+        .table-simple th {
+            background: var(--vert); color: white; padding: 0.8rem 1.1rem;
+            text-align: left; font-weight: 700; font-size: 1rem;
+        }
+        .table-simple td { padding: 0.65rem 1.1rem; border-bottom: 1px solid var(--bordure); }
+        .table-simple tr:last-child td { border-bottom: none; }
+
+        /* ===== DÉMO CARTE ===== */
+        .card-demo {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 1rem; margin: 1.2rem 0;
+        }
+        .demo-card {
+            background: white; border-radius: 12px; overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .demo-card-img {
+            height: 110px;
+            background: linear-gradient(135deg, #7dd3fc 0%, #3b82f6 100%);
+        }
+        .demo-card-body { padding: 1rem; }
+        .demo-card-body h4 { font-size: 0.95rem; margin-bottom: 0.3rem; color: var(--texte); }
+        .demo-card-body p { font-size: 0.8rem; color: var(--texte-secondaire); }
+
+        /* ===== DÉMO GRILLE ===== */
+        .grid-demo {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 10px; margin: 1rem 0;
+        }
+        .grid-cell {
+            background: var(--vert); color: white; padding: 20px;
+            border-radius: 8px; text-align: center; font-weight: 700; font-size: 0.9rem;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .slide-content { padding: 2rem 1.5rem; }
+            h1 { font-size: 1.8rem; }
+            h2 { font-size: 1.4rem; }
+            p, li { font-size: 1rem; }
+            .bloc-plan { grid-template-columns: 1fr 1fr; }
+            .card-demo { grid-template-columns: 1fr; }
+            .grid-demo { grid-template-columns: 1fr; }
+            .access-card { padding: 2rem 1.5rem; }
+            pre { font-size: 0.85rem; }
+            .slide-header { font-size: 0.7rem; padding: 0.5rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- =========================================================
+         ÉCRAN DE CODE D'ACCÈS
+         Mot de passe : WEB2026 (base64 : V0VCMjAyNg==)
+         ========================================================= -->
+    <div class="access-overlay" id="accessOverlay">
+        <div class="access-card">
+            <div class="logo-symbol">CSS+</div>
+            <h2>Jour 4 — CSS avancé & galerie</h2>
+            <p>Formation Développement Web<br>Saisissez le code d'accès.</p>
+            <input type="password" class="access-input" id="accessInput" placeholder="Code d'accès" autocomplete="off" />
+            <button class="access-btn" id="accessBtn"><i class="fas fa-arrow-right"></i> Commencer</button>
+            <div class="access-error" id="accessError">Code incorrect. Réessayez.</div>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         CONTENEUR PROJECTION
+         ========================================================= -->
+    <div class="presentation-container" id="presentationContainer">
+        <div class="slide-header" id="slideHeader" style="display:none;">
+            <div>
+                <span class="bloc-tag" id="blocTag">BLOC 1</span>
+                <span class="type-tag" id="typeTag">Cours</span>
+            </div>
+            <div class="num"><span id="slideNum">1</span> / <span id="slideTotal">20</span></div>
+        </div>
+        <div class="slide-stage" id="slideStage"></div>
+        <div class="nav-hint">← → · Échap pour quitter</div>
+    </div>
+
+    <script>
+        // ============================================================
+        // DONNÉES DES SLIDES — JOUR 4 : CSS AVANCÉ & GALERIE
+        // ============================================================
+        const slidesData = [
+
+        // ---------- SLIDE 1 : TITRE ----------
+        {
+            type: 'title',
+            bloc: '—',
+            content: `
+                <h1>CSS avancé & galerie</h1>
+                <p class="lead">Jour 4 — Passer au niveau professionnel</p>
+                <p class="lead" style="font-size:1.15rem; margin-top:1.5rem;">
+                    Grid · Cartes · Galerie responsive · Media queries
+                </p>
+                <p class="meta">DURÉE : 2 HEURES · NIVEAU : INTERMÉDIAIRE</p>
+            `,
+            className: 'slide-title'
+        },
+
+        // ---------- SLIDE 2 : PLAN ----------
+        {
+            type: 'cours',
+            bloc: '—',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Programme des 2 heures</h2>
+                    <p class="anim-item">Le site est correct. Aujourd'hui, on le rend professionnel avec les outils CSS modernes.</p>
+                    <div class="bloc-plan">
+                        <div class="bloc-item anim-item">
+                            <div class="num">BLOC 1</div>
+                            <h4>Variables & Grid</h4>
+                            <p>Variables CSS, grilles, colonnes adaptatives.</p>
+                            <span class="duree">30 min</span>
+                        </div>
+                        <div class="bloc-item anim-item">
+                            <div class="num">BLOC 2</div>
+                            <h4>Cartes & ombres</h4>
+                            <p>Cards design, ombres, coins arrondis, cadrage.</p>
+                            <span class="duree">30 min</span>
+                        </div>
+                        <div class="bloc-item anim-item">
+                            <div class="num">BLOC 3</div>
+                            <h4>Galerie & responsive</h4>
+                            <p>Galerie d'images, media queries, mobile.</p>
+                            <span class="duree">30 min</span>
+                        </div>
+                        <div class="bloc-item anim-item">
+                            <div class="num">BLOC 4</div>
+                            <h4>Boutons & espacements</h4>
+                            <p>Boutons modernes, hiérarchie, exercice final.</p>
+                            <span class="duree">30 min</span>
+                        </div>
+                    </div>
+                    <div class="box box-tip anim-item" style="margin-top:1.5rem;">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>Objectif du jour :</strong> produire un site qui rivalise visuellement avec les sites professionnels.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 3 : COURS — RÉVISION ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Où en sommes-nous ?</h2>
+                    <p class="anim-item">Rappel express du Jour 3 avant d'aller plus loin.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Acquis</th><th>Jour</th></tr></thead>
+                        <tbody>
+                            <tr><td>Structure HTML complète, plusieurs pages reliées</td><td>J1 + J2</td></tr>
+                            <tr><td>Fichier <code>style.css</code> relié aux pages</td><td>J3</td></tr>
+                            <tr><td>Sélecteurs, couleurs, polices, box model</td><td>J3</td></tr>
+                            <tr><td>Flexbox pour 2 éléments côte à côte</td><td>J3</td></tr>
+                            <tr><td>Effets <code>:hover</code> sur liens et boutons</td><td>J3</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-important anim-item">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>Aujourd'hui :</strong> on remplace Flexbox par <strong>Grid</strong> pour les galeries, on crée de vraies <strong>cartes</strong>, et on rend tout <strong>responsive</strong>.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 4 : COURS — VARIABLES CSS ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Les variables CSS</h2>
+                    <p class="anim-item">On peut stocker une valeur (couleur, taille…) dans une variable réutilisable partout.</p>
+                    <pre class="anim-item"><span class="com">/* Déclaration en haut du fichier */</span>
+<span class="sel">:root</span> {
+  <span class="prop">--couleur-principale</span>: <span class="val">#0B3FA5</span>;
+  <span class="prop">--couleur-accent</span>: <span class="val">#FF6B35</span>;
+  <span class="prop">--espace-standard</span>: <span class="val">20px</span>;
+}
+
+<span class="com">/* Utilisation avec var() */</span>
+<span class="sel">h1</span> { <span class="prop">color</span>: <span class="val">var(--couleur-principale)</span>; }
+<span class="sel">button</span> { <span class="prop">background</span>: <span class="val">var(--couleur-accent)</span>; }
+<span class="sel">.carte</span> { <span class="prop">padding</span>: <span class="val">var(--espace-standard)</span>; }</pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Avantage</th><th>Explication</th></tr></thead>
+                        <tbody>
+                            <tr><td>Changement global instantané</td><td>Modifier la variable = tout le site change</td></tr>
+                            <tr><td>Cohérence garantie</td><td>Même couleur partout, pas de dérive</td></tr>
+                            <tr><td>Code plus lisible</td><td><code>var(--couleur-principale)</code> parle plus que <code>#0B3FA5</code></td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Bonne pratique :</strong> toujours mettre les variables dans <code>:root { }</code> en début de fichier CSS.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 5 : COURS — DISPLAY GRID ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">display: grid — la grille CSS</h2>
+                    <p class="anim-item">Grid est la méthode moderne pour disposer des éléments en lignes ET colonnes.</p>
+                    <pre class="anim-item"><span class="sel">.grille</span> {
+  <span class="prop">display</span>: <span class="val">grid</span>;
+  <span class="prop">grid-template-columns</span>: <span class="val">repeat(3, 1fr)</span>;   <span class="com">/* 3 colonnes égales */</span>
+  <span class="prop">gap</span>: <span class="val">20px</span>;                            <span class="com">/* espace entre les cellules */</span>
+}</pre>
+                    <div class="grid-demo anim-item">
+                        <div class="grid-cell">1</div>
+                        <div class="grid-cell">2</div>
+                        <div class="grid-cell">3</div>
+                        <div class="grid-cell">4</div>
+                        <div class="grid-cell">5</div>
+                        <div class="grid-cell">6</div>
+                    </div>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Valeur de grid-template-columns</th><th>Résultat</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>repeat(3, 1fr)</code></td><td>3 colonnes égales</td></tr>
+                            <tr><td><code>1fr 2fr</code></td><td>Colonne 1 = moitié de colonne 2</td></tr>
+                            <tr><td><code>repeat(auto-fit, minmax(250px, 1fr))</code></td><td>Colonnes adaptatives automatiques</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>1fr</strong> = une fraction de l'espace disponible. <code>1fr 1fr 1fr</code> = 3 colonnes égales.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 6 : COURS — GRILLE ADAPTATIVE ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">La grille qui s'adapte toute seule</h2>
+                    <p class="anim-item">Une seule ligne de CSS suffit pour créer une galerie responsive.</p>
+                    <pre class="anim-item"><span class="sel">.galerie</span> {
+  <span class="prop">display</span>: <span class="val">grid</span>;
+  <span class="prop">grid-template-columns</span>: <span class="val">repeat(auto-fit, minmax(250px, 1fr))</span>;
+  <span class="prop">gap</span>: <span class="val">15px</span>;
+}</pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Partie</th><th>Rôle</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>auto-fit</code></td><td>Le navigateur décide combien de colonnes tiennent</td></tr>
+                            <tr><td><code>minmax(250px, 1fr)</code></td><td>Largeur minimum 250px, maximum extensible</td></tr>
+                            <tr><td><code>gap</code></td><td>Espace entre les images</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-important anim-item">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>Effet magique :</strong> sur un grand écran, 4 colonnes. Sur une tablette, 2. Sur un téléphone, 1. Sans écrire de media query.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 7 : PRATIQUE — GRILLE DE 3 COLONNES ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : créer une grille de 3 colonnes</h2>
+                    <p class="anim-item">On crée une section avec 6 blocs disposés en grille.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Dans <code>index.html</code>, ajoutez une section : <code>&lt;section class="grille"&gt; ... &lt;/section&gt;</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">À l'intérieur, placez 6 <code>&lt;div class="case"&gt;</code> avec chacun un <code>&lt;h3&gt;</code> et un <code>&lt;p&gt;</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Dans <code>style.css</code>, ajoutez :<br><code>.grille { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }</code></div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Style des cases :<br><code>.case { padding: 20px; background: #f8fafc; border-radius: 12px; }</code></div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Enregistrez. Les 6 cases s'affichent en 2 lignes de 3 colonnes.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">6</div>
+                            <div class="txt">Testez la version adaptative : remplacez par <code>repeat(auto-fit, minmax(250px, 1fr))</code> et réduisez la fenêtre.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Votre première grille CSS fonctionne.</strong> C'est la base de toutes les galeries modernes.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 8 : COURS — CARTES ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 2',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Les cartes (cards)</h2>
+                    <p class="anim-item">Une carte est un bloc autonome contenant une image, un titre et du texte.</p>
+                    <div class="card-demo anim-item">
+                        <div class="demo-card">
+                            <div class="demo-card-img"></div>
+                            <div class="demo-card-body">
+                                <h4>Titre de la carte</h4>
+                                <p>Description courte de la carte.</p>
+                            </div>
+                        </div>
+                        <div class="demo-card">
+                            <div class="demo-card-img" style="background:linear-gradient(135deg,#fbbf24,#f59e0b);"></div>
+                            <div class="demo-card-body">
+                                <h4>Deuxième carte</h4>
+                                <p>Description courte de la carte.</p>
+                            </div>
+                        </div>
+                        <div class="demo-card">
+                            <div class="demo-card-img" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);"></div>
+                            <div class="demo-card-body">
+                                <h4>Troisième carte</h4>
+                                <p>Description courte de la carte.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <pre class="anim-item"><span class="sel">.carte</span> {
+  <span class="prop">background</span>: <span class="val">white</span>;
+  <span class="prop">border-radius</span>: <span class="val">12px</span>;
+  <span class="prop">overflow</span>: <span class="val">hidden</span>;
+  <span class="prop">box-shadow</span>: <span class="val">0 4px 12px rgba(0,0,0,0.08)</span>;
+}
+<span class="sel">.carte img</span> { <span class="prop">width</span>: <span class="val">100%</span>; <span class="prop">display</span>: <span class="val">block</span>; }
+<span class="sel">.carte-body</span> { <span class="prop">padding</span>: <span class="val">16px</span>; }</pre>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Les cartes sont partout :</strong> Airbnb, YouTube, boutiques en ligne. C'est le composant de base du Web moderne.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 9 : COURS — OMBRES & ARRONDIS ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 2',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Ombres et coins arrondis</h2>
+                    <p class="anim-item">Deux propriétés qui transforment radicalement une interface.</p>
+                    <pre class="anim-item"><span class="com">/* Coins arrondis */</span>
+<span class="sel">.carte</span> { <span class="prop">border-radius</span>: <span class="val">12px</span>; }
+
+<span class="com">/* Ombre douce */</span>
+<span class="sel">.carte</span> { <span class="prop">box-shadow</span>: <span class="val">0 4px 12px rgba(0,0,0,0.08)</span>; }
+
+<span class="com">/* Ombre au survol */</span>
+<span class="sel">.carte:hover</span> {
+  <span class="prop">box-shadow</span>: <span class="val">0 10px 25px rgba(0,0,0,0.15)</span>;
+  <span class="prop">transform</span>: <span class="val">translateY(-4px)</span>;
+  <span class="prop">transition</span>: <span class="val">all 0.3s ease</span>;
+}</pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Valeur box-shadow</th><th>Signification</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>0 4px 12px rgba(0,0,0,0.08)</code></td><td>Décalage vertical 4px, flou 12px, noir à 8%</td></tr>
+                            <tr><td><code>0 10px 25px rgba(0,0,0,0.15)</code></td><td>Ombre plus prononcée (au survol)</td></tr>
+                            <tr><td><code>inset</code></td><td>Ombre intérieure</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Règle d'or :</strong> une ombre discrète est toujours plus élégante qu'une ombre forte.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 10 : COURS — OBJECT-FIT ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 2',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Cadrer une image : object-fit</h2>
+                    <p class="anim-item">Problème : une image plus haute que large casse la carte. Solution : <code>object-fit</code>.</p>
+                    <pre class="anim-item"><span class="sel">.carte img</span> {
+  <span class="prop">width</span>: <span class="val">100%</span>;
+  <span class="prop">height</span>: <span class="val">200px</span>;
+  <span class="prop">object-fit</span>: <span class="val">cover</span>;   <span class="com">/* remplit, recadre proprement */</span>
+}</pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Valeur object-fit</th><th>Effet</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>cover</code></td><td>Remplit la zone, recadre si besoin</td></tr>
+                            <tr><td><code>contain</code></td><td>Affiche l'image entière, laisse des marges</td></tr>
+                            <tr><td><code>fill</code></td><td>Étire l'image (déformation)</td></tr>
+                            <tr><td><code>none</code></td><td>Garde la taille d'origine</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-important anim-item">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>Utilisez toujours <code>cover</code></strong> pour les cartes et galeries : les images gardent leurs proportions sans déformer le sujet.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 11 : PRATIQUE — 3 CARTES ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 2',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : créer 3 cartes avec image</h2>
+                    <p class="anim-item">On remplace les cases de la grille par de vraies cartes.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Dans <code>style.css</code>, créez la classe <code>.carte</code> : fond blanc, coins arrondis, ombre, overflow hidden.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Créez <code>.carte img { width: 100%; height: 200px; object-fit: cover; }</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Créez <code>.carte-body { padding: 16px; }</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Dans <code>index.html</code>, transformez chaque <code>&lt;div class="case"&gt;</code> en :<br><code>&lt;div class="carte"&gt; &lt;img&gt; &lt;div class="carte-body"&gt; ... &lt;/div&gt; &lt;/div&gt;</code></div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Utilisez 3 images différentes de votre dossier <code>images/</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">6</div>
+                            <div class="txt">Enregistrez. Les 3 cartes apparaissent avec image + titre + texte.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Vos cartes ressemblent à celles d'un vrai site.</strong> C'est un composant réutilisable à l'infini.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 12 : COURS — GALERIE RESPONSIVE ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">La galerie responsive</h2>
+                    <p class="anim-item">Une galerie = plusieurs images alignées qui s'adaptent à l'écran.</p>
+                    <pre class="anim-item"><span class="sel">.galerie</span> {
+  <span class="prop">display</span>: <span class="val">grid</span>;
+  <span class="prop">grid-template-columns</span>: <span class="val">repeat(auto-fit, minmax(200px, 1fr))</span>;
+  <span class="prop">gap</span>: <span class="val">10px</span>;
+}
+
+<span class="sel">.galerie img</span> {
+  <span class="prop">width</span>: <span class="val">100%</span>;
+  <span class="prop">height</span>: <span class="val">200px</span>;
+  <span class="prop">object-fit</span>: <span class="val">cover</span>;
+  <span class="prop">border-radius</span>: <span class="val">8px</span>;
+  <span class="prop">cursor</span>: <span class="val">pointer</span>;
+  <span class="prop">transition</span>: <span class="val">transform 0.3s ease</span>;
+}
+
+<span class="sel">.galerie img:hover</span> {
+  <span class="prop">transform</span>: <span class="val">scale(1.05)</span>;
+}</pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Comportement</th><th>Écran</th><th>Colonnes</th></tr></thead>
+                        <tbody>
+                            <tr><td>Adaptatif</td><td>Téléphone (320px)</td><td>1 colonne</td></tr>
+                            <tr><td>Adaptatif</td><td>Tablette (768px)</td><td>2-3 colonnes</td></tr>
+                            <tr><td>Adaptatif</td><td>Ordinateur (1200px+)</td><td>4-5 colonnes</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Effet <code>scale(1.05)</code></strong> : l'image grossit légèrement au survol. Effet élégant et moderne.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 13 : COURS — MEDIA QUERIES ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Les media queries (@media)</h2>
+                    <p class="anim-item">On peut appliquer du CSS uniquement sur certaines tailles d'écran.</p>
+                    <pre class="anim-item"><span class="com">/* Pour les écrans de 768px ou moins (tablette, mobile) */</span>
+<span class="sel">@media (max-width: 768px)</span> {
+  <span class="sel">.grille</span> { <span class="prop">grid-template-columns</span>: <span class="val">1fr</span>; }
+  <span class="sel">nav a</span> { <span class="prop">display</span>: <span class="val">block</span>; <span class="prop">margin</span>: <span class="val">10px 0</span>; }
+  <span class="sel">h1</span> { <span class="prop">font-size</span>: <span class="val">24px</span>; }
+}
+
+<span class="com">/* Pour les écrans de 1024px ou plus (ordinateur) */</span>
+<span class="sel">@media (min-width: 1024px)</span> {
+  <span class="sel">.conteneur</span> { <span class="prop">max-width</span>: <span class="val">1100px</span>; }
+}</pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Type</th><th>Syntaxe</th><th>Quand ça s'applique</th></tr></thead>
+                        <tbody>
+                            <tr><td>Max-width</td><td><code>@media (max-width: 768px)</code></td><td>Écran ≤ 768px</td></tr>
+                            <tr><td>Min-width</td><td><code>@media (min-width: 1024px)</code></td><td>Écran ≥ 1024px</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-important anim-item">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>Mobile first :</strong> on écrit le CSS pour mobile en premier, puis on ajoute des media queries <code>min-width</code> pour les grands écrans.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 14 : PRATIQUE — GALERIE RESPONSIVE ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : rendre la galerie responsive</h2>
+                    <p class="anim-item">On crée une galerie qui s'adapte automatiquement.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Dans <code>index.html</code>, créez une section : <code>&lt;section class="galerie"&gt; ... &lt;/section&gt;</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Ajoutez 6 balises <code>&lt;img&gt;</code> avec <code>src</code> et <code>alt</code> correspondant à 6 images de votre dossier.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Dans <code>style.css</code>, appliquez le CSS de la galerie (grid + auto-fit + minmax).</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Ajoutez <code>object-fit: cover</code> et <code>height: 200px</code> sur les images.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Ajoutez l'effet <code>:hover</code> avec <code>transform: scale(1.05)</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">6</div>
+                            <div class="txt">Réduisez la fenêtre du navigateur. Les colonnes passent de 4 → 2 → 1 automatiquement.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Votre galerie est responsive.</strong> Elle fonctionne sur téléphone, tablette et ordinateur sans code supplémentaire.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 15 : COURS — BOUTONS MODERNES ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 4',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Les boutons modernes</h2>
+                    <p class="anim-item">Un bouton bien conçu attire l'œil et invite au clic.</p>
+                    <pre class="anim-item"><span class="sel">.btn</span> {
+  <span class="prop">display</span>: <span class="val">inline-block</span>;
+  <span class="prop">background</span>: <span class="val">var(--couleur-accent)</span>;
+  <span class="prop">color</span>: <span class="val">white</span>;
+  <span class="prop">padding</span>: <span class="val">12px 24px</span>;
+  <span class="prop">border</span>: <span class="val">none</span>;
+  <span class="prop">border-radius</span>: <span class="val">8px</span>;
+  <span class="prop">font-weight</span>: <span class="val">700</span>;
+  <span class="prop">cursor</span>: <span class="val">pointer</span>;
+  <span class="prop">text-decoration</span>: <span class="val">none</span>;
+  <span class="prop">transition</span>: <span class="val">all 0.3s ease</span>;
+}
+
+<span class="sel">.btn:hover</span> {
+  <span class="prop">background</span>: <span class="val">#e55a2b</span>;
+  <span class="prop">transform</span>: <span class="val">translateY(-2px)</span>;
+  <span class="prop">box-shadow</span>: <span class="val">0 8px 20px rgba(255,107,53,0.3)</span>;
+}</pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Style</th><th>Usage</th></tr></thead>
+                        <tbody>
+                            <tr><td>Plein (solid)</td><td>Action principale (Envoyer, Acheter)</td></tr>
+                            <tr><td>Contour (outline)</td><td>Action secondaire (Annuler, En savoir plus)</td></tr>
+                            <tr><td>Texte seul</td><td>Action tertiaire (lien discret)</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Règle d'or :</strong> un seul bouton « principal » par section. Les autres sont secondaires.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 16 : PRATIQUE — BOUTONS HOVER ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 4',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : boutons avec hover</h2>
+                    <p class="anim-item">On crée 2 styles de boutons : principal et secondaire.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Dans <code>style.css</code>, créez la classe <code>.btn</code> avec les styles de base (fond, padding, coins, curseur).</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Ajoutez <code>.btn:hover</code> : changement de fond, légère translation, ombre.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Créez <code>.btn-secondaire</code> : fond transparent, bordure, texte coloré.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Dans <code>index.html</code>, placez un <code>&lt;a class="btn"&gt;Nous contacter&lt;/a&gt;</code> dans une section.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Ajoutez à côté un <code>&lt;a class="btn btn-secondaire"&gt;En savoir plus&lt;/a&gt;</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">6</div>
+                            <div class="txt">Survolez les deux boutons : chacun réagit à sa manière.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Vos boutons sont modernes et interactifs.</strong> Hiérarchie visuelle respectée.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 17 : COURS — ESPACEMENTS ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 4',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Hiérarchie visuelle et espacements</h2>
+                    <p class="anim-item">L'espacement est la première marque du professionnalisme. Pas le style, pas la couleur.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Espace</th><th>Valeur suggérée</th><th>Où l'utiliser</th></tr></thead>
+                        <tbody>
+                            <tr><td>Petit</td><td>8-12px</td><td>Espace entre un titre et son texte</td></tr>
+                            <tr><td>Moyen</td><td>20-30px</td><td>Entre deux cartes, entre deux sections</td></tr>
+                            <tr><td>Grand</td><td>50-80px</td><td>Entre deux grandes sections de la page</td></tr>
+                            <tr><td>Interne</td><td>15-25px</td><td>Padding dans une carte, un bouton, un bloc</td></tr>
+                        </tbody>
+                    </table>
+                    <pre class="anim-item"><span class="com">/* Bon espacement partout */</span>
+<span class="sel">section</span> { <span class="prop">padding</span>: <span class="val">60px 20px</span>; }
+<span class="sel">.grille</span> { <span class="prop">gap</span>: <span class="val">25px</span>; }
+<span class="sel">h2</span> { <span class="prop">margin-bottom</span>: <span class="val">20px</span>; }
+<span class="sel">.carte-body</span> { <span class="prop">padding</span>: <span class="val">20px</span>; }</pre>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Test visuel :</strong> si vous ne savez pas si l'espace est correct, doublez-le. Le résultat semblera plus propre. 90 % du temps, c'est mieux.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 18 : PRATIQUE — AJUSTER LES ESPACEMENTS ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 4',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : ajuster l'espacement du site</h2>
+                    <p class="anim-item">On passe en revue tout le site et on corrige les espacements.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Dans <code>style.css</code>, ajoutez <code>section { padding: 60px 20px; }</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Vérifiez que <code>.grille { gap: 25px; }</code> et <code>.galerie { gap: 12px; }</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Ajoutez <code>h2 { margin-bottom: 20px; }</code> et <code>p { margin-bottom: 12px; }</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Vérifiez le padding du <code>nav</code> : <code>nav { padding: 20px; }</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Vérifiez le padding du <code>footer</code> : <code>footer { padding: 40px 20px; }</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">6</div>
+                            <div class="txt">Parcourez le site sur 2-3 pages. Le rendu est plus aéré, plus lisible, plus pro.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Le site est passé du stade « correct » au stade « professionnel ».</strong></div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 19 : EXERCICE FINAL ----------
+        {
+            type: 'exercice',
+            bloc: 'BLOC 4',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Exercice final : construire une galerie de 6 photos</h2>
+                    <p class="anim-item">Vous allez créer une page <code>galerie.html</code> complète, responsive, professionnelle.</p>
+                    <div class="pratique-etapes anim-item" style="border-color:var(--orange);">
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">1</div>
+                            <div class="txt">Créez <code>galerie.html</code> avec la structure habituelle (header, nav, main, footer).</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">2</div>
+                            <div class="txt">Reliez-y <code>style.css</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">3</div>
+                            <div class="txt">Dans le <code>main</code>, ajoutez un <code>&lt;h1&gt;</code> : « Galerie ».</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">4</div>
+                            <div class="txt">Ajoutez une section <code>&lt;div class="galerie"&gt;</code> avec 6 <code>&lt;img&gt;</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">5</div>
+                            <div class="txt">Vérifiez que la galerie est responsive : réduisez la fenêtre → colonnes s'adaptent.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">6</div>
+                            <div class="txt">Ajoutez le lien vers cette nouvelle page dans le <code>nav</code> de toutes les autres pages.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Durée :</strong> 15 minutes. Le formateur circule et corrige.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-exercice'
+        },
+
+        // ---------- SLIDE 20 : SYNTHÈSE ----------
+        {
+            type: 'synthese',
+            bloc: '—',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Ce que vous savez faire maintenant</h2>
+                    <ul class="anim-item" style="font-size:1.15rem; line-height:1.7;">
+                        <li>Déclarer des variables CSS dans <code>:root</code> et les réutiliser</li>
+                        <li>Créer des grilles avec <code>display: grid</code></li>
+                        <li>Utiliser <code>grid-template-columns</code> et <code>gap</code></li>
+                        <li>Faire une grille qui s'adapte avec <code>auto-fit</code> + <code>minmax</code></li>
+                        <li>Concevoir des cartes (cards) modernes avec ombre et arrondis</li>
+                        <li>Cadrer une image avec <code>object-fit: cover</code></li>
+                        <li>Créer une galerie responsive sans media query</li>
+                        <li>Utiliser les media queries pour ajuster sur mobile</li>
+                        <li>Styliser des boutons modernes avec états <code>:hover</code></li>
+                        <li>Appliquer une hiérarchie d'espacements cohérente</li>
+                    </ul>
+                    <div class="box box-important anim-item" style="margin-top:1.5rem;">
+                        <i class="fas fa-tasks"></i>
+                        <div><strong>Pour le Jour 5 (Site multi-pages) :</strong> apportez votre site avec toutes ses pages actuelles. Nous allons créer un menu de navigation commun solide et organiser le site en vraie structure multi-pages professionnelle.</div>
+                    </div>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Conseil entre les séances :</strong> refaites une galerie de zéro sur 6 nouvelles images. C'est l'exercice le plus formateur du jour.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-synthese'
+        }
+
+        ];
+
+        // ============================================================
+        // ÉTAT
+        // ============================================================
+        let currentSlide = 0;
+        const totalSlides = slidesData.length;
+
+        // ============================================================
+        // AFFICHAGE
+        // ============================================================
+        function renderSlide(index) {
+            const stage = document.getElementById('slideStage');
+            const slide = slidesData[index];
+            stage.innerHTML = `<div class="slide-content ${slide.className || ''}">${slide.content}</div>`;
+
+            const header = document.getElementById('slideHeader');
+            if (slide.type === 'title') {
+                header.style.display = 'none';
+            } else {
+                header.style.display = 'flex';
+                document.getElementById('blocTag').textContent = slide.bloc || '—';
+                document.getElementById('slideNum').textContent = index + 1;
+                document.getElementById('slideTotal').textContent = totalSlides;
+
+                const typeTag = document.getElementById('typeTag');
+                const typeLabels = {
+                    'cours': 'Cours',
+                    'pratique': 'Pratique',
+                    'exercice': 'Exercice',
+                    'synthese': 'Synthèse'
+                };
+                typeTag.textContent = typeLabels[slide.type] || 'Cours';
+                typeTag.className = 'type-tag type-' + (slide.type || 'cours');
+            }
+        }
+
+        function goNext() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                renderSlide(currentSlide);
+            }
+        }
+
+        function goPrev() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                renderSlide(currentSlide);
+            }
+        }
+
+        // ============================================================
+        // CODE D'ACCÈS — WEB2026 (base64 : V0VCMjAyNg==)
+        // ============================================================
+        function checkAccess() {
+            const input = document.getElementById('accessInput');
+            const error = document.getElementById('accessError');
+            const expected = 'V0VCMjAyNg==';
+            const entered = btoa(input.value.trim());
+            if (entered === expected) {
+                document.getElementById('accessOverlay').classList.add('hidden');
+                document.getElementById('presentationContainer').classList.add('active');
+                renderSlide(currentSlide);
+            } else {
+                error.classList.add('visible');
+                input.value = '';
+                input.focus();
+                setTimeout(() => error.classList.remove('visible'), 2500);
+            }
+        }
+
+        document.getElementById('accessBtn').addEventListener('click', checkAccess);
+        document.getElementById('accessInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') checkAccess();
+        });
+
+        // ============================================================
+        // NAVIGATION CLAVIER
+        // ============================================================
+        document.addEventListener('keydown', function(e) {
+            const container = document.getElementById('presentationContainer');
+            if (!container.classList.contains('active')) return;
+            switch (e.key) {
+                case 'ArrowRight':
+                case ' ':
+                case 'PageDown':
+                    e.preventDefault();
+                    goNext();
+                    break;
+                case 'ArrowLeft':
+                case 'PageUp':
+                    e.preventDefault();
+                    goPrev();
+                    break;
+                case 'Escape':
+                    if (confirm('Quitter la projection ?')) {
+                        document.getElementById('presentationContainer').classList.remove('active');
+                        document.getElementById('accessOverlay').classList.remove('hidden');
+                        currentSlide = 0;
+                    }
+                    break;
+            }
+        });
+
+        // ============================================================
+        // NAVIGATION TACTILE
+        // ============================================================
+        let touchStartX = 0;
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        document.addEventListener('touchend', function(e) {
+            const deltaX = e.changedTouches[0].screenX - touchStartX;
+            if (Math.abs(deltaX) > 60) {
+                if (deltaX < 0) goNext();
+                else goPrev();
+            }
+        });
+    </script>
+
+</body>
+</html>

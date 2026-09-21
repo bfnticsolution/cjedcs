@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Formation Développement Web · Jour 5 — Site multi-pages</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        /* ===== VARIABLES ===== */
+        :root {
+            --bleu: #0B3FA5;
+            --bleu-profond: #072a6e;
+            --bleu-clair: #e8f0fe;
+            --orange: #FF6B35;
+            --orange-clair: #fff4e5;
+            --vert: #059669;
+            --vert-clair: #ecfdf5;
+            --violet: #7c3aed;
+            --violet-clair: #f3e8ff;
+            --rouge: #dc2626;
+            --rouge-clair: #fef2f2;
+            --jaune: #f59e0b;
+            --jaune-clair: #fffbeb;
+            --texte: #1e293b;
+            --texte-secondaire: #475569;
+            --blanc: #ffffff;
+            --bordure: #e2e8f0;
+            --transition: 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background: #0d1117;
+            color: var(--texte);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            -webkit-font-smoothing: antialiased;
+            user-select: none;
+        }
+
+        /* ===== ÉCRAN DE CODE D'ACCÈS ===== */
+        .access-overlay {
+            position: fixed; inset: 0; z-index: 99999;
+            background: linear-gradient(135deg, var(--orange) 0%, #b8420c 100%);
+            display: flex; align-items: center; justify-content: center;
+            transition: opacity 0.7s ease, visibility 0.7s ease;
+        }
+        .access-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .access-card {
+            background: var(--blanc); border-radius: 2rem; padding: 3rem 2.5rem;
+            text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            max-width: 420px; width: 90%; animation: floatIn 0.8s ease;
+        }
+        @keyframes floatIn {
+            from { opacity: 0; transform: translateY(40px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .access-card .logo-symbol {
+            background: var(--orange); color: white; width: 64px; height: 64px;
+            border-radius: 18px; display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 1.4rem; margin: 0 auto 1.2rem;
+        }
+        .access-card h2 { color: var(--orange); font-size: 1.4rem; margin-bottom: 0.5rem; }
+        .access-card p { color: #475569; margin-bottom: 1.8rem; font-size: 0.9rem; }
+        .access-input {
+            width: 100%; padding: 0.9rem 1.3rem; border: 2px solid var(--bordure);
+            border-radius: 14px; font-family: inherit; font-size: 1rem;
+            text-align: center; letter-spacing: 2px; transition: var(--transition); margin-bottom: 1rem;
+        }
+        .access-input:focus { outline: none; border-color: var(--orange); box-shadow: 0 0 0 4px rgba(255,107,53,0.1); }
+        .access-btn {
+            width: 100%; padding: 0.9rem; background: var(--bleu); color: white;
+            border: none; border-radius: 14px; font-weight: 700; font-size: 1rem;
+            font-family: inherit; cursor: pointer; transition: var(--transition);
+        }
+        .access-btn:hover { background: var(--bleu-profond); transform: translateY(-2px); }
+        .access-error {
+            color: #dc2626; font-size: 0.85rem; margin-top: 0.5rem;
+            display: none; font-weight: 600;
+        }
+        .access-error.visible { display: block; animation: shake 0.5s ease; }
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        /* ===== CONTAINER PROJECTION ===== */
+        .presentation-container {
+            display: none; position: fixed; inset: 0; background: #0d1117; z-index: 100;
+        }
+        .presentation-container.active { display: block; }
+        .slide-stage {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .slide-content {
+            background: white; width: 100%; height: 100%;
+            overflow-y: auto; padding: 3rem 4.5rem;
+            position: relative; animation: slideIn 0.4s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: scale(0.97); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .slide-header {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(8px);
+            padding: 0.6rem 1.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--bordure);
+            font-size: 0.8rem; font-weight: 600;
+        }
+        .slide-header .bloc-tag {
+            background: var(--orange); color: white; padding: 0.25rem 0.75rem;
+            border-radius: 999px; font-size: 0.7rem; letter-spacing: 0.5px;
+        }
+        .slide-header .type-tag {
+            padding: 0.25rem 0.75rem; border-radius: 999px;
+            font-size: 0.7rem; letter-spacing: 0.5px; font-weight: 700;
+        }
+        .type-cours { background: var(--bleu-clair); color: var(--bleu); }
+        .type-pratique { background: var(--vert-clair); color: var(--vert); }
+        .type-exercice { background: var(--orange-clair); color: var(--orange); }
+        .type-synthese { background: var(--violet-clair); color: var(--violet); }
+        .slide-header .num { color: var(--texte-secondaire); }
+
+        .nav-hint {
+            position: fixed; bottom: 1rem; right: 1rem; z-index: 500;
+            color: rgba(255,255,255,0.3); font-size: 0.7rem;
+            font-weight: 600; letter-spacing: 0.5px; pointer-events: none;
+        }
+
+        /* ===== ANIMATIONS ===== */
+        .anim-item { opacity: 0; transform: translateY(15px); animation: fadeUp 0.5s ease forwards; }
+        .anim-item:nth-child(1) { animation-delay: 0.05s; }
+        .anim-item:nth-child(2) { animation-delay: 0.15s; }
+        .anim-item:nth-child(3) { animation-delay: 0.25s; }
+        .anim-item:nth-child(4) { animation-delay: 0.35s; }
+        .anim-item:nth-child(5) { animation-delay: 0.45s; }
+        .anim-item:nth-child(6) { animation-delay: 0.55s; }
+        .anim-item:nth-child(7) { animation-delay: 0.65s; }
+        .anim-item:nth-child(8) { animation-delay: 0.75s; }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+        /* ===== TYPOGRAPHIE ===== */
+        h1 { font-size: 3rem; font-weight: 800; letter-spacing: -1px; color: var(--bleu); line-height: 1.1; }
+        h2 { font-size: 2.1rem; font-weight: 700; color: var(--bleu); line-height: 1.2; margin-bottom: 1rem; }
+        h3 { font-size: 1.4rem; font-weight: 700; color: var(--texte); }
+        h4 { font-size: 1.15rem; font-weight: 700; }
+        p { font-size: 1.25rem; line-height: 1.55; color: var(--texte); }
+        li { font-size: 1.15rem; line-height: 1.65; }
+        .lead { font-size: 1.4rem; color: var(--texte-secondaire); line-height: 1.5; }
+
+        /* ===== SLIDE DE TITRE ===== */
+        .slide-title {
+            background: linear-gradient(135deg, #FF6B35 0%, #b8420c 100%);
+            color: white; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; text-align: center;
+        }
+        .slide-title h1 { color: white; font-size: 3.2rem; }
+        .slide-title .lead { color: rgba(255,255,255,0.85); margin-top: 1rem; }
+        .slide-title .meta {
+            color: rgba(255,255,255,0.6); font-size: 1rem; margin-top: 2rem;
+            letter-spacing: 1px;
+        }
+
+        /* ===== SLIDE PLAN ===== */
+        .bloc-plan {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 1rem; margin-top: 2rem;
+        }
+        .bloc-item {
+            background: #f8fafc; border-radius: 16px; padding: 1.5rem 1.2rem;
+            border-top: 5px solid var(--orange); text-align: left;
+        }
+        .bloc-item .num {
+            font-size: 0.75rem; font-weight: 800; color: var(--orange);
+            letter-spacing: 1.5px; margin-bottom: 0.5rem;
+        }
+        .bloc-item h4 { color: var(--texte); margin-bottom: 0.4rem; font-size: 1.05rem; }
+        .bloc-item p { font-size: 0.9rem; color: var(--texte-secondaire); }
+        .bloc-item .duree {
+            font-size: 0.75rem; font-weight: 700; color: var(--bleu);
+            margin-top: 0.6rem; display: block;
+        }
+
+        /* ===== SLIDE COURS ===== */
+        .cours-content { max-width: 1000px; margin: 0 auto; }
+        .cours-content h2 { margin-bottom: 1.2rem; }
+        .cours-content p { margin-bottom: 1rem; }
+        .cours-content ul { padding-left: 1.5rem; margin-bottom: 1rem; }
+        .cours-content li { margin-bottom: 0.4rem; }
+
+        /* ===== CODE ===== */
+        pre {
+            background: #1e293b; color: #e2e8f0;
+            padding: 1.3rem 1.5rem; border-radius: 12px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 1rem; line-height: 1.65;
+            overflow-x: auto; margin: 1rem 0;
+            border-left: 4px solid var(--orange);
+        }
+        pre .tag { color: #7dd3fc; }
+        pre .attr { color: #fbbf24; }
+        pre .val { color: #86efac; }
+        pre .txt { color: #e2e8f0; }
+        pre .com { color: #64748b; font-style: italic; }
+        pre .sel { color: #f472b6; }
+        pre .prop { color: #7dd3fc; }
+        code {
+            background: #f1f5f9; padding: 0.15rem 0.4rem;
+            border-radius: 4px; font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.9em; color: #db2777;
+        }
+
+        /* ===== BOXES ===== */
+        .box {
+            border-radius: 12px; padding: 1rem 1.4rem; margin: 1rem 0;
+            font-size: 1.05rem; border-left: 5px solid;
+            display: flex; align-items: flex-start; gap: 0.7rem;
+        }
+        .box i { font-size: 1.2rem; flex-shrink: 0; margin-top: 0.15rem; }
+        .box-tip { background: var(--bleu-clair); border-color: var(--bleu); color: #0a2c5c; }
+        .box-important { background: var(--orange-clair); border-color: var(--orange); color: #6b3a1f; }
+        .box-success { background: var(--vert-clair); border-color: var(--vert); color: #064e3b; }
+        .box-warning { background: var(--rouge-clair); border-color: var(--rouge); color: #7f1d1d; }
+        .box-info { background: var(--violet-clair); border-color: var(--violet); color: #3b0764; }
+
+        /* ===== SLIDE PRATIQUE ===== */
+        .slide-pratique { background: #f0fdf4; }
+        .pratique-etapes {
+            background: white; border-radius: 14px; padding: 1.5rem 2rem;
+            border: 2px solid var(--vert); margin-top: 1.2rem;
+        }
+        .pratique-etapes ol { padding-left: 1.5rem; }
+        .pratique-etapes li { margin-bottom: 0.7rem; font-size: 1.1rem; }
+        .check-item {
+            display: flex; align-items: flex-start; gap: 0.7rem;
+            padding: 0.6rem 0; border-bottom: 1px dashed var(--bordure);
+        }
+        .check-item:last-child { border-bottom: none; }
+        .check-item .num-circle {
+            background: var(--vert); color: white; width: 28px; height: 28px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
+        }
+        .check-item .txt { font-size: 1.05rem; }
+
+        /* ===== SLIDE EXERCICE ===== */
+        .slide-exercice { background: #fff7ed; }
+
+        /* ===== SLIDE SYNTHÈSE ===== */
+        .slide-synthese { background: #f5f3ff; }
+
+        /* ===== TABLEAU ===== */
+        .table-simple {
+            width: 100%; border-collapse: collapse; font-size: 1.05rem;
+            background: white; border-radius: 12px; overflow: hidden;
+            margin: 1rem 0;
+        }
+        .table-simple th {
+            background: var(--orange); color: white; padding: 0.8rem 1.1rem;
+            text-align: left; font-weight: 700; font-size: 1rem;
+        }
+        .table-simple td { padding: 0.65rem 1.1rem; border-bottom: 1px solid var(--bordure); }
+        .table-simple tr:last-child td { border-bottom: none; }
+
+        /* ===== DÉMO ARBORESCENCE ===== */
+        .tree-demo {
+            background: #1e293b; color: #e2e8f0;
+            padding: 1.5rem; border-radius: 12px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 1rem; line-height: 1.8;
+            margin: 1rem 0;
+        }
+        .tree-demo .folder { color: #7dd3fc; font-weight: 700; }
+        .tree-demo .file { color: #86efac; }
+        .tree-demo .note { color: #64748b; font-style: italic; }
+
+        /* ===== DÉMO NAV ===== */
+        .nav-demo {
+            background: var(--bleu); border-radius: 10px;
+            padding: 15px 20px; display: flex; gap: 25px;
+            justify-content: center; margin: 1rem 0;
+        }
+        .nav-demo a {
+            color: white; text-decoration: none; font-weight: 600;
+            font-size: 0.95rem; transition: 0.2s;
+        }
+        .nav-demo a.active {
+            color: var(--orange); border-bottom: 2px solid var(--orange);
+            padding-bottom: 2px;
+        }
+
+        /* ===== DÉMO BREADCRUMB ===== */
+        .breadcrumb-demo {
+            background: #f8fafc; padding: 12px 18px; border-radius: 8px;
+            font-size: 0.95rem; color: var(--texte-secondaire);
+            margin: 1rem 0;
+        }
+        .breadcrumb-demo .sep { color: var(--bordure); margin: 0 8px; }
+        .breadcrumb-demo .current { color: var(--texte); font-weight: 700; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .slide-content { padding: 2rem 1.5rem; }
+            h1 { font-size: 1.8rem; }
+            h2 { font-size: 1.4rem; }
+            p, li { font-size: 1rem; }
+            .bloc-plan { grid-template-columns: 1fr 1fr; }
+            .access-card { padding: 2rem 1.5rem; }
+            pre { font-size: 0.85rem; }
+            .slide-header { font-size: 0.7rem; padding: 0.5rem 1rem; }
+            .nav-demo { flex-wrap: wrap; gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- =========================================================
+         ÉCRAN DE CODE D'ACCÈS
+         Mot de passe : WEB2026 (base64 : V0VCMjAyNg==)
+         ========================================================= -->
+    <div class="access-overlay" id="accessOverlay">
+        <div class="access-card">
+            <div class="logo-symbol">WEB</div>
+            <h2>Jour 5 — Site multi-pages</h2>
+            <p>Formation Développement Web<br>Saisissez le code d'accès.</p>
+            <input type="password" class="access-input" id="accessInput" placeholder="Code d'accès" autocomplete="off" />
+            <button class="access-btn" id="accessBtn"><i class="fas fa-arrow-right"></i> Commencer</button>
+            <div class="access-error" id="accessError">Code incorrect. Réessayez.</div>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         CONTENEUR PROJECTION
+         ========================================================= -->
+    <div class="presentation-container" id="presentationContainer">
+        <div class="slide-header" id="slideHeader" style="display:none;">
+            <div>
+                <span class="bloc-tag" id="blocTag">BLOC 1</span>
+                <span class="type-tag" id="typeTag">Cours</span>
+            </div>
+            <div class="num"><span id="slideNum">1</span> / <span id="slideTotal">20</span></div>
+        </div>
+        <div class="slide-stage" id="slideStage"></div>
+        <div class="nav-hint">← → · Échap pour quitter</div>
+    </div>
+
+    <script>
+        // ============================================================
+        // DONNÉES DES SLIDES — JOUR 5 : SITE MULTI-PAGES
+        // ============================================================
+        const slidesData = [
+
+        // ---------- SLIDE 1 : TITRE ----------
+        {
+            type: 'title',
+            bloc: '—',
+            content: `
+                <h1>Site multi-pages</h1>
+                <p class="lead">Jour 5 — Structurer un vrai site</p>
+                <p class="lead" style="font-size:1.15rem; margin-top:1.5rem;">
+                    Navigation commune · Structure de dossier · Footer pro · Page 404
+                </p>
+                <p class="meta">DURÉE : 2 HEURES · NIVEAU : INTERMÉDIAIRE</p>
+            `,
+            className: 'slide-title'
+        },
+
+        // ---------- SLIDE 2 : PLAN ----------
+        {
+            type: 'cours',
+            bloc: '—',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Programme des 2 heures</h2>
+                    <p class="anim-item">Le site a de belles pages. Aujourd'hui, on les unifie en un vrai site cohérent.</p>
+                    <div class="bloc-plan">
+                        <div class="bloc-item anim-item">
+                            <div class="num">BLOC 1</div>
+                            <h4>Navigation commune</h4>
+                            <p>Menu partout, page active, structure de dossier.</p>
+                            <span class="duree">30 min</span>
+                        </div>
+                        <div class="bloc-item anim-item">
+                            <div class="num">BLOC 2</div>
+                            <h4>Pages & footer</h4>
+                            <p>Page Services, footer riche, fil d'Ariane.</p>
+                            <span class="duree">30 min</span>
+                        </div>
+                        <div class="bloc-item anim-item">
+                            <div class="num">BLOC 3</div>
+                            <h4>Maillage & erreurs</h4>
+                            <p>Liens internes, page 404, cohérence globale.</p>
+                            <span class="duree">30 min</span>
+                        </div>
+                        <div class="bloc-item anim-item">
+                            <div class="num">BLOC 4</div>
+                            <h4>Test & nouvelle page</h4>
+                            <p>Parcours complet, exercice « Équipe ».</p>
+                            <span class="duree">30 min</span>
+                        </div>
+                    </div>
+                    <div class="box box-tip anim-item" style="margin-top:1.5rem;">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>Objectif du jour :</strong> transformer une collection de pages en un vrai site web professionnel et cohérent.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 3 : COURS — QU'EST-CE QU'UN SITE MULTI-PAGES ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Qu'est-ce qu'un site multi-pages ?</h2>
+                    <p class="anim-item">Un site multi-pages est un ensemble de fichiers HTML reliés entre eux par des liens, avec un style et une navigation communs.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Site 1 page</th><th>Site multi-pages</th></tr></thead>
+                        <tbody>
+                            <tr><td>Tout sur une seule page</td><td>Une page par sujet</td></tr>
+                            <tr><td>Défilement long</td><td>Navigation par clic</td></tr>
+                            <tr><td>Simple à maintenir</td><td>Facile à faire grandir</td></tr>
+                            <tr><td>Limite : surcharge</td><td>Limite : duplication du nav/footer</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Exemples :</strong> un site vitrine, une boutique en ligne, un blog — tous sont multi-pages.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 4 : COURS — PRINCIPES DE NAVIGATION ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Les principes d'une bonne navigation</h2>
+                    <p class="anim-item">Le nav doit être : <strong>identique partout</strong>, <strong>clair</strong>, <strong>visible</strong>.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Principe</th><th>Pourquoi</th></tr></thead>
+                        <tbody>
+                            <tr><td>Même menu sur toutes les pages</td><td>L'utilisateur ne se perd jamais</td></tr>
+                            <tr><td>Ordre logique et stable</td><td>Accueil → À propos → Services → Galerie → Contact</td></tr>
+                            <tr><td>Nombre limité de liens</td><td>5 à 7 liens maximum dans le menu principal</td></tr>
+                            <tr><td>Page active mise en évidence</td><td>L'utilisateur sait où il se trouve</td></tr>
+                            <tr><td>Accessible depuis le header</td><td>Toujours visible en haut de page</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-important anim-item">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>Règle des 3 clics :</strong> toute page doit être accessible en 3 clics maximum depuis l'accueil.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 5 : COURS — LE MENU COMMUN ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Le menu commun : la méthode</h2>
+                    <p class="anim-item">En HTML pur, on duplique le même bloc <code>&lt;nav&gt;</code> dans chaque page. Le code est identique partout, sauf la classe <code>active</code>.</p>
+                    <pre class="anim-item"><span class="tag">&lt;nav&gt;</span>
+  <span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"index.html"</span><span class="tag">&gt;</span><span class="txt">Accueil</span><span class="tag">&lt;/a&gt;</span>
+  <span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"apropos.html"</span><span class="tag">&gt;</span><span class="txt">À propos</span><span class="tag">&lt;/a&gt;</span>
+  <span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"services.html"</span><span class="tag">&gt;</span><span class="txt">Services</span><span class="tag">&lt;/a&gt;</span>
+  <span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"galerie.html"</span><span class="tag">&gt;</span><span class="txt">Galerie</span><span class="tag">&lt;/a&gt;</span>
+  <span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"contact.html"</span><span class="tag">&gt;</span><span class="txt">Contact</span><span class="tag">&lt;/a&gt;</span>
+<span class="tag">&lt;/nav&gt;</span></pre>
+                    <div class="box box-warning anim-item">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div><strong>Erreur à éviter :</strong> modifier le nav sur une seule page. Si on change un lien, il faut le changer partout. C'est le prix du HTML pur — et la raison pour laquelle on utilise un langage de serveur (PHP) en production.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 6 : COURS — PAGE ACTIVE ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Signaler la page active</h2>
+                    <p class="anim-item">Sur chaque page, on ajoute une classe <code>active</code> au lien correspondant.</p>
+                    <pre class="anim-item"><span class="com">&lt;!-- Dans index.html --&gt;</span>
+<span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"index.html"</span> <span class="attr">class</span>=<span class="val">"active"</span><span class="tag">&gt;</span><span class="txt">Accueil</span><span class="tag">&lt;/a&gt;</span>
+
+<span class="com">/* Dans style.css */</span>
+<span class="sel">nav a.active</span> {
+  <span class="prop">color</span>: <span class="val">#FF6B35</span>;
+  <span class="prop">border-bottom</span>: <span class="val">2px solid #FF6B35</span>;
+}</pre>
+                    <div class="nav-demo anim-item">
+                        <a href="#" class="active">Accueil</a>
+                        <a href="#">À propos</a>
+                        <a href="#">Services</a>
+                        <a href="#">Galerie</a>
+                        <a href="#">Contact</a>
+                    </div>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Ordre du jour :</strong> la page <code>index.html</code> aura le lien « Accueil » en <code>active</code>, <code>apropos.html</code> aura « À propos » en <code>active</code>, etc.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 7 : PRATIQUE — UNIFORMISER LE NAV ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : uniformiser le nav sur toutes les pages</h2>
+                    <p class="anim-item">On aligne le menu partout, avec la bonne classe <code>active</code>.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Ouvrez <code>index.html</code>. Repérez le bloc <code>&lt;nav&gt;</code>. Ajoutez <code>class="active"</code> sur le lien « Accueil ».</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Copiez ce bloc <code>&lt;nav&gt;</code> entier (Ctrl+C).</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Dans <code>apropos.html</code>, remplacez l'ancien nav par celui copié. Déplacez <code>class="active"</code> sur « À propos ».</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Répétez pour <code>services.html</code>, <code>galerie.html</code>, <code>contact.html</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Dans <code>style.css</code>, ajoutez la règle <code>nav a.active</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">6</div>
+                            <div class="txt">Testez chaque page : le lien actif est bien coloré en orange.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Navigation homogène sur les 5 pages.</strong> L'utilisateur sait toujours où il est.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 8 : COURS — STRUCTURE DE DOSSIER ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 2',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">La structure de dossier d'un vrai site</h2>
+                    <p class="anim-item">Un site professionnel a une arborescence claire et prévisible.</p>
+                    <div class="tree-demo anim-item">
+<span class="folder">mon-site/</span>
+├── <span class="file">index.html</span>            <span class="note">← page d'accueil</span>
+├── <span class="file">apropos.html</span>
+├── <span class="file">services.html</span>
+├── <span class="file">galerie.html</span>
+├── <span class="file">contact.html</span>
+├── <span class="file">404.html</span>              <span class="note">← page d'erreur</span>
+├── <span class="file">style.css</span>             <span class="note">← CSS global</span>
+├── <span class="folder">images/</span>
+│   ├── <span class="file">logo.png</span>
+│   ├── <span class="file">photo1.jpg</span>
+│   └── <span class="file">photo2.jpg</span>
+└── <span class="folder">assets/</span>               <span class="note">← ressources diverses</span>
+    ├── <span class="file">favicon.ico</span>
+    └── <span class="folder">documents/</span>
+        └── <span class="file">presentation.pdf</span>
+                    </div>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Règle :</strong> tout ce qui est image va dans <code>images/</code>. Tout ce qui est CSS/JS va à la racine. Les documents divers dans <code>assets/</code>.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 9 : COURS — PAGES ESSENTIELLES ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 2',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Les 5 pages essentielles d'un site</h2>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Page</th><th>Rôle</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>Accueil</strong> (<code>index.html</code>)</td><td>Première impression, message principal, appel à l'action</td></tr>
+                            <tr><td><strong>À propos</strong></td><td>Qui vous êtes, votre histoire, votre mission</td></tr>
+                            <tr><td><strong>Services</strong></td><td>Ce que vous proposez, vos offres détaillées</td></tr>
+                            <tr><td><strong>Galerie</strong></td><td>Réalisations, photos, portfolio</td></tr>
+                            <tr><td><strong>Contact</strong></td><td>Formulaire, téléphone, adresse, réseaux</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-important anim-item">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>Aujourd'hui :</strong> on va créer la page <code>services.html</code> complète et une page <code>404.html</code> de secours.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 10 : COURS — FIL D'ARIANE ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 2',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Le fil d'Ariane (breadcrumb)</h2>
+                    <p class="anim-item">Un petit chemin affiché sous le menu qui montre où l'utilisateur se trouve.</p>
+                    <div class="breadcrumb-demo anim-item">
+                        <a href="index.html">Accueil</a>
+                        <span class="sep">›</span>
+                        <a href="services.html">Services</a>
+                        <span class="sep">›</span>
+                        <span class="current">Développement web</span>
+                    </div>
+                    <pre class="anim-item"><span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"breadcrumb"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"index.html"</span><span class="tag">&gt;</span><span class="txt">Accueil</span><span class="tag">&lt;/a&gt;</span>
+  <span class="tag">&lt;span&gt;</span><span class="txt">›</span><span class="tag">&lt;/span&gt;</span>
+  <span class="tag">&lt;span&gt;</span><span class="txt">Services</span><span class="tag">&lt;/span&gt;</span>
+<span class="tag">&lt;/div&gt;</span></pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Avantage</th><th>Explication</th></tr></thead>
+                        <tbody>
+                            <tr><td>Repère l'utilisateur</td><td>Il sait où il est dans le site</td></tr>
+                            <tr><td>Retour rapide</td><td>Cliquer sur « Accueil » ramène à la racine</td></tr>
+                            <tr><td>Bon pour le référencement</td><td>Google comprend la hiérarchie des pages</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Utilisez-le</strong> sur toutes les pages sauf l'accueil. C'est un détail qui fait professionnel.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 11 : PRATIQUE — PAGE SERVICES ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 2',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : créer la page « Services »</h2>
+                    <p class="anim-item">Une page complète, structurée, avec le nav et le footer communs.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Créez <code>services.html</code>. Structure de base + <code>&lt;link rel="stylesheet" href="style.css"&gt;</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Copiez le <code>&lt;header&gt;</code> et le <code>&lt;nav&gt;</code> depuis <code>index.html</code>. Mettez <code>class="active"</code> sur « Services ».</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Ajoutez un <code>&lt;div class="breadcrumb"&gt;</code> sous le nav.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Dans le <code>main</code> : un <code>&lt;h1&gt;</code> « Nos services », un paragraphe d'intro, puis une grille de 3 cartes (services différents).</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Copiez le <code>&lt;footer&gt;</code> depuis <code>index.html</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">6</div>
+                            <div class="txt">Testez : le lien « Services » du nav est bien orange sur cette page.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Nouvelle page fonctionnelle, intégrée au site.</strong> On répète cette méthode pour chaque future page.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 12 : COURS — FOOTER PROFESSIONNEL ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Le footer professionnel</h2>
+                    <p class="anim-item">Le footer contient les informations de contact et les liens secondaires. Il est identique partout.</p>
+                    <pre class="anim-item"><span class="tag">&lt;footer&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"footer-col"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;h4&gt;</span><span class="txt">À propos</span><span class="tag">&lt;/h4&gt;</span>
+    <span class="tag">&lt;p&gt;</span><span class="txt">Description courte</span><span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"footer-col"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;h4&gt;</span><span class="txt">Contact</span><span class="tag">&lt;/h4&gt;</span>
+    <span class="tag">&lt;p&gt;</span><span class="txt">Téléphone · Email</span><span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"footer-col"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;h4&gt;</span><span class="txt">Liens</span><span class="tag">&lt;/h4&gt;</span>
+    <span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"index.html"</span><span class="tag">&gt;</span><span class="txt">Accueil</span><span class="tag">&lt;/a&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/footer&gt;</span></pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Colonne type</th><th>Contenu</th></tr></thead>
+                        <tbody>
+                            <tr><td>À propos</td><td>Description courte du site (2-3 lignes)</td></tr>
+                            <tr><td>Contact</td><td>Téléphone, email, adresse</td></tr>
+                            <tr><td>Liens utiles</td><td>Rappel des pages principales</td></tr>
+                            <tr><td>Réseaux sociaux</td><td>Facebook, WhatsApp, LinkedIn…</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Règle :</strong> le footer doit rester sobre. Fond sombre, texte clair, 3 ou 4 colonnes maximum.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 13 : COURS — LIENS INTERNES ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Le maillage interne</h2>
+                    <p class="anim-item">Le maillage interne, c'est l'ensemble des liens qui relient vos pages entre elles dans le contenu — pas seulement dans le menu.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Où placer un lien interne</th><th>Exemple</th></tr></thead>
+                        <tbody>
+                            <tr><td>Dans le texte d'un paragraphe</td><td>« Découvrez nos <a href="services.html">services</a> »</td></tr>
+                            <tr><td>Dans une carte</td><td>Une carte « Découvrir » → page de détail</td></tr>
+                            <tr><td>En bas d'article</td><td>« Voir aussi : notre galerie »</td></tr>
+                            <tr><td>Dans le footer</td><td>Rappel des pages principales</td></tr>
+                            <tr><td>Dans un bouton d'appel à l'action</td><td><code>&lt;a class="btn" href="contact.html"&gt;Nous contacter&lt;/a&gt;</code></td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Bénéfices :</strong> l'utilisateur explore plus longtemps, Google comprend mieux le site, chaque page est reliée au reste.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 14 : PRATIQUE — FOOTER COMMUN ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : créer un footer commun riche</h2>
+                    <p class="anim-item">On remplace le footer simple par un footer à 3 colonnes.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Dans <code>index.html</code>, remplacez le <code>&lt;footer&gt;</code> actuel par une structure à 3 colonnes.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Colonne 1 : un titre « À propos » + une phrase de description.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Colonne 2 : « Contact » + téléphone + email.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Colonne 3 : « Liens » + 4 liens vers vos pages.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Dans <code>style.css</code> : <code>footer { background: #1e293b; color: white; padding: 40px 20px; }</code> puis <code>.footer-col { }</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">6</div>
+                            <div class="txt">Copiez ce nouveau footer dans toutes les pages.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Footer professionnel présent sur tout le site.</strong></div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 15 : COURS — ERREURS 404 ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Les erreurs 404 et la page de secours</h2>
+                    <p class="anim-item">Quand un utilisateur clique sur un lien cassé ou tape une mauvaise adresse, il tombe sur une erreur 404.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Code</th><th>Signification</th></tr></thead>
+                        <tbody>
+                            <tr><td>200</td><td>Tout va bien, page trouvée</td></tr>
+                            <tr><td>301 / 302</td><td>Redirection vers une autre page</td></tr>
+                            <tr><td>403</td><td>Accès interdit</td></tr>
+                            <tr><td>404</td><td>Page non trouvée</td></tr>
+                            <tr><td>500</td><td>Erreur du serveur</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-important anim-item">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>Bonne pratique :</strong> créer sa propre page <code>404.html</code> avec le menu, un message d'excuse clair, et un bouton « Retour à l'accueil ».</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 16 : PRATIQUE — PAGE 404 ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : créer la page 404</h2>
+                    <p class="anim-item">Une page 404 personnalisée transforme une erreur en expérience agréable.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Créez <code>404.html</code>. Reliez-y <code>style.css</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Ajoutez le nav et le footer communs.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Dans le <code>main</code>, centrez : un grand <code>&lt;h1&gt;404&lt;/h1&gt;</code>, un <code>&lt;p&gt;</code> « Page introuvable », un lien <code>&lt;a class="btn" href="index.html"&gt;Retour à l'accueil&lt;/a&gt;</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Ajoutez un peu de style : <code>.error-page { text-align: center; padding: 80px 20px; }</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Testez la page en ouvrant directement <code>404.html</code> avec Live Server.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Page 404 en place.</strong> Sur un vrai serveur, elle s'affichera automatiquement en cas d'URL incorrecte.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 17 : COURS — TESTER SON SITE ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 4',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Tester et valider son site</h2>
+                    <p class="anim-item">Avant de publier, on passe en revue chaque page avec une checklist stricte.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>#</th><th>Vérification</th></tr></thead>
+                        <tbody>
+                            <tr><td>1</td><td>Tous les liens du nav mènent à une page existante</td></tr>
+                            <tr><td>2</td><td>Toutes les images s'affichent correctement</td></tr>
+                            <tr><td>3</td><td>Le <code>style.css</code> est bien relié sur chaque page</td></tr>
+                            <tr><td>4</td><td>Le lien <code>active</code> est correct sur chaque page</td></tr>
+                            <tr><td>5</td><td>Le footer est identique partout</td></tr>
+                            <tr><td>6</td><td>Aucun texte « lorem ipsum » oublié</td></tr>
+                            <tr><td>7</td><td>La page 404 fonctionne</td></tr>
+                            <tr><td>8</td><td>Le site est lisible sur mobile (réduire la fenêtre)</td></tr>
+                            <tr><td>9</td><td>Les boutons sont cliquables et mènent quelque part</td></tr>
+                            <tr><td>10</td><td>La console du navigateur (F12) n'affiche pas d'erreur rouge</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Astuce :</strong> utilisez <code>Ctrl+clic</code> sur chaque lien pour l'ouvrir dans un nouvel onglet. Vous testez tout rapidement.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 18 : PRATIQUE — PARCOURS DE TEST ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 4',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : parcours complet de test</h2>
+                    <p class="anim-item">On teste le site comme un utilisateur réel.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Ouvrez <code>index.html</code> avec Live Server.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Cliquez sur chaque lien du nav, un par un. Vérifiez que la page s'affiche et que le lien devient orange.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Testez les liens du footer.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Testez les liens internes dans les paragraphes.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Ouvrez la console (F12) → onglet <strong>Console</strong>. Vérifiez qu'il n'y a pas d'erreur rouge.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">6</div>
+                            <div class="txt">Réduisez la fenêtre à 400px de large. Le site doit rester lisible.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Site validé.</strong> Tous les liens fonctionnent, aucune erreur. Il est prêt pour la suite.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 19 : EXERCICE ----------
+        {
+            type: 'exercice',
+            bloc: 'BLOC 4',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Exercice final : ajouter une 6<sup>e</sup> page « Équipe »</h2>
+                    <p class="anim-item">Vous allez créer une nouvelle page, l'intégrer au nav et au footer, et la rendre cohérente avec le reste.</p>
+                    <div class="pratique-etapes anim-item" style="border-color:var(--orange);">
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">1</div>
+                            <div class="txt">Créez <code>equipe.html</code> avec la structure habituelle (header, nav, main, footer, lien vers style.css).</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">2</div>
+                            <div class="txt">Dans le <code>main</code>, un <code>&lt;h1&gt;</code> « Notre équipe » + une grille de 3 cartes (une par membre).</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">3</div>
+                            <div class="txt">Chaque carte : une photo (placeholder ou image), un nom, un rôle, une phrase.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">4</div>
+                            <div class="txt">Ajoutez le lien « Équipe » dans le <code>&lt;nav&gt;</code> de TOUTES les pages (avant « Contact »).</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">5</div>
+                            <div class="txt">Sur <code>equipe.html</code>, mettez <code>class="active"</code> sur le lien « Équipe ».</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">6</div>
+                            <div class="txt">Testez : depuis n'importe quelle page, on accède à « Équipe » en un clic.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Durée :</strong> 15 minutes. Le formateur circule et corrige.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-exercice'
+        },
+
+        // ---------- SLIDE 20 : SYNTHÈSE ----------
+        {
+            type: 'synthese',
+            bloc: '—',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Ce que vous savez faire maintenant</h2>
+                    <ul class="anim-item" style="font-size:1.15rem; line-height:1.7;">
+                        <li>Structurer un site en plusieurs pages cohérentes</li>
+                        <li>Un menu identique partout, avec page active signalée</li>
+                        <li>Utiliser une arborescence de dossier professionnelle</li>
+                        <li>Placer un fil d'Ariane sur les pages internes</li>
+                        <li>Créer un footer commun à 3 colonnes</li>
+                        <li>Mailler les pages avec des liens internes pertinents</li>
+                        <li>Concevoir une page 404 personnalisée</li>
+                        <li>Tester un site avec une checklist rigoureuse</li>
+                        <li>Ajouter une nouvelle page au site en 5 minutes</li>
+                    </ul>
+                    <div class="box box-important anim-item" style="margin-top:1.5rem;">
+                        <i class="fas fa-tasks"></i>
+                        <div><strong>Pour le Jour 6 (Formulaires & JavaScript) :</strong> apportez votre site avec toutes ses pages. Nous allons créer un formulaire de contact fonctionnel et ajouter nos premières interactions avec JavaScript.</div>
+                    </div>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Conseil entre les séances :</strong> ajoutez une 7<sup>e</sup> page de votre choix (blog, tarifs, FAQ…). Plus vous répétez, plus le processus devient naturel.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-synthese'
+        }
+
+        ];
+
+        // ============================================================
+        // ÉTAT
+        // ============================================================
+        let currentSlide = 0;
+        const totalSlides = slidesData.length;
+
+        // ============================================================
+        // AFFICHAGE
+        // ============================================================
+        function renderSlide(index) {
+            const stage = document.getElementById('slideStage');
+            const slide = slidesData[index];
+            stage.innerHTML = `<div class="slide-content ${slide.className || ''}">${slide.content}</div>`;
+
+            const header = document.getElementById('slideHeader');
+            if (slide.type === 'title') {
+                header.style.display = 'none';
+            } else {
+                header.style.display = 'flex';
+                document.getElementById('blocTag').textContent = slide.bloc || '—';
+                document.getElementById('slideNum').textContent = index + 1;
+                document.getElementById('slideTotal').textContent = totalSlides;
+
+                const typeTag = document.getElementById('typeTag');
+                const typeLabels = {
+                    'cours': 'Cours',
+                    'pratique': 'Pratique',
+                    'exercice': 'Exercice',
+                    'synthese': 'Synthèse'
+                };
+                typeTag.textContent = typeLabels[slide.type] || 'Cours';
+                typeTag.className = 'type-tag type-' + (slide.type || 'cours');
+            }
+        }
+
+        function goNext() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                renderSlide(currentSlide);
+            }
+        }
+
+        function goPrev() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                renderSlide(currentSlide);
+            }
+        }
+
+        // ============================================================
+        // CODE D'ACCÈS — WEB2026 (base64 : V0VCMjAyNg==)
+        // ============================================================
+        function checkAccess() {
+            const input = document.getElementById('accessInput');
+            const error = document.getElementById('accessError');
+            const expected = 'V0VCMjAyNg==';
+            const entered = btoa(input.value.trim());
+            if (entered === expected) {
+                document.getElementById('accessOverlay').classList.add('hidden');
+                document.getElementById('presentationContainer').classList.add('active');
+                renderSlide(currentSlide);
+            } else {
+                error.classList.add('visible');
+                input.value = '';
+                input.focus();
+                setTimeout(() => error.classList.remove('visible'), 2500);
+            }
+        }
+
+        document.getElementById('accessBtn').addEventListener('click', checkAccess);
+        document.getElementById('accessInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') checkAccess();
+        });
+
+        // ============================================================
+        // NAVIGATION CLAVIER
+        // ============================================================
+        document.addEventListener('keydown', function(e) {
+            const container = document.getElementById('presentationContainer');
+            if (!container.classList.contains('active')) return;
+            switch (e.key) {
+                case 'ArrowRight':
+                case ' ':
+                case 'PageDown':
+                    e.preventDefault();
+                    goNext();
+                    break;
+                case 'ArrowLeft':
+                case 'PageUp':
+                    e.preventDefault();
+                    goPrev();
+                    break;
+                case 'Escape':
+                    if (confirm('Quitter la projection ?')) {
+                        document.getElementById('presentationContainer').classList.remove('active');
+                        document.getElementById('accessOverlay').classList.remove('hidden');
+                        currentSlide = 0;
+                    }
+                    break;
+            }
+        });
+
+        // ============================================================
+        // NAVIGATION TACTILE
+        // ============================================================
+        let touchStartX = 0;
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        document.addEventListener('touchend', function(e) {
+            const deltaX = e.changedTouches[0].screenX - touchStartX;
+            if (Math.abs(deltaX) > 60) {
+                if (deltaX < 0) goNext();
+                else goPrev();
+            }
+        });
+    </script>
+
+</body>
+</html>

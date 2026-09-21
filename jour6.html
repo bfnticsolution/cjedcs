@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Formation Développement Web · Jour 6 — Formulaires & JavaScript</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        /* ===== VARIABLES ===== */
+        :root {
+            --bleu: #0B3FA5;
+            --bleu-profond: #072a6e;
+            --bleu-clair: #e8f0fe;
+            --orange: #FF6B35;
+            --orange-clair: #fff4e5;
+            --vert: #059669;
+            --vert-clair: #ecfdf5;
+            --violet: #7c3aed;
+            --violet-clair: #f3e8ff;
+            --rouge: #dc2626;
+            --rouge-clair: #fef2f2;
+            --jaune: #f59e0b;
+            --jaune-clair: #fffbeb;
+            --texte: #1e293b;
+            --texte-secondaire: #475569;
+            --blanc: #ffffff;
+            --bordure: #e2e8f0;
+            --transition: 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background: #0d1117;
+            color: var(--texte);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            -webkit-font-smoothing: antialiased;
+            user-select: none;
+        }
+
+        /* ===== ÉCRAN DE CODE D'ACCÈS ===== */
+        .access-overlay {
+            position: fixed; inset: 0; z-index: 99999;
+            background: linear-gradient(135deg, var(--jaune) 0%, #b45309 100%);
+            display: flex; align-items: center; justify-content: center;
+            transition: opacity 0.7s ease, visibility 0.7s ease;
+        }
+        .access-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .access-card {
+            background: var(--blanc); border-radius: 2rem; padding: 3rem 2.5rem;
+            text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            max-width: 420px; width: 90%; animation: floatIn 0.8s ease;
+        }
+        @keyframes floatIn {
+            from { opacity: 0; transform: translateY(40px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .access-card .logo-symbol {
+            background: var(--jaune); color: white; width: 64px; height: 64px;
+            border-radius: 18px; display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 1.6rem; margin: 0 auto 1.2rem;
+        }
+        .access-card h2 { color: #b45309; font-size: 1.4rem; margin-bottom: 0.5rem; }
+        .access-card p { color: #475569; margin-bottom: 1.8rem; font-size: 0.9rem; }
+        .access-input {
+            width: 100%; padding: 0.9rem 1.3rem; border: 2px solid var(--bordure);
+            border-radius: 14px; font-family: inherit; font-size: 1rem;
+            text-align: center; letter-spacing: 2px; transition: var(--transition); margin-bottom: 1rem;
+        }
+        .access-input:focus { outline: none; border-color: var(--jaune); box-shadow: 0 0 0 4px rgba(245,158,11,0.1); }
+        .access-btn {
+            width: 100%; padding: 0.9rem; background: var(--bleu); color: white;
+            border: none; border-radius: 14px; font-weight: 700; font-size: 1rem;
+            font-family: inherit; cursor: pointer; transition: var(--transition);
+        }
+        .access-btn:hover { background: var(--bleu-profond); transform: translateY(-2px); }
+        .access-error {
+            color: #dc2626; font-size: 0.85rem; margin-top: 0.5rem;
+            display: none; font-weight: 600;
+        }
+        .access-error.visible { display: block; animation: shake 0.5s ease; }
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        /* ===== CONTAINER PROJECTION ===== */
+        .presentation-container {
+            display: none; position: fixed; inset: 0; background: #0d1117; z-index: 100;
+        }
+        .presentation-container.active { display: block; }
+        .slide-stage {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .slide-content {
+            background: white; width: 100%; height: 100%;
+            overflow-y: auto; padding: 3rem 4.5rem;
+            position: relative; animation: slideIn 0.4s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: scale(0.97); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .slide-header {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(8px);
+            padding: 0.6rem 1.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--bordure);
+            font-size: 0.8rem; font-weight: 600;
+        }
+        .slide-header .bloc-tag {
+            background: var(--jaune); color: white; padding: 0.25rem 0.75rem;
+            border-radius: 999px; font-size: 0.7rem; letter-spacing: 0.5px;
+        }
+        .slide-header .type-tag {
+            padding: 0.25rem 0.75rem; border-radius: 999px;
+            font-size: 0.7rem; letter-spacing: 0.5px; font-weight: 700;
+        }
+        .type-cours { background: var(--bleu-clair); color: var(--bleu); }
+        .type-pratique { background: var(--vert-clair); color: var(--vert); }
+        .type-exercice { background: var(--orange-clair); color: var(--orange); }
+        .type-synthese { background: var(--violet-clair); color: var(--violet); }
+        .slide-header .num { color: var(--texte-secondaire); }
+
+        .nav-hint {
+            position: fixed; bottom: 1rem; right: 1rem; z-index: 500;
+            color: rgba(255,255,255,0.3); font-size: 0.7rem;
+            font-weight: 600; letter-spacing: 0.5px; pointer-events: none;
+        }
+
+        /* ===== ANIMATIONS ===== */
+        .anim-item { opacity: 0; transform: translateY(15px); animation: fadeUp 0.5s ease forwards; }
+        .anim-item:nth-child(1) { animation-delay: 0.05s; }
+        .anim-item:nth-child(2) { animation-delay: 0.15s; }
+        .anim-item:nth-child(3) { animation-delay: 0.25s; }
+        .anim-item:nth-child(4) { animation-delay: 0.35s; }
+        .anim-item:nth-child(5) { animation-delay: 0.45s; }
+        .anim-item:nth-child(6) { animation-delay: 0.55s; }
+        .anim-item:nth-child(7) { animation-delay: 0.65s; }
+        .anim-item:nth-child(8) { animation-delay: 0.75s; }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+        /* ===== TYPOGRAPHIE ===== */
+        h1 { font-size: 3rem; font-weight: 800; letter-spacing: -1px; color: var(--bleu); line-height: 1.1; }
+        h2 { font-size: 2.1rem; font-weight: 700; color: var(--bleu); line-height: 1.2; margin-bottom: 1rem; }
+        h3 { font-size: 1.4rem; font-weight: 700; color: var(--texte); }
+        h4 { font-size: 1.15rem; font-weight: 700; }
+        p { font-size: 1.25rem; line-height: 1.55; color: var(--texte); }
+        li { font-size: 1.15rem; line-height: 1.65; }
+        .lead { font-size: 1.4rem; color: var(--texte-secondaire); line-height: 1.5; }
+
+        /* ===== SLIDE DE TITRE ===== */
+        .slide-title {
+            background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
+            color: white; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; text-align: center;
+        }
+        .slide-title h1 { color: white; font-size: 3.2rem; }
+        .slide-title .lead { color: rgba(255,255,255,0.85); margin-top: 1rem; }
+        .slide-title .meta {
+            color: rgba(255,255,255,0.6); font-size: 1rem; margin-top: 2rem;
+            letter-spacing: 1px;
+        }
+
+        /* ===== SLIDE PLAN ===== */
+        .bloc-plan {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 1rem; margin-top: 2rem;
+        }
+        .bloc-item {
+            background: #f8fafc; border-radius: 16px; padding: 1.5rem 1.2rem;
+            border-top: 5px solid var(--jaune); text-align: left;
+        }
+        .bloc-item .num {
+            font-size: 0.75rem; font-weight: 800; color: #b45309;
+            letter-spacing: 1.5px; margin-bottom: 0.5rem;
+        }
+        .bloc-item h4 { color: var(--texte); margin-bottom: 0.4rem; font-size: 1.05rem; }
+        .bloc-item p { font-size: 0.9rem; color: var(--texte-secondaire); }
+        .bloc-item .duree {
+            font-size: 0.75rem; font-weight: 700; color: var(--bleu);
+            margin-top: 0.6rem; display: block;
+        }
+
+        /* ===== SLIDE COURS ===== */
+        .cours-content { max-width: 1000px; margin: 0 auto; }
+        .cours-content h2 { margin-bottom: 1.2rem; }
+        .cours-content p { margin-bottom: 1rem; }
+        .cours-content ul { padding-left: 1.5rem; margin-bottom: 1rem; }
+        .cours-content li { margin-bottom: 0.4rem; }
+
+        /* ===== CODE ===== */
+        pre {
+            background: #1e293b; color: #e2e8f0;
+            padding: 1.3rem 1.5rem; border-radius: 12px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 1rem; line-height: 1.65;
+            overflow-x: auto; margin: 1rem 0;
+            border-left: 4px solid var(--jaune);
+        }
+        pre .tag { color: #7dd3fc; }
+        pre .attr { color: #fbbf24; }
+        pre .val { color: #86efac; }
+        pre .txt { color: #e2e8f0; }
+        pre .com { color: #64748b; font-style: italic; }
+        pre .sel { color: #f472b6; }
+        pre .prop { color: #7dd3fc; }
+        pre .kw { color: #f472b6; font-weight: 600; }
+        pre .fn { color: #fbbf24; }
+        pre .str { color: #86efac; }
+        pre .num { color: #a5b4fc; }
+        code {
+            background: #f1f5f9; padding: 0.15rem 0.4rem;
+            border-radius: 4px; font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.9em; color: #db2777;
+        }
+
+        /* ===== BOXES ===== */
+        .box {
+            border-radius: 12px; padding: 1rem 1.4rem; margin: 1rem 0;
+            font-size: 1.05rem; border-left: 5px solid;
+            display: flex; align-items: flex-start; gap: 0.7rem;
+        }
+        .box i { font-size: 1.2rem; flex-shrink: 0; margin-top: 0.15rem; }
+        .box-tip { background: var(--bleu-clair); border-color: var(--bleu); color: #0a2c5c; }
+        .box-important { background: var(--orange-clair); border-color: var(--orange); color: #6b3a1f; }
+        .box-success { background: var(--vert-clair); border-color: var(--vert); color: #064e3b; }
+        .box-warning { background: var(--rouge-clair); border-color: var(--rouge); color: #7f1d1d; }
+        .box-info { background: var(--violet-clair); border-color: var(--violet); color: #3b0764; }
+
+        /* ===== SLIDE PRATIQUE ===== */
+        .slide-pratique { background: #f0fdf4; }
+        .pratique-etapes {
+            background: white; border-radius: 14px; padding: 1.5rem 2rem;
+            border: 2px solid var(--vert); margin-top: 1.2rem;
+        }
+        .pratique-etapes ol { padding-left: 1.5rem; }
+        .pratique-etapes li { margin-bottom: 0.7rem; font-size: 1.1rem; }
+        .check-item {
+            display: flex; align-items: flex-start; gap: 0.7rem;
+            padding: 0.6rem 0; border-bottom: 1px dashed var(--bordure);
+        }
+        .check-item:last-child { border-bottom: none; }
+        .check-item .num-circle {
+            background: var(--vert); color: white; width: 28px; height: 28px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
+        }
+        .check-item .txt { font-size: 1.05rem; }
+
+        /* ===== SLIDE EXERCICE ===== */
+        .slide-exercice { background: #fff7ed; }
+
+        /* ===== SLIDE SYNTHÈSE ===== */
+        .slide-synthese { background: #f5f3ff; }
+
+        /* ===== TABLEAU ===== */
+        .table-simple {
+            width: 100%; border-collapse: collapse; font-size: 1.05rem;
+            background: white; border-radius: 12px; overflow: hidden;
+            margin: 1rem 0;
+        }
+        .table-simple th {
+            background: var(--jaune); color: white; padding: 0.8rem 1.1rem;
+            text-align: left; font-weight: 700; font-size: 1rem;
+        }
+        .table-simple td { padding: 0.65rem 1.1rem; border-bottom: 1px solid var(--bordure); }
+        .table-simple tr:last-child td { border-bottom: none; }
+
+        /* ===== DÉMO FORM ===== */
+        .form-demo {
+            background: #f8fafc; border-radius: 12px; padding: 1.5rem;
+            border: 1px solid var(--bordure); margin: 1rem 0;
+        }
+        .form-demo label {
+            display: block; font-weight: 600; font-size: 0.95rem;
+            margin-bottom: 0.4rem; color: var(--texte);
+        }
+        .form-demo input, .form-demo textarea, .form-demo select {
+            width: 100%; padding: 0.7rem 1rem; border: 1px solid var(--bordure);
+            border-radius: 8px; font-family: inherit; font-size: 0.95rem;
+            margin-bottom: 1rem; transition: 0.2s;
+        }
+        .form-demo input:focus, .form-demo textarea:focus {
+            outline: none; border-color: var(--jaune);
+            box-shadow: 0 0 0 3px rgba(245,158,11,0.15);
+        }
+
+        /* ===== DÉMO JS ===== */
+        .js-demo {
+            background: #1e293b; color: white; border-radius: 12px;
+            padding: 1.5rem; margin: 1rem 0; text-align: center;
+        }
+        .js-demo button {
+            background: var(--jaune); color: white; border: none;
+            padding: 10px 20px; border-radius: 8px; font-weight: 700;
+            cursor: pointer; font-family: inherit; font-size: 0.95rem;
+            transition: 0.2s;
+        }
+        .js-demo button:hover { background: #d97706; }
+        .js-demo p {
+            color: white; font-size: 1.1rem; margin: 1rem 0 0 0;
+            font-weight: 600;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .slide-content { padding: 2rem 1.5rem; }
+            h1 { font-size: 1.8rem; }
+            h2 { font-size: 1.4rem; }
+            p, li { font-size: 1rem; }
+            .bloc-plan { grid-template-columns: 1fr 1fr; }
+            .access-card { padding: 2rem 1.5rem; }
+            pre { font-size: 0.85rem; }
+            .slide-header { font-size: 0.7rem; padding: 0.5rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- =========================================================
+         ÉCRAN DE CODE D'ACCÈS
+         Mot de passe : WEB2026 (base64 : V0VCMjAyNg==)
+         ========================================================= -->
+    <div class="access-overlay" id="accessOverlay">
+        <div class="access-card">
+            <div class="logo-symbol">JS</div>
+            <h2>Jour 6 — Formulaires & JavaScript</h2>
+            <p>Formation Développement Web<br>Saisissez le code d'accès.</p>
+            <input type="password" class="access-input" id="accessInput" placeholder="Code d'accès" autocomplete="off" />
+            <button class="access-btn" id="accessBtn"><i class="fas fa-arrow-right"></i> Commencer</button>
+            <div class="access-error" id="accessError">Code incorrect. Réessayez.</div>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         CONTENEUR PROJECTION
+         ========================================================= -->
+    <div class="presentation-container" id="presentationContainer">
+        <div class="slide-header" id="slideHeader" style="display:none;">
+            <div>
+                <span class="bloc-tag" id="blocTag">BLOC 1</span>
+                <span class="type-tag" id="typeTag">Cours</span>
+            </div>
+            <div class="num"><span id="slideNum">1</span> / <span id="slideTotal">20</span></div>
+        </div>
+        <div class="slide-stage" id="slideStage"></div>
+        <div class="nav-hint">← → · Échap pour quitter</div>
+    </div>
+
+    <script>
+        // ============================================================
+        // DONNÉES DES SLIDES — JOUR 6 : FORMULAIRES & JAVASCRIPT
+        // ============================================================
+        const slidesData = [
+
+        // ---------- SLIDE 1 : TITRE ----------
+        {
+            type: 'title',
+            bloc: '—',
+            content: `
+                <h1>Formulaires & JavaScript</h1>
+                <p class="lead">Jour 6 — Rendre le site interactif</p>
+                <p class="lead" style="font-size:1.15rem; margin-top:1.5rem;">
+                    Formulaires HTML · Styles · JavaScript · Validation
+                </p>
+                <p class="meta">DURÉE : 2 HEURES · NIVEAU : INTERMÉDIAIRE</p>
+            `,
+            className: 'slide-title'
+        },
+
+        // ---------- SLIDE 2 : PLAN ----------
+        {
+            type: 'cours',
+            bloc: '—',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Programme des 2 heures</h2>
+                    <p class="anim-item">Le site est beau et cohérent. Aujourd'hui, on le rend intelligent et interactif.</p>
+                    <div class="bloc-plan">
+                        <div class="bloc-item anim-item">
+                            <div class="num">BLOC 1</div>
+                            <h4>Formulaires HTML</h4>
+                            <p>Form, champs, labels, boutons.</p>
+                            <span class="duree">30 min</span>
+                        </div>
+                        <div class="bloc-item anim-item">
+                            <div class="num">BLOC 2</div>
+                            <h4>Styles & formulaire</h4>
+                            <p>Habiller le formulaire, ergonomie.</p>
+                            <span class="duree">30 min</span>
+                        </div>
+                        <div class="bloc-item anim-item">
+                            <div class="num">BLOC 3</div>
+                            <h4>Introduction JavaScript</h4>
+                            <p>Variables, fonctions, DOM, événements.</p>
+                            <span class="duree">30 min</span>
+                        </div>
+                        <div class="bloc-item anim-item">
+                            <div class="num">BLOC 4</div>
+                            <h4>Validation & exercice</h4>
+                            <p>Valider un formulaire avec JS.</p>
+                            <span class="duree">30 min</span>
+                        </div>
+                    </div>
+                    <div class="box box-tip anim-item" style="margin-top:1.5rem;">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>Objectif du jour :</strong> un formulaire de contact qui réagit, vérifie les données et communique avec l'utilisateur.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 3 : COURS — FORMULAIRE HTML ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Qu'est-ce qu'un formulaire HTML ?</h2>
+                    <p class="anim-item">Un formulaire est une zone de la page où l'utilisateur saisit des informations.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Usage</th><th>Exemple concret</th></tr></thead>
+                        <tbody>
+                            <tr><td>Contact</td><td>Nom, email, message</td></tr>
+                            <tr><td>Inscription</td><td>Identifiant, mot de passe</td></tr>
+                            <tr><td>Commande</td><td>Adresse, paiement</td></tr>
+                            <tr><td>Recherche</td><td>Mot-clé</td></tr>
+                            <tr><td>Sondage</td><td>Choix multiples</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Un formulaire a 3 rôles :</strong> recueillir, vérifier, envoyer les données. Aujourd'hui, on fait les 2 premiers. L'envoi viendra au Jour 7.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 4 : COURS — BALISE FORM ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">La balise form et ses attributs</h2>
+                    <p class="anim-item">Tout formulaire est enveloppé dans une balise <code>&lt;form&gt;</code>.</p>
+                    <pre class="anim-item"><span class="tag">&lt;form</span> <span class="attr">action</span>=<span class="val">"traitement.php"</span> <span class="attr">method</span>=<span class="val">"post"</span><span class="tag">&gt;</span>
+  <span class="com">&lt;!-- les champs ici --&gt;</span>
+<span class="tag">&lt;/form&gt;</span></pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Attribut</th><th>Rôle</th><th>Valeurs</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>action</code></td><td>Où envoyer les données</td><td>URL du script</td></tr>
+                            <tr><td><code>method</code></td><td>Comment les envoyer</td><td><code>get</code> ou <code>post</code></td></tr>
+                            <tr><td><code>name</code></td><td>Nom du formulaire</td><td>Optionnel</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-important anim-item">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>GET vs POST :</strong> GET met les données dans l'URL (visible). POST les envoie cachées. Pour un formulaire de contact : toujours POST.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 5 : COURS — LES CHAMPS ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Les champs de saisie</h2>
+                    <p class="anim-item">La balise <code>&lt;input&gt;</code> crée un champ. Son attribut <code>type</code> définit la nature du champ.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Type</th><th>Usage</th><th>Exemple</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>text</code></td><td>Texte court</td><td>Nom, prénom</td></tr>
+                            <tr><td><code>email</code></td><td>Adresse email</td><td>contact@exemple.com</td></tr>
+                            <tr><td><code>password</code></td><td>Mot de passe masqué</td><td>••••••</td></tr>
+                            <tr><td><code>number</code></td><td>Nombre</td><td>Âge</td></tr>
+                            <tr><td><code>tel</code></td><td>Téléphone</td><td>+226 05 58 58 68</td></tr>
+                            <tr><td><code>date</code></td><td>Date</td><td>01/01/2026</td></tr>
+                            <tr><td><code>checkbox</code></td><td>Case à cocher</td><td>J'accepte</td></tr>
+                            <tr><td><code>radio</code></td><td>Choix unique</td><td>Homme / Femme</td></tr>
+                            <tr><td><code>file</code></td><td>Fichier</td><td>Photo</td></tr>
+                            <tr><td><code>submit</code></td><td>Bouton d'envoi</td><td>Envoyer</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>input</strong> est auto-fermante : <code>&lt;input type="text"&gt;</code>, jamais <code>&lt;/input&gt;</code>.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 6 : COURS — LABELS ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Les labels : essentiels et obligatoires</h2>
+                    <p class="anim-item">Un <code>&lt;label&gt;</code> décrit un champ. Il améliore l'accessibilité et le confort d'utilisation.</p>
+                    <pre class="anim-item"><span class="tag">&lt;label</span> <span class="attr">for</span>=<span class="val">"nom"</span><span class="tag">&gt;</span><span class="txt">Votre nom</span><span class="tag">&lt;/label&gt;</span>
+<span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="val">"text"</span> <span class="attr">id</span>=<span class="val">"nom"</span> <span class="attr">name</span>=<span class="val">"nom"</span><span class="tag">&gt;</span></pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Attribut</th><th>Rôle</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>for</code> du label</td><td>Doit correspondre à l'<code>id</code> du champ</td></tr>
+                            <tr><td><code>id</code> du champ</td><td>Identifiant unique</td></tr>
+                            <tr><td><code>name</code> du champ</td><td>Nom utilisé lors de l'envoi des données</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Astuce :</strong> quand un label est bien relié, cliquer dessus place le curseur dans le champ. Pratique sur mobile.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 7 : COURS — BOUTONS ET AUTRES CHAMPS ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">textarea, select et boutons</h2>
+                    <p class="anim-item">Trois balises pour compléter un formulaire.</p>
+                    <pre class="anim-item"><span class="com">&lt;!-- Zone de texte long --&gt;</span>
+<span class="tag">&lt;textarea</span> <span class="attr">id</span>=<span class="val">"message"</span> <span class="attr">name</span>=<span class="val">"message"</span> <span class="attr">rows</span>=<span class="val">"5"</span><span class="tag">&gt;&lt;/textarea&gt;</span>
+
+<span class="com">&lt;!-- Liste déroulante --&gt;</span>
+<span class="tag">&lt;select</span> <span class="attr">id</span>=<span class="val">"sujet"</span> <span class="attr">name</span>=<span class="val">"sujet"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="val">""</span><span class="tag">&gt;</span><span class="txt">Choisir…</span><span class="tag">&lt;/option&gt;</span>
+  <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="val">"info"</span><span class="tag">&gt;</span><span class="txt">Demande d'information</span><span class="tag">&lt;/option&gt;</span>
+  <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="val">"devis"</span><span class="tag">&gt;</span><span class="txt">Demande de devis</span><span class="tag">&lt;/option&gt;</span>
+<span class="tag">&lt;/select&gt;</span>
+
+<span class="com">&lt;!-- Boutons --&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">type</span>=<span class="val">"submit"</span><span class="tag">&gt;</span><span class="txt">Envoyer</span><span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">type</span>=<span class="val">"reset"</span><span class="tag">&gt;</span><span class="txt">Effacer</span><span class="tag">&lt;/button&gt;</span></pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Élément</th><th>Rôle</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>&lt;textarea&gt;</code></td><td>Zone de saisie multi-lignes</td></tr>
+                            <tr><td><code>&lt;select&gt;</code> + <code>&lt;option&gt;</code></td><td>Liste déroulante</td></tr>
+                            <tr><td><code>&lt;button type="submit"&gt;</code></td><td>Envoie le formulaire</td></tr>
+                            <tr><td><code>&lt;button type="reset"&gt;</code></td><td>Vide le formulaire</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-important anim-item">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>Différence :</strong> <code>type="submit"</code> envoie. <code>type="reset"</code> efface. <code>type="button"</code> ne fait rien sans JavaScript.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 8 : PRATIQUE — FORMULAIRE DE CONTACT ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : créer un formulaire de contact</h2>
+                    <p class="anim-item">On remplace la page <code>contact.html</code> par un vrai formulaire.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Ouvrez <code>contact.html</code>. Dans le <code>main</code>, ajoutez un <code>&lt;h1&gt;</code> « Nous contacter ».</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Sous le titre, ouvrez un <code>&lt;form action="#" method="post"&gt;</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Ajoutez un champ « Nom » : label + <code>&lt;input type="text" id="nom" name="nom"&gt;</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Ajoutez un champ « Email » : label + <code>&lt;input type="email" id="email" name="email"&gt;</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Ajoutez un champ « Message » : label + <code>&lt;textarea id="message" name="message"&gt;&lt;/textarea&gt;</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">6</div>
+                            <div class="txt">Ajoutez un <code>&lt;button type="submit"&gt;Envoyer&lt;/button&gt;</code>.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Formulaire en place.</strong> Il fonctionne mais reste brut visuellement — c'est l'objet du prochain bloc.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 9 : COURS — STYLISER UN FORMULAIRE ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 2',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Styliser un formulaire en CSS</h2>
+                    <p class="anim-item">Un formulaire bien stylisé inspire confiance et donne envie de le remplir.</p>
+                    <pre class="anim-item"><span class="sel">form</span> {
+  <span class="prop">max-width</span>: <span class="val">600px</span>;
+  <span class="prop">margin</span>: <span class="val">0 auto</span>;
+}
+
+<span class="sel">form label</span> {
+  <span class="prop">display</span>: <span class="val">block</span>;
+  <span class="prop">margin-bottom</span>: <span class="val">6px</span>;
+  <span class="prop">font-weight</span>: <span class="val">600</span>;
+}
+
+<span class="sel">form input, form textarea</span> {
+  <span class="prop">width</span>: <span class="val">100%</span>;
+  <span class="prop">padding</span>: <span class="val">12px 16px</span>;
+  <span class="prop">border</span>: <span class="val">1px solid #ddd</span>;
+  <span class="prop">border-radius</span>: <span class="val">8px</span>;
+  <span class="prop">margin-bottom</span>: <span class="val">16px</span>;
+  <span class="prop">font-family</span>: <span class="val">inherit</span>;
+}
+
+<span class="sel">form input:focus</span> {
+  <span class="prop">outline</span>: <span class="val">none</span>;
+  <span class="prop">border-color</span>: <span class="val">#0B3FA5</span>;
+  <span class="prop">box-shadow</span>: <span class="val">0 0 0 3px rgba(11,63,165,0.1)</span>;
+}</pre>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Détail important :</strong> <code>font-family: inherit</code> sur les champs — sans ça, les inputs utilisent la police par défaut du navigateur, laide et différente du reste du site.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 10 : PRATIQUE — HABILLER LE FORMULAIRE ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 2',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : habiller le formulaire</h2>
+                    <p class="anim-item">On applique le CSS vu juste avant.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Dans <code>style.css</code>, ajoutez le bloc <code>form { max-width: 600px; margin: 0 auto; }</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Style des labels : <code>display: block</code> + <code>margin-bottom: 6px</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Style des champs : <code>width: 100%</code>, <code>padding</code>, <code>border</code>, <code>border-radius</code>, <code>font-family: inherit</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Ajoutez l'effet <code>:focus</code> : bordure bleue + ombre légère.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Style du bouton submit : reprendre la classe <code>.btn</code> définie au Jour 4.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">6</div>
+                            <div class="txt">Testez : le formulaire est propre, lisible, avec un retour visuel au focus.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Formulaire professionnel.</strong> Il ressemble maintenant à ceux des sites commerciaux.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 11 : COURS — INTRO JAVASCRIPT ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Introduction à JavaScript</h2>
+                    <p class="anim-item">HTML structure. CSS habille. <strong>JavaScript fait agir</strong> : réactions, calculs, validations, animations.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Langage</th><th>Rôle</th><th>Analogie</th></tr></thead>
+                        <tbody>
+                            <tr><td>HTML</td><td>Structure</td><td>Le squelette</td></tr>
+                            <tr><td>CSS</td><td>Apparence</td><td>La peau, les vêtements</td></tr>
+                            <tr><td>JavaScript</td><td>Comportement</td><td>Les muscles, le cerveau</td></tr>
+                        </tbody>
+                    </table>
+                    <p class="anim-item">JavaScript permet de :</p>
+                    <ul class="anim-item">
+                        <li>Réagir aux clics, saisies, survols</li>
+                        <li>Valider un formulaire avant envoi</li>
+                        <li>Modifier le contenu d'une page sans recharger</li>
+                        <li>Créer des animations, des menus, des carrousels</li>
+                        <li>Communiquer avec un serveur (AJAX)</li>
+                    </ul>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Aujourd'hui :</strong> les bases. Vous ne deviendrez pas expert JS en 30 minutes. Mais vous saurez écrire du code simple et utile.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 12 : COURS — OÙ ÉCRIRE DU JS ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Où écrire du JavaScript ?</h2>
+                    <p class="anim-item">Trois méthodes. Une seule est recommandée.</p>
+                    <pre class="anim-item"><span class="com">&lt;!-- 1. En ligne (déconseillé) --&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">onclick</span>=<span class="val">"alert('Bonjour')"</span><span class="tag">&gt;</span><span class="txt">Cliquer</span><span class="tag">&lt;/button&gt;</span>
+
+<span class="com">&lt;!-- 2. Interne (dans le body) --&gt;</span>
+<span class="tag">&lt;script&gt;</span>
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'Bonjour'</span>);
+<span class="tag">&lt;/script&gt;</span>
+
+<span class="com">&lt;!-- 3. Externe (recommandé) --&gt;</span>
+<span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="val">"script.js"</span><span class="tag">&gt;&lt;/script&gt;</span></pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Méthode</th><th>Quand l'utiliser</th></tr></thead>
+                        <tbody>
+                            <tr><td>En ligne</td><td>Jamais</td></tr>
+                            <tr><td>Interne</td><td>Test rapide, page unique</td></tr>
+                            <tr><td><strong>Externe</strong></td><td>Toujours — un fichier <code>script.js</code> partagé</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-important anim-item">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>Emplacement :</strong> <code>&lt;script src="script.js"&gt;&lt;/script&gt;</code> juste avant <code>&lt;/body&gt;</code>, pour que le HTML soit chargé avant le JS.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 13 : COURS — VARIABLES ET FONCTIONS ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Variables et fonctions</h2>
+                    <p class="anim-item">Les deux briques de base de tout code JavaScript.</p>
+                    <pre class="anim-item"><span class="com">// Variable : stocke une valeur</span>
+<span class="kw">let</span> nom = <span class="str">"Awa"</span>;
+<span class="kw">let</span> age = <span class="num">25</span>;
+<span class="kw">const</span> PI = <span class="num">3.14</span>;
+
+<span class="com">// Fonction : bloc de code réutilisable</span>
+<span class="kw">function</span> <span class="fn">saluer</span>(prenom) {
+  <span class="kw">return</span> <span class="str">"Bonjour "</span> + prenom;
+}
+
+<span class="com">// Appel de la fonction</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">saluer</span>(<span class="str">"Awa"</span>));   <span class="com">// Affiche : Bonjour Awa</span></pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Mot-clé</th><th>Rôle</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>let</code></td><td>Variable modifiable</td></tr>
+                            <tr><td><code>const</code></td><td>Constante (ne change pas)</td></tr>
+                            <tr><td><code>function</code></td><td>Déclare une fonction réutilisable</td></tr>
+                            <tr><td><code>console.log()</code></td><td>Affiche dans la console (F12)</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>console.log</strong> est votre meilleur ami : il affiche des informations dans la console (F12) pour comprendre ce qui se passe.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 14 : PRATIQUE — PREMIER SCRIPT ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : premier script JavaScript</h2>
+                    <p class="anim-item">On crée le fichier <code>script.js</code> et on fait un test.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Dans <code>mon-site</code>, créez un fichier <code>script.js</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Écrivez : <code>console.log("Bonjour depuis JavaScript !");</code></div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Dans <code>index.html</code>, juste avant <code>&lt;/body&gt;</code>, ajoutez :<br><code>&lt;script src="script.js"&gt;&lt;/script&gt;</code></div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Ouvrez la page avec Live Server. Appuyez sur <strong>F12</strong> → onglet <strong>Console</strong>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Vous devez voir le message « Bonjour depuis JavaScript ! ».</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">6</div>
+                            <div class="txt">Testez : ajoutez un autre <code>console.log</code>, enregistrez, la console se met à jour.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Votre premier script fonctionne.</strong> La console est votre fenêtre d'observation.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 15 : COURS — LE DOM ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Le DOM : interagir avec la page</h2>
+                    <p class="anim-item">Le DOM est la représentation en mémoire de votre page HTML. JavaScript peut la lire et la modifier.</p>
+                    <pre class="anim-item"><span class="com">// Sélectionner un élément par son id</span>
+<span class="kw">const</span> titre = <span class="fn">document</span>.<span class="fn">getElementById</span>(<span class="str">"monTitre"</span>);
+
+<span class="com">// Modifier son texte</span>
+titre.textContent = <span class="str">"Nouveau titre"</span>;
+
+<span class="com">// Modifier son style</span>
+titre.style.color = <span class="str">"red"</span>;
+
+<span class="com">// Sélectionner tous les éléments d'une classe</span>
+<span class="kw">const</span> cartes = <span class="fn">document</span>.<span class="fn">querySelectorAll</span>(<span class="str">".carte"</span>);</pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Méthode</th><th>Ce qu'elle fait</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>getElementById("id")</code></td><td>Sélectionne un élément par ID</td></tr>
+                            <tr><td><code>querySelector(".classe")</code></td><td>Sélectionne le premier élément correspondant</td></tr>
+                            <tr><td><code>querySelectorAll(".classe")</code></td><td>Sélectionne tous les éléments correspondants</td></tr>
+                            <tr><td><code>.textContent</code></td><td>Lit ou modifie le texte</td></tr>
+                            <tr><td><code>.style.propriete</code></td><td>Modifie le style en direct</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Le DOM est vivant :</strong> les modifications sont immédiates, sans rechargement de la page.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 16 : PRATIQUE — CHANGER DU TEXTE AU CLIC ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : changer du texte au clic</h2>
+                    <p class="anim-item">On ajoute un bouton qui modifie le titre de la page.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Dans <code>index.html</code>, donnez un <code>id="titreAccueil"</code> à votre <code>&lt;h1&gt;</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Ajoutez un bouton : <code>&lt;button id="btnChanger"&gt;Changer le titre&lt;/button&gt;</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Dans <code>script.js</code>, écrivez :<br><code>const btn = document.getElementById("btnChanger");</code></div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Ajoutez l'écouteur d'événement :<br><code>btn.addEventListener("click", function() { ... });</code></div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Dans la fonction :<br><code>document.getElementById("titreAccueil").textContent = "Titre modifié !";</code></div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">6</div>
+                            <div class="txt">Enregistrez. Cliquez sur le bouton dans le navigateur : le titre change.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Vous venez de créer votre première interaction.</strong> C'est le principe de base de toutes les applications web.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 17 : COURS — VALIDATION FORMULAIRE ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 4',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">La validation de formulaire</h2>
+                    <p class="anim-item">Avant d'envoyer les données, on vérifie qu'elles sont correctes.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Type de validation</th><th>Où</th><th>Exemple</th></tr></thead>
+                        <tbody>
+                            <tr><td>HTML natif</td><td>Attributs <code>required</code>, <code>type="email"</code></td><td>Le navigateur vérifie seul</td></tr>
+                            <tr><td>JavaScript</td><td>Au moment de l'envoi</td><td>Vérifie longueur, format personnalisé</td></tr>
+                            <tr><td>Côté serveur</td><td>PHP, Python…</td><td>Sécurité finale (Jour 7+)</td></tr>
+                        </tbody>
+                    </table>
+                    <pre class="anim-item"><span class="com">&lt;!-- Validation HTML native --&gt;</span>
+<span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="val">"email"</span> <span class="attr">id</span>=<span class="val">"email"</span> <span class="attr">required</span><span class="tag">&gt;</span>
+<span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="val">"text"</span> <span class="attr">id</span>=<span class="val">"nom"</span> <span class="attr">required</span> <span class="attr">minlength</span>=<span class="val">"2"</span><span class="tag">&gt;</span></pre>
+                    <div class="box box-important anim-item">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>Toujours valider côté serveur aussi.</strong> JavaScript côté client peut être contourné. La validation JS sert au confort, pas à la sécurité.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 18 : PRATIQUE — VALIDER EN JS ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 4',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : valider le formulaire en JavaScript</h2>
+                    <p class="anim-item">On intercepte l'envoi pour vérifier les champs.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Dans <code>contact.html</code>, donnez un <code>id="formContact"</code> au <code>&lt;form&gt;</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Dans <code>script.js</code>, sélectionnez le formulaire :<br><code>const form = document.getElementById("formContact");</code></div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Ajoutez un écouteur <code>submit</code> :<br><code>form.addEventListener("submit", function(e) { ... });</code></div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Dans la fonction, récupérez les valeurs :<br><code>const nom = document.getElementById("nom").value;</code></div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Vérifiez : si <code>nom.length &lt; 2</code>, <code>e.preventDefault()</code> et <code>alert("Nom trop court")</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">6</div>
+                            <div class="txt">Testez : remplissez mal le formulaire, cliquez Envoyer. L'alerte apparaît et rien n'est envoyé.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Votre formulaire est vérifié côté client.</strong> Les données invalides sont bloquées avant envoi.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 19 : EXERCICE ----------
+        {
+            type: 'exercice',
+            bloc: 'BLOC 4',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Exercice final : formulaire complet avec validation</h2>
+                    <p class="anim-item">Vous allez produire un formulaire professionnel avec 4 champs et une validation JS complète.</p>
+                    <div class="pratique-etapes anim-item" style="border-color:var(--orange);">
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">1</div>
+                            <div class="txt">Champs obligatoires : Nom, Email, Sujet (liste déroulante), Message.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">2</div>
+                            <div class="txt">Tous les champs ont un <code>label</code> correctement relié par <code>for</code> / <code>id</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">3</div>
+                            <div class="txt">Attributs HTML : <code>required</code> sur tous, <code>type="email"</code> pour l'email.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">4</div>
+                            <div class="txt">Validation JS : nom ≥ 2 caractères, email valide (regex simple), message ≥ 10 caractères.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">5</div>
+                            <div class="txt">Message d'erreur affiché dans la page (pas alert) : un <code>&lt;p class="error"&gt;</code> sous chaque champ.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">6</div>
+                            <div class="txt">Si tout est correct, afficher « Message envoyé ! » et vider le formulaire.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Durée :</strong> 15 minutes. Le formateur circule et corrige.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-exercice'
+        },
+
+        // ---------- SLIDE 20 : SYNTHÈSE ----------
+        {
+            type: 'synthese',
+            bloc: '—',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Ce que vous savez faire maintenant</h2>
+                    <ul class="anim-item" style="font-size:1.15rem; line-height:1.7;">
+                        <li>Créer un formulaire HTML avec <code>&lt;form&gt;</code>, <code>&lt;input&gt;</code>, <code>&lt;textarea&gt;</code>, <code>&lt;select&gt;</code></li>
+                        <li>Relier labels et champs avec <code>for</code> et <code>id</code></li>
+                        <li>Utiliser les types de champs : text, email, password, number, date…</li>
+                        <li>Styliser un formulaire en CSS avec focus et ergonomie</li>
+                        <li>Écrire du JavaScript dans un fichier <code>script.js</code></li>
+                        <li>Déclarer des variables (<code>let</code>, <code>const</code>) et des fonctions</li>
+                        <li>Manipuler le DOM : sélectionner, modifier texte et style</li>
+                        <li>Réagir à un événement avec <code>addEventListener</code></li>
+                        <li>Valider un formulaire côté client avec JavaScript</li>
+                    </ul>
+                    <div class="box box-important anim-item" style="margin-top:1.5rem;">
+                        <i class="fas fa-tasks"></i>
+                        <div><strong>Pour le Jour 7 (Mise en ligne) :</strong> apportez votre site complet et fonctionnel. Dernière étape : le publier sur GitHub Pages et le présenter au groupe.</div>
+                    </div>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Conseil entre les séances :</strong> testez votre formulaire sur mobile. Le clavier tactile doit proposer le bon type de saisie (email, nombre…).</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-synthese'
+        }
+
+        ];
+
+        // ============================================================
+        // ÉTAT
+        // ============================================================
+        let currentSlide = 0;
+        const totalSlides = slidesData.length;
+
+        // ============================================================
+        // AFFICHAGE
+        // ============================================================
+        function renderSlide(index) {
+            const stage = document.getElementById('slideStage');
+            const slide = slidesData[index];
+            stage.innerHTML = `<div class="slide-content ${slide.className || ''}">${slide.content}</div>`;
+
+            const header = document.getElementById('slideHeader');
+            if (slide.type === 'title') {
+                header.style.display = 'none';
+            } else {
+                header.style.display = 'flex';
+                document.getElementById('blocTag').textContent = slide.bloc || '—';
+                document.getElementById('slideNum').textContent = index + 1;
+                document.getElementById('slideTotal').textContent = totalSlides;
+
+                const typeTag = document.getElementById('typeTag');
+                const typeLabels = {
+                    'cours': 'Cours',
+                    'pratique': 'Pratique',
+                    'exercice': 'Exercice',
+                    'synthese': 'Synthèse'
+                };
+                typeTag.textContent = typeLabels[slide.type] || 'Cours';
+                typeTag.className = 'type-tag type-' + (slide.type || 'cours');
+            }
+        }
+
+        function goNext() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                renderSlide(currentSlide);
+            }
+        }
+
+        function goPrev() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                renderSlide(currentSlide);
+            }
+        }
+
+        // ============================================================
+        // CODE D'ACCÈS — WEB2026 (base64 : V0VCMjAyNg==)
+        // ============================================================
+        function checkAccess() {
+            const input = document.getElementById('accessInput');
+            const error = document.getElementById('accessError');
+            const expected = 'V0VCMjAyNg==';
+            const entered = btoa(input.value.trim());
+            if (entered === expected) {
+                document.getElementById('accessOverlay').classList.add('hidden');
+                document.getElementById('presentationContainer').classList.add('active');
+                renderSlide(currentSlide);
+            } else {
+                error.classList.add('visible');
+                input.value = '';
+                input.focus();
+                setTimeout(() => error.classList.remove('visible'), 2500);
+            }
+        }
+
+        document.getElementById('accessBtn').addEventListener('click', checkAccess);
+        document.getElementById('accessInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') checkAccess();
+        });
+
+        // ============================================================
+        // NAVIGATION CLAVIER
+        // ============================================================
+        document.addEventListener('keydown', function(e) {
+            const container = document.getElementById('presentationContainer');
+            if (!container.classList.contains('active')) return;
+            switch (e.key) {
+                case 'ArrowRight':
+                case ' ':
+                case 'PageDown':
+                    e.preventDefault();
+                    goNext();
+                    break;
+                case 'ArrowLeft':
+                case 'PageUp':
+                    e.preventDefault();
+                    goPrev();
+                    break;
+                case 'Escape':
+                    if (confirm('Quitter la projection ?')) {
+                        document.getElementById('presentationContainer').classList.remove('active');
+                        document.getElementById('accessOverlay').classList.remove('hidden');
+                        currentSlide = 0;
+                    }
+                    break;
+            }
+        });
+
+        // ============================================================
+        // NAVIGATION TACTILE
+        // ============================================================
+        let touchStartX = 0;
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        document.addEventListener('touchend', function(e) {
+            const deltaX = e.changedTouches[0].screenX - touchStartX;
+            if (Math.abs(deltaX) > 60) {
+                if (deltaX < 0) goNext();
+                else goPrev();
+            }
+        });
+    </script>
+
+</body>
+</html>

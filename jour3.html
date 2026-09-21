@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Formation Développement Web · Jour 3 — CSS : mise en page</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        /* ===== VARIABLES ===== */
+        :root {
+            --bleu: #0B3FA5;
+            --bleu-profond: #072a6e;
+            --bleu-clair: #e8f0fe;
+            --orange: #FF6B35;
+            --orange-clair: #fff4e5;
+            --vert: #059669;
+            --vert-clair: #ecfdf5;
+            --violet: #7c3aed;
+            --violet-clair: #f3e8ff;
+            --rouge: #dc2626;
+            --rouge-clair: #fef2f2;
+            --jaune: #f59e0b;
+            --jaune-clair: #fffbeb;
+            --texte: #1e293b;
+            --texte-secondaire: #475569;
+            --blanc: #ffffff;
+            --bordure: #e2e8f0;
+            --transition: 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background: #0d1117;
+            color: var(--texte);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            -webkit-font-smoothing: antialiased;
+            user-select: none;
+        }
+
+        /* ===== ÉCRAN DE CODE D'ACCÈS ===== */
+        .access-overlay {
+            position: fixed; inset: 0; z-index: 99999;
+            background: linear-gradient(135deg, var(--bleu-profond) 0%, #0d1b3e 100%);
+            display: flex; align-items: center; justify-content: center;
+            transition: opacity 0.7s ease, visibility 0.7s ease;
+        }
+        .access-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .access-card {
+            background: var(--blanc); border-radius: 2rem; padding: 3rem 2.5rem;
+            text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            max-width: 420px; width: 90%; animation: floatIn 0.8s ease;
+        }
+        @keyframes floatIn {
+            from { opacity: 0; transform: translateY(40px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .access-card .logo-symbol {
+            background: var(--violet); color: white; width: 64px; height: 64px;
+            border-radius: 18px; display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 1.6rem; margin: 0 auto 1.2rem;
+        }
+        .access-card h2 { color: var(--violet); font-size: 1.4rem; margin-bottom: 0.5rem; }
+        .access-card p { color: #475569; margin-bottom: 1.8rem; font-size: 0.9rem; }
+        .access-input {
+            width: 100%; padding: 0.9rem 1.3rem; border: 2px solid var(--bordure);
+            border-radius: 14px; font-family: inherit; font-size: 1rem;
+            text-align: center; letter-spacing: 2px; transition: var(--transition); margin-bottom: 1rem;
+        }
+        .access-input:focus { outline: none; border-color: var(--violet); box-shadow: 0 0 0 4px rgba(124,58,237,0.1); }
+        .access-btn {
+            width: 100%; padding: 0.9rem; background: var(--orange); color: white;
+            border: none; border-radius: 14px; font-weight: 700; font-size: 1rem;
+            font-family: inherit; cursor: pointer; transition: var(--transition);
+        }
+        .access-btn:hover { background: #e55a2b; transform: translateY(-2px); }
+        .access-error {
+            color: #dc2626; font-size: 0.85rem; margin-top: 0.5rem;
+            display: none; font-weight: 600;
+        }
+        .access-error.visible { display: block; animation: shake 0.5s ease; }
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        /* ===== CONTAINER PROJECTION ===== */
+        .presentation-container {
+            display: none; position: fixed; inset: 0; background: #0d1117; z-index: 100;
+        }
+        .presentation-container.active { display: block; }
+        .slide-stage {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .slide-content {
+            background: white; width: 100%; height: 100%;
+            overflow-y: auto; padding: 3rem 4.5rem;
+            position: relative; animation: slideIn 0.4s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: scale(0.97); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .slide-header {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(8px);
+            padding: 0.6rem 1.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--bordure);
+            font-size: 0.8rem; font-weight: 600;
+        }
+        .slide-header .bloc-tag {
+            background: var(--violet); color: white; padding: 0.25rem 0.75rem;
+            border-radius: 999px; font-size: 0.7rem; letter-spacing: 0.5px;
+        }
+        .slide-header .type-tag {
+            padding: 0.25rem 0.75rem; border-radius: 999px;
+            font-size: 0.7rem; letter-spacing: 0.5px; font-weight: 700;
+        }
+        .type-cours { background: var(--bleu-clair); color: var(--bleu); }
+        .type-pratique { background: var(--vert-clair); color: var(--vert); }
+        .type-exercice { background: var(--orange-clair); color: var(--orange); }
+        .type-synthese { background: var(--violet-clair); color: var(--violet); }
+        .slide-header .num { color: var(--texte-secondaire); }
+
+        .nav-hint {
+            position: fixed; bottom: 1rem; right: 1rem; z-index: 500;
+            color: rgba(255,255,255,0.3); font-size: 0.7rem;
+            font-weight: 600; letter-spacing: 0.5px; pointer-events: none;
+        }
+
+        /* ===== ANIMATIONS ===== */
+        .anim-item { opacity: 0; transform: translateY(15px); animation: fadeUp 0.5s ease forwards; }
+        .anim-item:nth-child(1) { animation-delay: 0.05s; }
+        .anim-item:nth-child(2) { animation-delay: 0.15s; }
+        .anim-item:nth-child(3) { animation-delay: 0.25s; }
+        .anim-item:nth-child(4) { animation-delay: 0.35s; }
+        .anim-item:nth-child(5) { animation-delay: 0.45s; }
+        .anim-item:nth-child(6) { animation-delay: 0.55s; }
+        .anim-item:nth-child(7) { animation-delay: 0.65s; }
+        .anim-item:nth-child(8) { animation-delay: 0.75s; }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+        /* ===== TYPOGRAPHIE ===== */
+        h1 { font-size: 3rem; font-weight: 800; letter-spacing: -1px; color: var(--bleu); line-height: 1.1; }
+        h2 { font-size: 2.1rem; font-weight: 700; color: var(--bleu); line-height: 1.2; margin-bottom: 1rem; }
+        h3 { font-size: 1.4rem; font-weight: 700; color: var(--texte); }
+        h4 { font-size: 1.15rem; font-weight: 700; }
+        p { font-size: 1.25rem; line-height: 1.55; color: var(--texte); }
+        li { font-size: 1.15rem; line-height: 1.65; }
+        .lead { font-size: 1.4rem; color: var(--texte-secondaire); line-height: 1.5; }
+
+        /* ===== SLIDE DE TITRE ===== */
+        .slide-title {
+            background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%);
+            color: white; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; text-align: center;
+        }
+        .slide-title h1 { color: white; font-size: 3.2rem; }
+        .slide-title .lead { color: rgba(255,255,255,0.85); margin-top: 1rem; }
+        .slide-title .meta {
+            color: rgba(255,255,255,0.6); font-size: 1rem; margin-top: 2rem;
+            letter-spacing: 1px;
+        }
+
+        /* ===== SLIDE PLAN ===== */
+        .bloc-plan {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 1rem; margin-top: 2rem;
+        }
+        .bloc-item {
+            background: #f8fafc; border-radius: 16px; padding: 1.5rem 1.2rem;
+            border-top: 5px solid var(--violet); text-align: left;
+        }
+        .bloc-item .num {
+            font-size: 0.75rem; font-weight: 800; color: var(--violet);
+            letter-spacing: 1.5px; margin-bottom: 0.5rem;
+        }
+        .bloc-item h4 { color: var(--texte); margin-bottom: 0.4rem; font-size: 1.05rem; }
+        .bloc-item p { font-size: 0.9rem; color: var(--texte-secondaire); }
+        .bloc-item .duree {
+            font-size: 0.75rem; font-weight: 700; color: var(--orange);
+            margin-top: 0.6rem; display: block;
+        }
+
+        /* ===== SLIDE COURS ===== */
+        .cours-content { max-width: 1000px; margin: 0 auto; }
+        .cours-content h2 { margin-bottom: 1.2rem; }
+        .cours-content p { margin-bottom: 1rem; }
+        .cours-content ul { padding-left: 1.5rem; margin-bottom: 1rem; }
+        .cours-content li { margin-bottom: 0.4rem; }
+
+        /* ===== CODE ===== */
+        pre {
+            background: #1e293b; color: #e2e8f0;
+            padding: 1.3rem 1.5rem; border-radius: 12px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 1rem; line-height: 1.65;
+            overflow-x: auto; margin: 1rem 0;
+            border-left: 4px solid var(--violet);
+        }
+        pre .tag { color: #7dd3fc; }
+        pre .attr { color: #fbbf24; }
+        pre .val { color: #86efac; }
+        pre .txt { color: #e2e8f0; }
+        pre .com { color: #64748b; font-style: italic; }
+        pre .sel { color: #f472b6; }
+        pre .prop { color: #7dd3fc; }
+        code {
+            background: #f1f5f9; padding: 0.15rem 0.4rem;
+            border-radius: 4px; font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.9em; color: #db2777;
+        }
+
+        /* ===== BOXES ===== */
+        .box {
+            border-radius: 12px; padding: 1rem 1.4rem; margin: 1rem 0;
+            font-size: 1.05rem; border-left: 5px solid;
+            display: flex; align-items: flex-start; gap: 0.7rem;
+        }
+        .box i { font-size: 1.2rem; flex-shrink: 0; margin-top: 0.15rem; }
+        .box-tip { background: var(--bleu-clair); border-color: var(--bleu); color: #0a2c5c; }
+        .box-important { background: var(--orange-clair); border-color: var(--orange); color: #6b3a1f; }
+        .box-success { background: var(--vert-clair); border-color: var(--vert); color: #064e3b; }
+        .box-warning { background: var(--rouge-clair); border-color: var(--rouge); color: #7f1d1d; }
+        .box-info { background: var(--violet-clair); border-color: var(--violet); color: #3b0764; }
+
+        /* ===== SLIDE PRATIQUE ===== */
+        .slide-pratique { background: #f0fdf4; }
+        .pratique-etapes {
+            background: white; border-radius: 14px; padding: 1.5rem 2rem;
+            border: 2px solid var(--vert); margin-top: 1.2rem;
+        }
+        .pratique-etapes ol { padding-left: 1.5rem; }
+        .pratique-etapes li { margin-bottom: 0.7rem; font-size: 1.1rem; }
+        .check-item {
+            display: flex; align-items: flex-start; gap: 0.7rem;
+            padding: 0.6rem 0; border-bottom: 1px dashed var(--bordure);
+        }
+        .check-item:last-child { border-bottom: none; }
+        .check-item .num-circle {
+            background: var(--vert); color: white; width: 28px; height: 28px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
+        }
+        .check-item .txt { font-size: 1.05rem; }
+
+        /* ===== SLIDE EXERCICE ===== */
+        .slide-exercice { background: #fff7ed; }
+
+        /* ===== SLIDE SYNTHÈSE ===== */
+        .slide-synthese { background: #f5f3ff; }
+
+        /* ===== TABLEAU ===== */
+        .table-simple {
+            width: 100%; border-collapse: collapse; font-size: 1.05rem;
+            background: white; border-radius: 12px; overflow: hidden;
+            margin: 1rem 0;
+        }
+        .table-simple th {
+            background: var(--violet); color: white; padding: 0.8rem 1.1rem;
+            text-align: left; font-weight: 700; font-size: 1rem;
+        }
+        .table-simple td { padding: 0.65rem 1.1rem; border-bottom: 1px solid var(--bordure); }
+        .table-simple tr:last-child td { border-bottom: none; }
+
+        /* ===== DEUX COLONNES ===== */
+        .cols-2 {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 1.5rem; margin-top: 1rem;
+        }
+        .mini-card {
+            background: #f8fafc; border-radius: 12px; padding: 1.2rem;
+            border: 1px solid var(--bordure);
+        }
+        .mini-card h4 { color: var(--violet); margin-bottom: 0.4rem; }
+        .mini-card p { font-size: 0.95rem; color: var(--texte-secondaire); }
+
+        /* ===== DÉMO COULEUR ===== */
+        .color-demo {
+            display: flex; gap: 0.5rem; margin: 1rem 0; flex-wrap: wrap;
+        }
+        .swatch {
+            width: 90px; height: 70px; border-radius: 10px;
+            display: flex; align-items: flex-end; justify-content: center;
+            color: white; font-weight: 700; font-size: 0.75rem;
+            padding-bottom: 0.4rem; text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+        }
+
+        /* ===== DÉMO BOX MODEL ===== */
+        .box-model-demo {
+            background: #f8fafc; border-radius: 12px; padding: 1rem;
+            display: flex; justify-content: center; align-items: center;
+            margin: 1rem 0;
+        }
+        .bm-outer {
+            background: #fbbf24; padding: 20px;
+            border-radius: 8px; position: relative;
+        }
+        .bm-outer::before {
+            content: 'margin'; position: absolute; top: 3px; left: 6px;
+            font-size: 0.7rem; font-weight: 700; color: #78350f;
+        }
+        .bm-inner {
+            background: #3b82f6; padding: 20px;
+            border-radius: 6px; position: relative;
+        }
+        .bm-inner::before {
+            content: 'padding'; position: absolute; top: 3px; left: 6px;
+            font-size: 0.7rem; font-weight: 700; color: white;
+        }
+        .bm-content {
+            background: #059669; color: white; padding: 12px 24px;
+            border-radius: 4px; font-weight: 700; font-size: 0.85rem;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .slide-content { padding: 2rem 1.5rem; }
+            h1 { font-size: 1.8rem; }
+            h2 { font-size: 1.4rem; }
+            p, li { font-size: 1rem; }
+            .bloc-plan { grid-template-columns: 1fr 1fr; }
+            .cols-2 { grid-template-columns: 1fr; }
+            .access-card { padding: 2rem 1.5rem; }
+            pre { font-size: 0.85rem; }
+            .slide-header { font-size: 0.7rem; padding: 0.5rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- =========================================================
+         ÉCRAN DE CODE D'ACCÈS
+         Mot de passe : WEB2026 (base64 : V0VCMjAyNg==)
+         ========================================================= -->
+    <div class="access-overlay" id="accessOverlay">
+        <div class="access-card">
+            <div class="logo-symbol">CSS</div>
+            <h2>Jour 3 — CSS : mise en page</h2>
+            <p>Formation Développement Web<br>Saisissez le code d'accès.</p>
+            <input type="password" class="access-input" id="accessInput" placeholder="Code d'accès" autocomplete="off" />
+            <button class="access-btn" id="accessBtn"><i class="fas fa-arrow-right"></i> Commencer</button>
+            <div class="access-error" id="accessError">Code incorrect. Réessayez.</div>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         CONTENEUR PROJECTION
+         ========================================================= -->
+    <div class="presentation-container" id="presentationContainer">
+        <div class="slide-header" id="slideHeader" style="display:none;">
+            <div>
+                <span class="bloc-tag" id="blocTag">BLOC 1</span>
+                <span class="type-tag" id="typeTag">Cours</span>
+            </div>
+            <div class="num"><span id="slideNum">1</span> / <span id="slideTotal">20</span></div>
+        </div>
+        <div class="slide-stage" id="slideStage"></div>
+        <div class="nav-hint">← → · Échap pour quitter</div>
+    </div>
+
+    <script>
+        // ============================================================
+        // DONNÉES DES SLIDES — JOUR 3 : CSS MISE EN PAGE
+        // ============================================================
+        const slidesData = [
+
+        // ---------- SLIDE 1 : TITRE ----------
+        {
+            type: 'title',
+            bloc: '—',
+            content: `
+                <h1>CSS : mise en page</h1>
+                <p class="lead">Jour 3 — Habiller le site</p>
+                <p class="lead" style="font-size:1.15rem; margin-top:1.5rem;">
+                    Couleurs · Polices · Marges · Bordures · Colonnes
+                </p>
+                <p class="meta">DURÉE : 2 HEURES · NIVEAU : DÉBUTANT → INTERMÉDIAIRE</p>
+            `,
+            className: 'slide-title'
+        },
+
+        // ---------- SLIDE 2 : PLAN ----------
+        {
+            type: 'cours',
+            bloc: '—',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Programme des 2 heures</h2>
+                    <p class="anim-item">Le site du Jour 2 fonctionne mais reste brut. Aujourd'hui, on le rend beau.</p>
+                    <div class="bloc-plan">
+                        <div class="bloc-item anim-item">
+                            <div class="num">BLOC 1</div>
+                            <h4>Découvrir le CSS</h4>
+                            <p>Syntaxe, sélecteurs, premier fichier style.css.</p>
+                            <span class="duree">30 min</span>
+                        </div>
+                        <div class="bloc-item anim-item">
+                            <div class="num">BLOC 2</div>
+                            <h4>Couleurs & texte</h4>
+                            <p>Palette, polices, tailles, alignements.</p>
+                            <span class="duree">30 min</span>
+                        </div>
+                        <div class="bloc-item anim-item">
+                            <div class="num">BLOC 3</div>
+                            <h4>Le modèle de boîte</h4>
+                            <p>Marges, padding, bordures, centrage.</p>
+                            <span class="duree">30 min</span>
+                        </div>
+                        <div class="bloc-item anim-item">
+                            <div class="num">BLOC 4</div>
+                            <h4>Disposition & effets</h4>
+                            <p>Colonnes flexbox, effets au survol, exercice.</p>
+                            <span class="duree">30 min</span>
+                        </div>
+                    </div>
+                    <div class="box box-tip anim-item" style="margin-top:1.5rem;">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>Objectif du jour :</strong> transformer un site brut en un site lisible, coloré, professionnel.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 3 : COURS — QU'EST-CE QUE LE CSS ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Qu'est-ce que le CSS ?</h2>
+                    <p class="anim-item"><strong>CSS</strong> = <em>Cascading Style Sheets</em> (feuilles de style en cascade).</p>
+                    <p class="anim-item">Le HTML décrit <strong>le contenu</strong>. Le CSS décrit <strong>l'apparence</strong> : couleurs, polices, tailles, marges, disposition.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>HTML</th><th>CSS</th></tr></thead>
+                        <tbody>
+                            <tr><td>« Ceci est un titre important »</td><td>« Ce titre est bleu, en gras, centré »</td></tr>
+                            <tr><td>Structure</td><td>Présentation</td></tr>
+                            <tr><td>Squelette</td><td>Habillage</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Pourquoi séparer ?</strong> On peut changer tout le style d'un site sans toucher au contenu. Un site de 50 pages se relooke en modifiant un seul fichier.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 4 : COURS — 3 FAÇONS D'AJOUTER DU CSS ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Les 3 façons d'ajouter du CSS</h2>
+                    <p class="anim-item">On peut appliquer du style de trois manières. Une seule est recommandée en pratique.</p>
+                    <pre class="anim-item"><span class="com">&lt;!-- 1. CSS en ligne (déconseillé) --&gt;</span>
+<span class="tag">&lt;h1</span> <span class="attr">style</span>=<span class="val">"color: red;"</span><span class="tag">&gt;</span><span class="txt">Titre</span><span class="tag">&lt;/h1&gt;</span>
+
+<span class="com">&lt;!-- 2. CSS interne (dans le head) --&gt;</span>
+<span class="tag">&lt;head&gt;</span>
+  <span class="tag">&lt;style&gt;</span>
+    <span class="sel">h1</span> { <span class="prop">color</span>: red; }
+  <span class="tag">&lt;/style&gt;</span>
+<span class="tag">&lt;/head&gt;</span>
+
+<span class="com">&lt;!-- 3. CSS externe (recommandé) --&gt;</span>
+<span class="tag">&lt;head&gt;</span>
+  <span class="tag">&lt;link</span> <span class="attr">rel</span>=<span class="val">"stylesheet"</span> <span class="attr">href</span>=<span class="val">"style.css"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;/head&gt;</span></pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Méthode</th><th>Quand l'utiliser</th></tr></thead>
+                        <tbody>
+                            <tr><td>En ligne</td><td>Jamais (sauf cas très spécifique)</td></tr>
+                            <tr><td>Interne</td><td>Test rapide, page unique</td></tr>
+                            <tr><td><strong>Externe</strong></td><td>Toujours — un fichier <code>style.css</code> partagé par toutes les pages</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-important anim-item">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>Aujourd'hui :</strong> nous utiliserons la méthode externe — un fichier <code>style.css</code> relié à toutes les pages.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 5 : COURS — SYNTAXE CSS ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">La syntaxe CSS</h2>
+                    <p class="anim-item">Toute règle CSS suit le même modèle : <strong>sélecteur</strong> + <strong>propriété</strong> + <strong>valeur</strong>.</p>
+                    <pre class="anim-item"><span class="sel">h1</span> {
+  <span class="prop">color</span>: <span class="val">#0B3FA5</span>;
+  <span class="prop">font-size</span>: <span class="val">32px</span>;
+  <span class="prop">text-align</span>: <span class="val">center</span>;
+}</pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Élément</th><th>Rôle</th><th>Exemple</th></tr></thead>
+                        <tbody>
+                            <tr><td>Sélecteur</td><td>Cible l'élément HTML</td><td><code>h1</code>, <code>.titre</code>, <code>#intro</code></td></tr>
+                            <tr><td>Propriété</td><td>Ce qu'on modifie</td><td><code>color</code>, <code>font-size</code></td></tr>
+                            <tr><td>Valeur</td><td>La nouvelle valeur</td><td><code>#0B3FA5</code>, <code>32px</code></td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-warning anim-item">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div><strong>Ponctuation stricte :</strong> point-virgule <code>;</code> après chaque ligne, accolades <code>{ }</code> autour du bloc. Une erreur, et la règle est ignorée.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 6 : COURS — SÉLECTEURS ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Les 3 sélecteurs de base</h2>
+                    <p class="anim-item">Un sélecteur cible un ou plusieurs éléments HTML.</p>
+                    <pre class="anim-item"><span class="com">/* Sélecteur de balise — cible TOUS les h1 */</span>
+<span class="sel">h1</span> { <span class="prop">color</span>: blue; }
+
+<span class="com">/* Sélecteur de classe — cible les éléments class="important" */</span>
+<span class="sel">.important</span> { <span class="prop">font-weight</span>: bold; }
+
+<span class="com">/* Sélecteur d'identifiant — cible l'élément id="intro" */</span>
+<span class="sel">#intro</span> { <span class="prop">background</span>: yellow; }</pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Sélecteur</th><th>Syntaxe HTML</th><th>Usage</th></tr></thead>
+                        <tbody>
+                            <tr><td>Balise</td><td><code>&lt;h1&gt;</code></td><td>Style global d'une balise</td></tr>
+                            <tr><td>Classe</td><td><code>class="important"</code></td><td>Réutilisable sur plusieurs éléments</td></tr>
+                            <tr><td>ID</td><td><code>id="intro"</code></td><td>Unique sur la page</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>En pratique :</strong> on utilise surtout les classes — réutilisables, flexibles. Les ID servent pour les ancres ou cas spécifiques.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 7 : PRATIQUE — PREMIER style.css ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : créer votre premier style.css</h2>
+                    <p class="anim-item">Nous relions un fichier CSS externe à toutes les pages.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Dans <code>mon-site</code>, créez un fichier <code>style.css</code> (New File).</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Dans <code>style.css</code>, tapez ce test :<br><code>body { background: #f0f0f0; }</code></div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Ouvrez <code>index.html</code>. Dans le <code>&lt;head&gt;</code>, ajoutez :<br><code>&lt;link rel="stylesheet" href="style.css"&gt;</code></div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Enregistrez. Regardez le navigateur : le fond est passé au gris clair.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Copiez la même ligne <code>&lt;link&gt;</code> dans <code>apropos.html</code>, <code>contact.html</code> et <code>services.html</code>.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Votre fichier CSS est relié à toutes les pages.</strong> Une seule modification impactera tout le site.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 8 : COURS — COULEURS ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 2',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Les couleurs en CSS</h2>
+                    <p class="anim-item">Trois façons d'écrire une couleur. Le hexadécimal est la plus utilisée.</p>
+                    <pre class="anim-item"><span class="com">/* Par nom */</span>
+<span class="sel">h1</span> { <span class="prop">color</span>: <span class="val">red</span>; }
+
+<span class="com">/* Par code hexadécimal (#RRGGBB) */</span>
+<span class="sel">h1</span> { <span class="prop">color</span>: <span class="val">#0B3FA5</span>; }
+
+<span class="com">/* Par rgb(r, g, b) — chaque valeur entre 0 et 255 */</span>
+<span class="sel">h1</span> { <span class="prop">color</span>: <span class="val">rgb(11, 63, 165)</span>; }</pre>
+                    <div class="color-demo anim-item">
+                        <div class="swatch" style="background:#0B3FA5;">#0B3FA5</div>
+                        <div class="swatch" style="background:#FF6B35;">#FF6B35</div>
+                        <div class="swatch" style="background:#059669;">#059669</div>
+                        <div class="swatch" style="background:#dc2626;">#dc2626</div>
+                        <div class="swatch" style="background:#1e293b;">#1e293b</div>
+                        <div class="swatch" style="background:#f59e0b;">#f59e0b</div>
+                    </div>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Propriété</th><th>Effet</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>color</code></td><td>Couleur du texte</td></tr>
+                            <tr><td><code>background</code></td><td>Couleur de fond</td></tr>
+                            <tr><td><code>background-color</code></td><td>Variante explicite (même effet)</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Astuce :</strong> utilisez un sélecteur de couleur en ligne (colorhunt.co) pour trouver une palette harmonieuse.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 9 : COURS — POLICES ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 2',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Les polices et le texte</h2>
+                    <p class="anim-item">Quatre propriétés pour contrôler l'apparence du texte.</p>
+                    <pre class="anim-item"><span class="sel">body</span> {
+  <span class="prop">font-family</span>: <span class="val">Arial, sans-serif</span>;
+  <span class="prop">font-size</span>: <span class="val">16px</span>;
+  <span class="prop">font-weight</span>: <span class="val">400</span>;
+  <span class="prop">line-height</span>: <span class="val">1.6</span>;
+  <span class="prop">text-align</span>: <span class="val">left</span>;
+}</pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Propriété</th><th>Valeurs courantes</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>font-family</code></td><td><code>Arial, sans-serif</code>, <code>Georgia, serif</code>, <code>'Courier New', monospace</code></td></tr>
+                            <tr><td><code>font-size</code></td><td><code>16px</code>, <code>1rem</code>, <code>1.2em</code></td></tr>
+                            <tr><td><code>font-weight</code></td><td><code>400</code> (normal), <code>700</code> (gras)</td></tr>
+                            <tr><td><code>line-height</code></td><td><code>1.5</code> — l'interligne</td></tr>
+                            <tr><td><code>text-align</code></td><td><code>left</code>, <code>center</code>, <code>right</code>, <code>justify</code></td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Bonne pratique :</strong> toujours terminer <code>font-family</code> par un type générique : <code>sans-serif</code> ou <code>serif</code>.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 10 : COURS — MODÈLE DE BOÎTE ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 2',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Le modèle de boîte</h2>
+                    <p class="anim-item">Chaque élément HTML est une boîte avec 3 couches : contenu, padding, bordure — plus une marge extérieure.</p>
+                    <div class="box-model-demo anim-item">
+                        <div class="bm-outer">
+                            <div class="bm-inner">
+                                <div class="bm-content">CONTENU</div>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Couche</th><th>Propriété CSS</th><th>Rôle</th></tr></thead>
+                        <tbody>
+                            <tr><td>Contenu</td><td>width / height</td><td>La zone visible du texte ou de l'image</td></tr>
+                            <tr><td>Padding</td><td><code>padding</code></td><td>Espace intérieur (entre contenu et bordure)</td></tr>
+                            <tr><td>Bordure</td><td><code>border</code></td><td>Le trait autour de la boîte</td></tr>
+                            <tr><td>Marge</td><td><code>margin</code></td><td>Espace extérieur (entre la boîte et ses voisines)</td></tr>
+                        </tbody>
+                    </table>
+                    <pre class="anim-item"><span class="sel">.carte</span> {
+  <span class="prop">padding</span>: <span class="val">20px</span>;
+  <span class="prop">border</span>: <span class="val">1px solid #ccc</span>;
+  <span class="prop">margin</span>: <span class="val">10px</span>;
+}</pre>
+                    <div class="box box-important anim-item">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>Astuce universelle :</strong> mettre <code>* { box-sizing: border-box; }</code> en haut du CSS simplifie tous les calculs de largeur.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 11 : PRATIQUE — HABILLER LA PAGE ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 2',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : habiller la page d'accueil</h2>
+                    <p class="anim-item">Nous appliquons les couleurs, les polices et les marges vues juste avant.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Dans <code>style.css</code>, ajoutez <code>* { box-sizing: border-box; margin: 0; padding: 0; }</code> en haut.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Style du <code>body</code> : <code>font-family: Arial, sans-serif;</code> <code>line-height: 1.6;</code> <code>color: #333;</code></div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Style du <code>h1</code> : <code>color: #0B3FA5;</code> <code>text-align: center;</code> <code>padding: 30px 0;</code></div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Style du <code>nav</code> : <code>background: #0B3FA5;</code> <code>padding: 15px;</code> <code>text-align: center;</code></div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Style des liens du nav : <code>nav a { color: white; margin: 0 15px; text-decoration: none; }</code></div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">6</div>
+                            <div class="txt">Enregistrez. Observez la transformation dans le navigateur.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Votre page commence à ressembler à un vrai site.</strong></div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 12 : COURS — DISPLAY ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Le display : block, inline, inline-block</h2>
+                    <p class="anim-item">Chaque élément HTML a un comportement d'affichage par défaut. On peut le modifier.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Display</th><th>Comportement</th><th>Exemples</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>block</code></td><td>Prend toute la largeur, saute à la ligne</td><td><code>&lt;h1&gt;</code>, <code>&lt;p&gt;</code>, <code>&lt;div&gt;</code></td></tr>
+                            <tr><td><code>inline</code></td><td>Reste sur la même ligne, largeur = contenu</td><td><code>&lt;a&gt;</code>, <code>&lt;span&gt;</code>, <code>&lt;strong&gt;</code></td></tr>
+                            <tr><td><code>inline-block</code></td><td>Sur la même ligne, mais accepte width/height</td><td>Boutons, cartes</td></tr>
+                            <tr><td><code>none</code></td><td>L'élément disparaît</td><td>Masquer du contenu</td></tr>
+                        </tbody>
+                    </table>
+                    <pre class="anim-item"><span class="sel">.carte</span> {
+  <span class="prop">display</span>: <span class="val">inline-block</span>;
+  <span class="prop">width</span>: <span class="val">250px</span>;
+  <span class="prop">padding</span>: <span class="val">20px</span>;
+}</pre>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Analogie :</strong> <code>block</code> = paragraphe. <code>inline</code> = mot dans une phrase. <code>inline-block</code> = image dans un texte.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 13 : COURS — LARGEUR & CENTRAGE ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Largeur, hauteur, centrage</h2>
+                    <p class="anim-item">Les 3 techniques de dimension et de centrage à connaître.</p>
+                    <pre class="anim-item"><span class="com">/* Largeur maximale (ne dépasse jamais 900px) */</span>
+<span class="sel">.conteneur</span> {
+  <span class="prop">max-width</span>: <span class="val">900px</span>;
+  <span class="prop">margin</span>: <span class="val">0 auto</span>;   <span class="com">/* centrage horizontal */</span>
+}
+
+<span class="com">/* Image qui ne dépasse pas son conteneur */</span>
+<span class="sel">img</span> { <span class="prop">max-width</span>: <span class="val">100%</span>; <span class="prop">height</span>: <span class="val">auto</span>; }
+
+<span class="com">/* Texte centré */</span>
+<span class="sel">.centre</span> { <span class="prop">text-align</span>: <span class="val">center</span>; }</pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Technique</th><th>Effet</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>max-width</code> + <code>margin: 0 auto</code></td><td>Centre un bloc horizontalement</td></tr>
+                            <tr><td><code>text-align: center</code></td><td>Centre le texte (et les inline-block)</td></tr>
+                            <tr><td><code>max-width: 100%</code></td><td>Empêche les images de dépasser</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-warning anim-item">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div><strong>Erreur fréquente :</strong> <code>margin: auto</code> ne fonctionne que si l'élément a une <code>width</code> ou <code>max-width</code> définie.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 14 : PRATIQUE — CENTRER LE CONTENU ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : centrer le contenu de la page</h2>
+                    <p class="anim-item">On limite la largeur du contenu et on le centre pour un meilleur confort de lecture.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Dans <code>index.html</code>, enveloppez tout le contenu de <code>&lt;main&gt;</code> dans un <code>&lt;div class="conteneur"&gt;</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Dans <code>style.css</code>, ajoutez :<br><code>.conteneur { max-width: 900px; margin: 0 auto; padding: 20px; }</code></div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Ajoutez aussi :<br><code>img { max-width: 100%; height: auto; border-radius: 8px; }</code></div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Enregistrez. Le contenu est centré, les images s'adaptent à la largeur.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Réduisez la fenêtre du navigateur : le site s'adapte sans déborder.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Votre page est lisible, centrée, adaptative.</strong> Les bases du responsive sont posées.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 15 : COURS — PSEUDO-CLASSES ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Les pseudo-classes : :hover, :focus</h2>
+                    <p class="anim-item">On peut modifier le style d'un élément <strong>selon son état</strong> : survolé, cliqué, focus.</p>
+                    <pre class="anim-item"><span class="com">/* Quand la souris survole un lien */</span>
+<span class="sel">a:hover</span> {
+  <span class="prop">color</span>: <span class="val">#FF6B35</span>;
+  <span class="prop">text-decoration</span>: <span class="val">underline</span>;
+}
+
+<span class="com">/* Quand un bouton reçoit le focus (clavier ou clic) */</span>
+<span class="sel">button:focus</span> {
+  <span class="prop">outline</span>: <span class="val">2px solid #0B3FA5</span>;
+}
+
+<span class="com">/* Élément visité */</span>
+<span class="sel">a:visited</span> { <span class="prop">color</span>: <span class="val">purple</span>; }</pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Pseudo-classe</th><th>Quand elle s'active</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>:hover</code></td><td>Souris au-dessus</td></tr>
+                            <tr><td><code>:focus</code></td><td>Élément sélectionné (clavier, formulaire)</td></tr>
+                            <tr><td><code>:active</code></td><td>Pendant le clic</td></tr>
+                            <tr><td><code>:visited</code></td><td>Lien déjà visité</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>:hover</strong> est la pseudo-classe la plus utilisée du Web. Elle rend un site vivant, réactif au survol.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 16 : PRATIQUE — EFFETS AU SURVOL ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : effets au survol</h2>
+                    <p class="anim-item">On donne une réaction visuelle aux liens et aux boutons.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Dans <code>style.css</code>, ajoutez une règle <code>nav a:hover</code> : changement de couleur et soulignement.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Ajoutez une <code>transition</code> pour adoucir l'effet :<br><code>nav a { transition: color 0.3s ease; }</code></div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Survolez les liens dans le navigateur : la couleur change en douceur.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Ajoutez un style pour les boutons <code>&lt;button&gt;</code> avec <code>background</code>, <code>padding</code>, <code>border-radius</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Ajoutez <code>button:hover</code> : changement de fond, curseur main.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Le site réagit au survol.</strong> C'est ce qui différencie un site statique d'un site vivant.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 17 : COURS — APERÇU FLEXBOX ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 4',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">La disposition : aperçu de Flexbox</h2>
+                    <p class="anim-item">Flexbox est la méthode moderne pour aligner plusieurs éléments côte à côte.</p>
+                    <pre class="anim-item"><span class="sel">.rangee</span> {
+  <span class="prop">display</span>: <span class="val">flex</span>;
+  <span class="prop">gap</span>: <span class="val">20px</span>;              <span class="com">/* espace entre les éléments */</span>
+  <span class="prop">align-items</span>: <span class="val">center</span>;       <span class="com">/* alignement vertical */</span>
+}
+
+<span class="sel">.rangee > div</span> {
+  <span class="prop">flex</span>: <span class="val">1</span>;                    <span class="com">/* chaque enfant prend largeur égale */</span>
+}</pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Propriété</th><th>Effet</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>display: flex</code></td><td>Active Flexbox sur le conteneur</td></tr>
+                            <tr><td><code>gap</code></td><td>Espace entre les enfants</td></tr>
+                            <tr><td><code>justify-content</code></td><td>Alignement horizontal (<code>center</code>, <code>space-between</code>)</td></tr>
+                            <tr><td><code>align-items</code></td><td>Alignement vertical</td></tr>
+                            <tr><td><code>flex-direction</code></td><td><code>row</code> (défaut) ou <code>column</code></td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Flexbox remplace</strong> les anciennes techniques (float, table). C'est aujourd'hui la base de toute mise en page moderne.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 18 : PRATIQUE — DEUX COLONNES ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 4',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : mettre deux colonnes côte à côte</h2>
+                    <p class="anim-item">On crée une section avec deux blocs alignés horizontalement.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Dans <code>index.html</code>, ajoutez une section : <code>&lt;section class="rangee"&gt; ... &lt;/section&gt;</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">À l'intérieur, placez 2 <code>&lt;div class="carte"&gt;</code> avec un <code>&lt;h3&gt;</code> et un <code>&lt;p&gt;</code> chacun.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Dans <code>style.css</code> :<br><code>.rangee { display: flex; gap: 20px; }</code><br><code>.carte { flex: 1; padding: 20px; background: #f8fafc; border-radius: 12px; }</code></div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Enregistrez. Les deux cartes s'affichent côte à côte.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Test : ajoutez une 3<sup>e</sup> carte → Flexbox adapte automatiquement.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Votre première mise en page moderne fonctionne.</strong> C'est la base de toutes les grilles de sites actuels.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 19 : EXERCICE ----------
+        {
+            type: 'exercice',
+            bloc: 'BLOC 4',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Exercice final : appliquer le style à tout le site</h2>
+                    <p class="anim-item">On harmonise les 4 pages créées aux Jours 1 et 2.</p>
+                    <div class="pratique-etapes anim-item" style="border-color:var(--orange);">
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">1</div>
+                            <div class="txt">Vérifiez que <code>style.css</code> est bien relié dans les 4 pages (<code>index</code>, <code>apropos</code>, <code>contact</code>, <code>services</code>).</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">2</div>
+                            <div class="txt">Le <code>nav</code> doit avoir le même style partout (couleur de fond, liens alignés).</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">3</div>
+                            <div class="txt">Le <code>footer</code> doit être sobre : fond sombre, texte clair, centré, padding.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">4</div>
+                            <div class="txt">Ajoutez sur chaque page un <code>&lt;div class="conteneur"&gt;</code> autour du <code>main</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">5</div>
+                            <div class="txt">Choisissez UNE couleur principale et UNE couleur secondaire pour tout le site. Appliquez-les partout.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">6</div>
+                            <div class="txt">Ajoutez <code>:hover</code> sur tous les liens de navigation.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Durée :</strong> 15 minutes. Le formateur circule et corrige.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-exercice'
+        },
+
+        // ---------- SLIDE 20 : SYNTHÈSE ----------
+        {
+            type: 'synthese',
+            bloc: '—',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Ce que vous savez faire maintenant</h2>
+                    <ul class="anim-item" style="font-size:1.15rem; line-height:1.7;">
+                        <li>Relier un fichier <code>style.css</code> externe à plusieurs pages</li>
+                        <li>Écrire une règle CSS : sélecteur, propriété, valeur</li>
+                        <li>Utiliser les sélecteurs de balise, de classe et d'ID</li>
+                        <li>Appliquer des couleurs (nom, hex, rgb) au texte et au fond</li>
+                        <li>Contrôler les polices, tailles, interlignes, alignements</li>
+                        <li>Comprendre le modèle de boîte : padding, border, margin</li>
+                        <li>Centrer un contenu avec <code>max-width</code> + <code>margin: auto</code></li>
+                        <li>Ajouter des effets au survol avec <code>:hover</code> et <code>transition</code></li>
+                        <li>Disposer deux blocs côte à côte avec Flexbox</li>
+                    </ul>
+                    <div class="box box-important anim-item" style="margin-top:1.5rem;">
+                        <i class="fas fa-tasks"></i>
+                        <div><strong>Pour le Jour 4 (CSS avancé) :</strong> apportez votre site actuel complet. Nous allons créer une galerie d'images responsive et utiliser les grilles CSS modernes.</div>
+                    </div>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Conseil entre les séances :</strong> refaites un <code>style.css</code> de zéro sur une de vos pages. La répétition ancre les réflexes.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-synthese'
+        }
+
+        ];
+
+        // ============================================================
+        // ÉTAT
+        // ============================================================
+        let currentSlide = 0;
+        const totalSlides = slidesData.length;
+
+        // ============================================================
+        // AFFICHAGE
+        // ============================================================
+        function renderSlide(index) {
+            const stage = document.getElementById('slideStage');
+            const slide = slidesData[index];
+            stage.innerHTML = `<div class="slide-content ${slide.className || ''}">${slide.content}</div>`;
+
+            const header = document.getElementById('slideHeader');
+            if (slide.type === 'title') {
+                header.style.display = 'none';
+            } else {
+                header.style.display = 'flex';
+                document.getElementById('blocTag').textContent = slide.bloc || '—';
+                document.getElementById('slideNum').textContent = index + 1;
+                document.getElementById('slideTotal').textContent = totalSlides;
+
+                const typeTag = document.getElementById('typeTag');
+                const typeLabels = {
+                    'cours': 'Cours',
+                    'pratique': 'Pratique',
+                    'exercice': 'Exercice',
+                    'synthese': 'Synthèse'
+                };
+                typeTag.textContent = typeLabels[slide.type] || 'Cours';
+                typeTag.className = 'type-tag type-' + (slide.type || 'cours');
+            }
+        }
+
+        function goNext() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                renderSlide(currentSlide);
+            }
+        }
+
+        function goPrev() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                renderSlide(currentSlide);
+            }
+        }
+
+        // ============================================================
+        // CODE D'ACCÈS — WEB2026 (base64 : V0VCMjAyNg==)
+        // ============================================================
+        function checkAccess() {
+            const input = document.getElementById('accessInput');
+            const error = document.getElementById('accessError');
+            const expected = 'V0VCMjAyNg==';
+            const entered = btoa(input.value.trim());
+            if (entered === expected) {
+                document.getElementById('accessOverlay').classList.add('hidden');
+                document.getElementById('presentationContainer').classList.add('active');
+                renderSlide(currentSlide);
+            } else {
+                error.classList.add('visible');
+                input.value = '';
+                input.focus();
+                setTimeout(() => error.classList.remove('visible'), 2500);
+            }
+        }
+
+        document.getElementById('accessBtn').addEventListener('click', checkAccess);
+        document.getElementById('accessInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') checkAccess();
+        });
+
+        // ============================================================
+        // NAVIGATION CLAVIER
+        // ============================================================
+        document.addEventListener('keydown', function(e) {
+            const container = document.getElementById('presentationContainer');
+            if (!container.classList.contains('active')) return;
+            switch (e.key) {
+                case 'ArrowRight':
+                case ' ':
+                case 'PageDown':
+                    e.preventDefault();
+                    goNext();
+                    break;
+                case 'ArrowLeft':
+                case 'PageUp':
+                    e.preventDefault();
+                    goPrev();
+                    break;
+                case 'Escape':
+                    if (confirm('Quitter la projection ?')) {
+                        document.getElementById('presentationContainer').classList.remove('active');
+                        document.getElementById('accessOverlay').classList.remove('hidden');
+                        currentSlide = 0;
+                    }
+                    break;
+            }
+        });
+
+        // ============================================================
+        // NAVIGATION TACTILE
+        // ============================================================
+        let touchStartX = 0;
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        document.addEventListener('touchend', function(e) {
+            const deltaX = e.changedTouches[0].screenX - touchStartX;
+            if (Math.abs(deltaX) > 60) {
+                if (deltaX < 0) goNext();
+                else goPrev();
+            }
+        });
+    </script>
+
+</body>
+</html>

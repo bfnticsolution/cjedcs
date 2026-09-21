@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Formation Développement Web · Jour 1 — Premiers pas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        /* ===== VARIABLES ===== */
+        :root {
+            --bleu: #0B3FA5;
+            --bleu-profond: #072a6e;
+            --bleu-clair: #e8f0fe;
+            --orange: #FF6B35;
+            --orange-clair: #fff4e5;
+            --vert: #059669;
+            --vert-clair: #ecfdf5;
+            --violet: #7c3aed;
+            --violet-clair: #f3e8ff;
+            --rouge: #dc2626;
+            --rouge-clair: #fef2f2;
+            --jaune: #f59e0b;
+            --jaune-clair: #fffbeb;
+            --texte: #1e293b;
+            --texte-secondaire: #475569;
+            --blanc: #ffffff;
+            --bordure: #e2e8f0;
+            --transition: 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ===== RESET ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background: #0d1117;
+            color: var(--texte);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            -webkit-font-smoothing: antialiased;
+            user-select: none;
+        }
+
+        /* ===== ÉCRAN DE CODE D'ACCÈS ===== */
+        .access-overlay {
+            position: fixed; inset: 0; z-index: 99999;
+            background: linear-gradient(135deg, var(--bleu-profond) 0%, #0d1b3e 100%);
+            display: flex; align-items: center; justify-content: center;
+            transition: opacity 0.7s ease, visibility 0.7s ease;
+        }
+        .access-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .access-card {
+            background: var(--blanc); border-radius: 2rem; padding: 3rem 2.5rem;
+            text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            max-width: 420px; width: 90%; animation: floatIn 0.8s ease;
+        }
+        @keyframes floatIn {
+            from { opacity: 0; transform: translateY(40px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .access-card .logo-symbol {
+            background: var(--bleu); color: white; width: 64px; height: 64px;
+            border-radius: 18px; display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 1.6rem; margin: 0 auto 1.2rem;
+        }
+        .access-card h2 { color: var(--bleu); font-size: 1.4rem; margin-bottom: 0.5rem; }
+        .access-card p { color: #475569; margin-bottom: 1.8rem; font-size: 0.9rem; }
+        .access-input {
+            width: 100%; padding: 0.9rem 1.3rem; border: 2px solid var(--bordure);
+            border-radius: 14px; font-family: inherit; font-size: 1rem;
+            text-align: center; letter-spacing: 2px; transition: var(--transition); margin-bottom: 1rem;
+        }
+        .access-input:focus { outline: none; border-color: var(--bleu); box-shadow: 0 0 0 4px rgba(11,63,165,0.1); }
+        .access-btn {
+            width: 100%; padding: 0.9rem; background: var(--orange); color: white;
+            border: none; border-radius: 14px; font-weight: 700; font-size: 1rem;
+            font-family: inherit; cursor: pointer; transition: var(--transition);
+        }
+        .access-btn:hover { background: #e55a2b; transform: translateY(-2px); }
+        .access-error {
+            color: #dc2626; font-size: 0.85rem; margin-top: 0.5rem;
+            display: none; font-weight: 600;
+        }
+        .access-error.visible { display: block; animation: shake 0.5s ease; }
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        /* ===== CONTAINER PROJECTION ===== */
+        .presentation-container {
+            display: none; position: fixed; inset: 0; background: #0d1117; z-index: 100;
+        }
+        .presentation-container.active { display: block; }
+        .slide-stage {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .slide-content {
+            background: white; width: 100%; height: 100%;
+            overflow-y: auto; padding: 3rem 4.5rem;
+            position: relative; animation: slideIn 0.4s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: scale(0.97); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .slide-header {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(8px);
+            padding: 0.6rem 1.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--bordure);
+            font-size: 0.8rem; font-weight: 600;
+        }
+        .slide-header .bloc-tag {
+            background: var(--bleu); color: white; padding: 0.25rem 0.75rem;
+            border-radius: 999px; font-size: 0.7rem; letter-spacing: 0.5px;
+        }
+        .slide-header .type-tag {
+            padding: 0.25rem 0.75rem; border-radius: 999px;
+            font-size: 0.7rem; letter-spacing: 0.5px; font-weight: 700;
+        }
+        .type-cours { background: var(--bleu-clair); color: var(--bleu); }
+        .type-pratique { background: var(--vert-clair); color: var(--vert); }
+        .type-exercice { background: var(--orange-clair); color: var(--orange); }
+        .type-synthese { background: var(--violet-clair); color: var(--violet); }
+        .slide-header .num { color: var(--texte-secondaire); }
+
+        .nav-hint {
+            position: fixed; bottom: 1rem; right: 1rem; z-index: 500;
+            color: rgba(255,255,255,0.3); font-size: 0.7rem;
+            font-weight: 600; letter-spacing: 0.5px; pointer-events: none;
+        }
+
+        /* ===== ANIMATIONS DOUCES ===== */
+        .anim-item { opacity: 0; transform: translateY(15px); animation: fadeUp 0.5s ease forwards; }
+        .anim-item:nth-child(1) { animation-delay: 0.05s; }
+        .anim-item:nth-child(2) { animation-delay: 0.15s; }
+        .anim-item:nth-child(3) { animation-delay: 0.25s; }
+        .anim-item:nth-child(4) { animation-delay: 0.35s; }
+        .anim-item:nth-child(5) { animation-delay: 0.45s; }
+        .anim-item:nth-child(6) { animation-delay: 0.55s; }
+        .anim-item:nth-child(7) { animation-delay: 0.65s; }
+        .anim-item:nth-child(8) { animation-delay: 0.75s; }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+        /* ===== TYPOGRAPHIE ===== */
+        h1 { font-size: 3rem; font-weight: 800; letter-spacing: -1px; color: var(--bleu); line-height: 1.1; }
+        h2 { font-size: 2.1rem; font-weight: 700; color: var(--bleu); line-height: 1.2; margin-bottom: 1rem; }
+        h3 { font-size: 1.4rem; font-weight: 700; color: var(--texte); }
+        h4 { font-size: 1.15rem; font-weight: 700; }
+        p { font-size: 1.25rem; line-height: 1.55; color: var(--texte); }
+        li { font-size: 1.15rem; line-height: 1.65; }
+        .lead { font-size: 1.4rem; color: var(--texte-secondaire); line-height: 1.5; }
+
+        /* ===== SLIDE DE TITRE ===== */
+        .slide-title {
+            background: linear-gradient(135deg, #0B3FA5 0%, #072a6e 100%);
+            color: white; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; text-align: center;
+        }
+        .slide-title h1 { color: white; font-size: 3.2rem; }
+        .slide-title .lead { color: rgba(255,255,255,0.85); margin-top: 1rem; }
+        .slide-title .meta {
+            color: rgba(255,255,255,0.6); font-size: 1rem; margin-top: 2rem;
+            letter-spacing: 1px;
+        }
+
+        /* ===== SLIDE PLAN ===== */
+        .bloc-plan {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 1rem; margin-top: 2rem;
+        }
+        .bloc-item {
+            background: #f8fafc; border-radius: 16px; padding: 1.5rem 1.2rem;
+            border-top: 5px solid var(--bleu); text-align: left;
+        }
+        .bloc-item .num {
+            font-size: 0.75rem; font-weight: 800; color: var(--bleu);
+            letter-spacing: 1.5px; margin-bottom: 0.5rem;
+        }
+        .bloc-item h4 { color: var(--texte); margin-bottom: 0.4rem; font-size: 1.05rem; }
+        .bloc-item p { font-size: 0.9rem; color: var(--texte-secondaire); }
+        .bloc-item .duree {
+            font-size: 0.75rem; font-weight: 700; color: var(--orange);
+            margin-top: 0.6rem; display: block;
+        }
+
+        /* ===== SLIDE COURS ===== */
+        .cours-content {
+            max-width: 1000px; margin: 0 auto;
+        }
+        .cours-content h2 { margin-bottom: 1.2rem; }
+        .cours-content p { margin-bottom: 1rem; }
+        .cours-content ul { padding-left: 1.5rem; margin-bottom: 1rem; }
+        .cours-content li { margin-bottom: 0.4rem; }
+
+        /* ===== CODE ===== */
+        pre {
+            background: #1e293b; color: #e2e8f0;
+            padding: 1.3rem 1.5rem; border-radius: 12px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 1rem; line-height: 1.65;
+            overflow-x: auto; margin: 1rem 0;
+            border-left: 4px solid var(--orange);
+        }
+        pre .tag { color: #7dd3fc; }
+        pre .attr { color: #fbbf24; }
+        pre .val { color: #86efac; }
+        pre .txt { color: #e2e8f0; }
+        code {
+            background: #f1f5f9; padding: 0.15rem 0.4rem;
+            border-radius: 4px; font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.9em; color: #db2777;
+        }
+
+        /* ===== BOXES ===== */
+        .box {
+            border-radius: 12px; padding: 1rem 1.4rem; margin: 1rem 0;
+            font-size: 1.05rem; border-left: 5px solid;
+            display: flex; align-items: flex-start; gap: 0.7rem;
+        }
+        .box i { font-size: 1.2rem; flex-shrink: 0; margin-top: 0.15rem; }
+        .box-tip { background: var(--bleu-clair); border-color: var(--bleu); color: #0a2c5c; }
+        .box-important { background: var(--orange-clair); border-color: var(--orange); color: #6b3a1f; }
+        .box-success { background: var(--vert-clair); border-color: var(--vert); color: #064e3b; }
+        .box-warning { background: var(--rouge-clair); border-color: var(--rouge); color: #7f1d1d; }
+        .box-info { background: var(--violet-clair); border-color: var(--violet); color: #3b0764; }
+
+        /* ===== SLIDE PRATIQUE ===== */
+        .slide-pratique {
+            background: #f0fdf4;
+        }
+        .pratique-etapes {
+            background: white; border-radius: 14px; padding: 1.5rem 2rem;
+            border: 2px solid var(--vert); margin-top: 1.2rem;
+        }
+        .pratique-etapes ol { padding-left: 1.5rem; }
+        .pratique-etapes li { margin-bottom: 0.7rem; font-size: 1.1rem; }
+        .check-item {
+            display: flex; align-items: flex-start; gap: 0.7rem;
+            padding: 0.6rem 0; border-bottom: 1px dashed var(--bordure);
+        }
+        .check-item:last-child { border-bottom: none; }
+        .check-item .num-circle {
+            background: var(--vert); color: white; width: 28px; height: 28px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
+        }
+        .check-item .txt { font-size: 1.05rem; }
+
+        /* ===== SLIDE EXERCICE ===== */
+        .slide-exercice { background: #fff7ed; }
+
+        /* ===== SLIDE SYNTHÈSE ===== */
+        .slide-synthese { background: #f5f3ff; }
+
+        /* ===== TABLEAU ===== */
+        .table-simple {
+            width: 100%; border-collapse: collapse; font-size: 1.05rem;
+            background: white; border-radius: 12px; overflow: hidden;
+            margin: 1rem 0;
+        }
+        .table-simple th {
+            background: var(--bleu); color: white; padding: 0.8rem 1.1rem;
+            text-align: left; font-weight: 700; font-size: 1rem;
+        }
+        .table-simple td { padding: 0.65rem 1.1rem; border-bottom: 1px solid var(--bordure); }
+        .table-simple tr:last-child td { border-bottom: none; }
+
+        /* ===== DEUX COLONNES ===== */
+        .cols-2 {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 1.5rem; margin-top: 1rem;
+        }
+        .mini-card {
+            background: #f8fafc; border-radius: 12px; padding: 1.2rem;
+            border: 1px solid var(--bordure);
+        }
+        .mini-card h4 { color: var(--bleu); margin-bottom: 0.4rem; }
+        .mini-card p { font-size: 0.95rem; color: var(--texte-secondaire); }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .slide-content { padding: 2rem 1.5rem; }
+            h1 { font-size: 1.8rem; }
+            h2 { font-size: 1.4rem; }
+            p, li { font-size: 1rem; }
+            .bloc-plan { grid-template-columns: 1fr 1fr; }
+            .cols-2 { grid-template-columns: 1fr; }
+            .access-card { padding: 2rem 1.5rem; }
+            pre { font-size: 0.85rem; }
+            .slide-header { font-size: 0.7rem; padding: 0.5rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- =========================================================
+         ÉCRAN DE CODE D'ACCÈS
+         Mot de passe : WEB2026 (encodé base64)
+         ========================================================= -->
+    <div class="access-overlay" id="accessOverlay">
+        <div class="access-card">
+            <div class="logo-symbol">WEB</div>
+            <h2>Accès à la formation</h2>
+            <p>Développement Web — Jour 1<br>Saisissez le code d'accès.</p>
+            <input type="password" class="access-input" id="accessInput" placeholder="Code d'accès" autocomplete="off" />
+            <button class="access-btn" id="accessBtn"><i class="fas fa-arrow-right"></i> Commencer</button>
+            <div class="access-error" id="accessError">Code incorrect. Réessayez.</div>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         CONTENEUR DE PROJECTION
+         ========================================================= -->
+    <div class="presentation-container" id="presentationContainer">
+        <div class="slide-header" id="slideHeader" style="display:none;">
+            <div>
+                <span class="bloc-tag" id="blocTag">BLOC 1</span>
+                <span class="type-tag" id="typeTag">Cours</span>
+            </div>
+            <div class="num"><span id="slideNum">1</span> / <span id="slideTotal">20</span></div>
+        </div>
+        <div class="slide-stage" id="slideStage"></div>
+        <div class="nav-hint">← → · Échap pour quitter</div>
+    </div>
+
+    <script>
+        // ============================================================
+        // DONNÉES DES SLIDES — FORMAT COURS
+        // Une notion = une slide · Code omniprésent · Zéro marketing
+        // ============================================================
+        const slidesData = [
+
+        // ---------- SLIDE 1 : TITRE ----------
+        {
+            type: 'title',
+            bloc: '—',
+            content: `
+                <h1>Développement Web</h1>
+                <p class="lead">Jour 1 — Premiers pas</p>
+                <p class="lead" style="font-size:1.15rem; margin-top:1.5rem;">
+                    Comprendre le Web · Installer les outils · Écrire son premier code HTML
+                </p>
+                <p class="meta">DURÉE : 2 HEURES · NIVEAU : DÉBUTANT</p>
+            `,
+            className: 'slide-title'
+        },
+
+        // ---------- SLIDE 2 : PLAN ----------
+        {
+            type: 'cours',
+            bloc: '—',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Programme des 2 heures</h2>
+                    <p class="anim-item">Quatre blocs, Chaque bloc mélange théorie courte et pratique immédiate.</p>
+                    <div class="bloc-plan">
+                        <div class="bloc-item anim-item">
+                            <div class="num">BLOC 1</div>
+                            <h4>Comprendre le Web</h4>
+                            <p>Vocabulaire, langages, navigateur, serveur.</p>
+                            
+                        </div>
+                        <div class="bloc-item anim-item">
+                            <div class="num">BLOC 2</div>
+                            <h4>Les outils</h4>
+                            <p>VS Code, extensions, premier fichier.</p>
+                            
+                        </div>
+                        <div class="bloc-item anim-item">
+                            <div class="num">BLOC 3</div>
+                            <h4>Écrire du HTML</h4>
+                            <p>Structure, balises, première page.</p>
+                            
+                        </div>
+                        <div class="bloc-item anim-item">
+                            <div class="num">BLOC 4</div>
+                            <h4>Assister par l'IA</h4>
+                            <p>DeepSeek, correction, exercice final.</p>
+                            
+                        </div>
+                    </div>
+                    <div class="box box-tip anim-item" style="margin-top:1.5rem;">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>Règle du jour :</strong> on code à chaque bloc. Pas de théorie sans pratique.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 3 : COURS — VOCABULAIRE ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Internet, Web : de quoi parle-t-on ?</h2>
+                    <p class="anim-item">Avant de coder, il faut nommer les choses correctement.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Terme</th><th>Définition simple</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>Internet</strong></td><td>Le réseau mondial qui relie tous les ordinateurs.</td></tr>
+                            <tr><td><strong>Web</strong></td><td>Un service d'Internet : les pages consultables dans un navigateur.</td></tr>
+                            <tr><td><strong>Site web</strong></td><td>Un ensemble de pages liées entre elles, sous une même adresse.</td></tr>
+                            <tr><td><strong>Page web</strong></td><td>Un document unique, écrit en HTML, affiché par le navigateur.</td></tr>
+                            <tr><td><strong>Navigateur</strong></td><td>Le logiciel qui affiche les pages (Chrome, Firefox, Safari, Edge).</td></tr>
+                            <tr><td><strong>Serveur</strong></td><td>Un ordinateur qui stocke les pages et les envoie aux visiteurs.</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>À retenir :</strong> Internet est le réseau. Le Web est ce qu'on consulte dessus. Un site est un ensemble de pages.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 4 : COURS — 3 LANGAGES ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Les 3 langages du Web</h2>
+                    <p class="anim-item">Un site web repose sur trois technologies complémentaires. Chacune a un rôle unique.</p>
+                    <div class="cols-2">
+                        <div class="mini-card anim-item" style="border-left:5px solid var(--vert);">
+                            <h4><i class="fas fa-cube" style="color:var(--vert);"></i> HTML</h4>
+                            <p><strong>Structure.</strong> Définit le contenu : titres, paragraphes, images, liens.</p>
+                            <p style="margin-top:0.5rem; font-size:0.85rem; color:var(--vert); font-weight:700;">→ Le squelette de la page</p>
+                        </div>
+                        <div class="mini-card anim-item" style="border-left:5px solid var(--bleu);">
+                            <h4><i class="fas fa-paint-brush" style="color:var(--bleu);"></i> CSS</h4>
+                            <p><strong>Style.</strong> Définit l'apparence : couleurs, tailles, marges, disposition.</p>
+                            <p style="margin-top:0.5rem; font-size:0.85rem; color:var(--bleu); font-weight:700;">→ L'habillage visuel</p>
+                        </div>
+                    </div>
+                    <div class="mini-card anim-item" style="border-left:5px solid var(--jaune); margin-top:1rem;">
+                        <h4><i class="fas fa-bolt" style="color:var(--jaune);"></i> JavaScript</h4>
+                        <p><strong>Interactivité.</strong> Rend la page vivante : réactions aux clics, formulaires, animations.</p>
+                        <p style="margin-top:0.5rem; font-size:0.85rem; color:var(--jaune); font-weight:700;">→ Le comportement dynamique</p>
+                    </div>
+                    <div class="box box-important anim-item" style="margin-top:1rem;">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>Aujourd'hui :</strong> uniquement le HTML. Le CSS viendra plus tard, puis JavaScript.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 5 : COURS — NAVIGATEUR / SERVEUR ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Comment une page arrive jusqu'à vous</h2>
+                    <p class="anim-item">Quand vous tapez une adresse, il se passe 4 étapes en moins d'une seconde.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>#</th><th>Étape</th><th>Qui agit</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>1</strong></td><td>Vous tapez une adresse (ex : <code>nticsolution.org</code>)</td><td>Vous</td></tr>
+                            <tr><td><strong>2</strong></td><td>La demande est envoyée sur Internet</td><td>Navigateur</td></tr>
+                            <tr><td><strong>3</strong></td><td>Le serveur retrouve la page et l'envoie</td><td>Serveur</td></tr>
+                            <tr><td><strong>4</strong></td><td>Le navigateur affiche la page à l'écran</td><td>Navigateur</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>À retenir :</strong> le navigateur demande, le serveur répond, le navigateur affiche.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 6 : PRATIQUE — OBSERVER 3 SITES ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : observer 3 sites</h2>
+                    <p class="anim-item">Ouvrez votre navigateur et visitez trois sites. Observez leur structure.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Ouvrez <code>nticsolution.org</code> — observez le titre, les paragraphes, les liens.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Ouvrez <code>kevinsanou.online/</code> — repérez les menus, les images, les sections.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Ouvrez <code>github.com</code> — observez les boutons, les formulaires.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Sur chaque site, appuyez sur <code>F12</code> puis sur l'onglet <strong>« Elements »</strong>. Vous voyez le code HTML de la page.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Ce que vous venez de voir :</strong> tous les sites web sont faits de balises HTML. C'est ce que vous allez apprendre à écrire.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 7 : COURS — LES OUTILS ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 2',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Les outils du développeur</h2>
+                    <p class="anim-item">Trois outils suffisent pour écrire et tester du HTML.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Outil</th><th>Rôle</th><th>Où le trouver</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>Navigateur</strong></td><td>Afficher le résultat</td><td>Déjà installé (Chrome, Edge, Firefox)</td></tr>
+                            <tr><td><strong>VS Code</strong></td><td>Écrire le code</td><td>code.visualstudio.com</td></tr>
+                            <tr><td><strong>Live Server</strong></td><td>Recharger la page automatiquement</td><td>Extension de VS Code</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>VS Code</strong> est l'éditeur de code le plus utilisé au monde. Gratuit, léger, extensible.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 8 : PRATIQUE — INSTALLER VS CODE ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 2',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : installer VS Code</h2>
+                    <p class="anim-item">Suivez chaque étape. Ne sautez rien.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Ouvrez le navigateur et allez sur <code>code.visualstudio.com</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Cliquez sur le bouton bleu <strong>« Download for Windows »</strong>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Ouvrez le fichier téléchargé (dans le dossier Téléchargements).</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Acceptez la licence, cliquez « Suivant » à chaque écran.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Cochez <strong>« Ajouter au menu contextuel des fichiers »</strong> — utile plus tard.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">6</div>
+                            <div class="txt">Cliquez « Installer », attendez la fin, puis « Terminer ».</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Vérification :</strong> VS Code doit s'ouvrir. Si ce n'est pas le cas, appelez le formateur.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 9 : PRATIQUE — 2 EXTENSIONS ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 2',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : installer 2 extensions</h2>
+                    <p class="anim-item">Dans VS Code, deux extensions vont nous être utiles dès aujourd'hui.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Dans VS Code, cliquez sur l'icône <strong>Extensions</strong> à gauche (ou <code>Ctrl+Shift+X</code>).</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Tapez <strong>« Live Server »</strong> dans la barre de recherche. Cliquez <strong>Installer</strong>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Effacez la recherche. Tapez <strong>« HTML Play »</strong>. Cliquez <strong>Installer</strong>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Fermez le panneau Extensions.</div>
+                        </div>
+                    </div>
+                    <div class="box box-tip anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Live Server</strong> : recharge la page à chaque sauvegarde. <strong>Prettier</strong> : indente proprement le code.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 10 : COURS — STRUCTURE HTML ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">La structure d'un fichier HTML</h2>
+                    <p class="anim-item">Tout fichier HTML suit le même squelette. Voici le minimum obligatoire.</p>
+                    <pre class="anim-item"><span class="tag">&lt;!DOCTYPE html&gt;</span>
+<span class="tag">&lt;html</span> <span class="attr">lang</span>=<span class="val">"fr"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;head&gt;</span>
+    <span class="tag">&lt;meta</span> <span class="attr">charset</span>=<span class="val">"UTF-8"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;title&gt;</span><span class="txt">Ma première page</span><span class="tag">&lt;/title&gt;</span>
+  <span class="tag">&lt;/head&gt;</span>
+  <span class="tag">&lt;body&gt;</span>
+    <span class="txt">Le contenu visible ici</span>
+  <span class="tag">&lt;/body&gt;</span>
+<span class="tag">&lt;/html&gt;</span></pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Balise</th><th>Rôle</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>&lt;!DOCTYPE html&gt;</code></td><td>Indique au navigateur : « ceci est du HTML moderne ».</td></tr>
+                            <tr><td><code>&lt;html&gt;</code></td><td>Contient toute la page.</td></tr>
+                            <tr><td><code>&lt;head&gt;</code></td><td>Informations invisibles (titre d'onglet, encodage).</td></tr>
+                            <tr><td><code>&lt;body&gt;</code></td><td>Contenu visible de la page.</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-important anim-item">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div><strong>Règle absolue :</strong> chaque balise ouverte doit être fermée. <code>&lt;body&gt;</code> → <code>&lt;/body&gt;</code>.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 11 : COURS — TITRES ET PARAGRAPHES ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Les balises de texte : h1, h2, p</h2>
+                    <p class="anim-item">Trois balises suffisent pour 80 % du contenu écrit.</p>
+                    <pre class="anim-item"><span class="tag">&lt;h1&gt;</span><span class="txt">Titre principal de la page</span><span class="tag">&lt;/h1&gt;</span>
+<span class="tag">&lt;h2&gt;</span><span class="txt">Sous-titre</span><span class="tag">&lt;/h2&gt;</span>
+<span class="tag">&lt;p&gt;</span><span class="txt">Un paragraphe de texte normal.</span><span class="tag">&lt;/p&gt;</span></pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Balise</th><th>Signification</th><th>Usage</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>&lt;h1&gt;</code></td><td>Heading 1</td><td>Titre principal — une seule fois par page</td></tr>
+                            <tr><td><code>&lt;h2&gt;</code></td><td>Heading 2</td><td>Sous-titre — plusieurs possibles</td></tr>
+                            <tr><td><code>&lt;p&gt;</code></td><td>Paragraph</td><td>Bloc de texte courant</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Il existe aussi</strong> <code>&lt;h3&gt;</code> à <code>&lt;h6&gt;</code> pour des sous-niveaux plus profonds. On les verra plus tard.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 12 : COURS — IMAGES, LIENS, BOUTONS ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Les balises médias : img, a, button</h2>
+                    <p class="anim-item">Ces trois balises rendent la page utile : images, navigation, action.</p>
+                    <pre class="anim-item"><span class="tag">&lt;img</span> <span class="attr">src</span>=<span class="val">"photo.jpg"</span> <span class="attr">alt</span>=<span class="val">"Description"</span><span class="tag">&gt;</span>
+
+<span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"https://nticsolution.org"</span><span class="tag">&gt;</span><span class="txt">Cliquez ici</span><span class="tag">&lt;/a&gt;</span>
+
+<span class="tag">&lt;button&gt;</span><span class="txt">Envoyer</span><span class="tag">&lt;/button&gt;</span></pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Balise</th><th>Rôle</th><th>Attribut clé</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>&lt;img&gt;</code></td><td>Afficher une image</td><td><code>src</code> (chemin), <code>alt</code> (description)</td></tr>
+                            <tr><td><code>&lt;a&gt;</code></td><td>Créer un lien</td><td><code>href</code> (destination)</td></tr>
+                            <tr><td><code>&lt;button&gt;</code></td><td>Créer un bouton</td><td>—</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-important anim-item">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div><strong>Attention :</strong> <code>&lt;img&gt;</code> ne se ferme pas avec <code>&lt;/img&gt;</code>. C'est une balise auto-fermante.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 13 : COURS — LISTES ET DIV ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Les balises de structure : ul, li, div</h2>
+                    <p class="anim-item">Pour organiser plusieurs éléments : listes et conteneurs.</p>
+                    <pre class="anim-item"><span class="tag">&lt;ul&gt;</span>
+  <span class="tag">&lt;li&gt;</span><span class="txt">Premier élément</span><span class="tag">&lt;/li&gt;</span>
+  <span class="tag">&lt;li&gt;</span><span class="txt">Deuxième élément</span><span class="tag">&lt;/li&gt;</span>
+<span class="tag">&lt;/ul&gt;</span>
+
+<span class="tag">&lt;div&gt;</span>
+  <span class="txt">Un conteneur pour regrouper plusieurs éléments</span>
+<span class="tag">&lt;/div&gt;</span></pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Balise</th><th>Rôle</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>&lt;ul&gt;</code></td><td>Liste à puces (unordered list)</td></tr>
+                            <tr><td><code>&lt;li&gt;</code></td><td>Un élément de la liste (list item)</td></tr>
+                            <tr><td><code>&lt;div&gt;</code></td><td>Conteneur générique — regroupe des éléments</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Le <code>&lt;div&gt;</code></strong> est la balise la plus utilisée du Web. Elle sert à regrouper et structurer.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 14 : PRATIQUE — PREMIER index.html ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : créer votre premier index.html</h2>
+                    <p class="anim-item">Nous allons écrire ensemble une page complète.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Sur le Bureau, créez un dossier nommé <code>mon-site</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Ouvrez VS Code → <strong>File</strong> → <strong>Open Folder</strong> → sélectionnez <code>mon-site</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Dans le panneau gauche, cliquez sur l'icône <strong>New File</strong>. Nommez-le <code>index.html</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Tapez <code>!</code> puis appuyez sur <strong>Tab</strong> — VS Code génère automatiquement la structure HTML de base.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Dans le <code>&lt;body&gt;</code>, ajoutez : un <code>&lt;h1&gt;</code>, un <code>&lt;p&gt;</code>, une <code>&lt;ul&gt;</code> avec 3 <code>&lt;li&gt;</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">6</div>
+                            <div class="txt">Enregistrez : <code>Ctrl+S</code>.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Votre premier fichier HTML est écrit.</strong> Il ne reste plus qu'à l'afficher.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 15 : PRATIQUE — LIVE SERVER ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : afficher la page avec Live Server</h2>
+                    <p class="anim-item">Live Server ouvre la page dans le navigateur et la recharge à chaque sauvegarde.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Dans VS Code, faites un clic droit sur <code>index.html</code> dans le panneau gauche.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Choisissez <strong>« Open with Live Server »</strong>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Le navigateur s'ouvre sur une adresse du type <code>127.0.0.1:5500</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Retournez dans VS Code. Modifiez le texte du <code>&lt;h1&gt;</code>. Enregistrez.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Regardez le navigateur : la page s'est mise à jour <strong>toute seule</strong>.</div>
+                        </div>
+                    </div>
+                    <div class="box box-tip anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>C'est tout l'intérêt de Live Server :</strong> plus besoin de rafraîchir manuellement.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 16 : COURS — ERREURS COURANTES ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Les erreurs courantes (et comment les corriger)</h2>
+                    <p class="anim-item">Il est normal de se tromper. Voici les 5 erreurs les plus fréquentes.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Erreur</th><th>Symptôme</th><th>Correction</th></tr></thead>
+                        <tbody>
+                            <tr><td>Balise non fermée</td><td>Le texte suivant est mal affiché</td><td>Ajouter <code>&lt;/balise&gt;</code></td></tr>
+                            <tr><td>Guillemets oubliés</td><td>L'image ou le lien ne fonctionne pas</td><td><code>src="photo.jpg"</code></td></tr>
+                            <tr><td>Fichier mal nommé</td><td>La page ne s'ouvre pas</td><td>Renommer en <code>index.html</code></td></tr>
+                            <tr><td>Chemin d'image erroné</td><td>Icône d'image cassée</td><td>Vérifier que l'image est dans le même dossier</td></tr>
+                            <tr><td>Oubli de sauvegarder</td><td>Rien ne change dans le navigateur</td><td><code>Ctrl+S</code></td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-warning anim-item">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div><strong>Réflexe n°1 en cas de problème :</strong> ouvrir la console du navigateur avec <code>F12</code> → onglet <strong>Console</strong>. Les erreurs y sont listées en rouge.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 17 : PRATIQUE — DEEPSEEK ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 4',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : utiliser DeepSeek pour générer une section</h2>
+                    <p class="anim-item">L'IA écrit du code à votre place — mais vous devez comprendre ce qu'elle produit.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Ouvrez <code>chat.deepseek.com</code> dans un nouvel onglet.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Écrivez ce prompt : <em>« Donne-moi uniquement le code HTML d'une section avec un titre h2, un paragraphe p, et une liste ul de 3 éléments. Pas de CSS, pas d'explication. »</em></div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Copiez le code généré.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Dans VS Code, collez-le <strong>dans le <code>&lt;body&gt;</code></strong>, après votre contenu existant.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Enregistrez. Regardez le navigateur : la nouvelle section apparaît.</div>
+                        </div>
+                    </div>
+                    <div class="box box-tip anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Un bon prompt est précis :</strong> « uniquement le code », « pas de CSS », « pas d'explication ». Sinon l'IA ajoute du bavardage.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 18 : PRATIQUE — MODIFIER LE CODE ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 4',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : modifier le code généré</h2>
+                    <p class="anim-item">Copier-coller ne suffit pas. Il faut adapter.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Dans le code généré par DeepSeek, remplacez le texte du <code>&lt;h2&gt;</code> par un titre de votre choix.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Modifiez les 3 <code>&lt;li&gt;</code> : remplacez leur contenu par des éléments qui vous concernent.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Ajoutez un 4<sup>e</sup> <code>&lt;li&gt;</code> en copiant une ligne existante.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Ajoutez une balise <code>&lt;img&gt;</code> avec une image trouvée sur Internet (clic droit → copier l'adresse de l'image).</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Enregistrez. Vérifiez dans le navigateur.</div>
+                        </div>
+                    </div>
+                    <div class="box box-important anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>Principe :</strong> l'IA propose, vous disposez. Le code doit vous appartenir.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 19 : EXERCICE FINAL ----------
+        {
+            type: 'exercice',
+            bloc: 'BLOC 4',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Exercice final : votre page de présentation</h2>
+                    <p class="anim-item">Créez une nouvelle page <code>presentation.html</code> qui contient :</p>
+                    <div class="pratique-etapes anim-item" style="border-color:var(--orange);">
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">1</div>
+                            <div class="txt">Un <code>&lt;h1&gt;</code> avec votre nom ou un titre de votre choix</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">2</div>
+                            <div class="txt">Un <code>&lt;p&gt;</code> de 2 à 3 phrases qui vous présente</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">3</div>
+                            <div class="txt">Une <code>&lt;img&gt;</code> (photo, logo, image quelconque)</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">4</div>
+                            <div class="txt">Une <code>&lt;ul&gt;</code> avec 3 <code>&lt;li&gt;</code> : vos centres d'intérêt</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">5</div>
+                            <div class="txt">Un <code>&lt;a&gt;</code> vers un site que vous aimez</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Durée :</strong> 8 minutes. Le formateur passe dans les rangs pour aider.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-exercice'
+        },
+
+        // ---------- SLIDE 20 : SYNTHÈSE ----------
+        {
+            type: 'synthese',
+            bloc: '—',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Ce que vous savez faire maintenant</h2>
+                    <ul class="anim-item" style="font-size:1.2rem; line-height:1.8;">
+                        <li>Nommer les éléments du Web : Internet, site, page, navigateur, serveur</li>
+                        <li>Distinguer les rôles de HTML, CSS et JavaScript</li>
+                        <li>Installer VS Code et deux extensions utiles</li>
+                        <li>Écrire un fichier HTML structuré (DOCTYPE, html, head, body)</li>
+                        <li>Utiliser les balises : h1, h2, p, img, a, button, ul, li, div</li>
+                        <li>Afficher et recharger automatiquement une page avec Live Server</li>
+                        <li>Formuler un prompt précis à DeepSeek et adapter le code généré</li>
+                    </ul>
+                    <div class="box box-important anim-item" style="margin-top:1.5rem;">
+                        <i class="fas fa-tasks"></i>
+                        <div><strong>Pour le prochain cours :</strong> apportez 3 images et 2 textes courts que vous souhaitez voir figurer sur votre site. Nous les intégrerons dans la page.</div>
+                    </div>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Conseil entre les séances :</strong> réécrivez au moins une fois le fichier <code>index.html</code> de zéro. La répétition crée la mémoire.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-synthese'
+        }
+
+        ];
+
+        // ============================================================
+        // ÉTAT
+        // ============================================================
+        let currentSlide = 0;
+        const totalSlides = slidesData.length;
+
+        // ============================================================
+        // AFFICHAGE
+        // ============================================================
+        function renderSlide(index) {
+            const stage = document.getElementById('slideStage');
+            const slide = slidesData[index];
+            stage.innerHTML = `<div class="slide-content ${slide.className || ''}">${slide.content}</div>`;
+
+            // En-tête (masqué sur la slide de titre)
+            const header = document.getElementById('slideHeader');
+            if (slide.type === 'title') {
+                header.style.display = 'none';
+            } else {
+                header.style.display = 'flex';
+                document.getElementById('blocTag').textContent = slide.bloc || '—';
+                document.getElementById('slideNum').textContent = index + 1;
+                document.getElementById('slideTotal').textContent = totalSlides;
+
+                const typeTag = document.getElementById('typeTag');
+                const typeLabels = {
+                    'cours': 'Cours',
+                    'pratique': 'Pratique',
+                    'exercice': 'Exercice',
+                    'synthese': 'Synthèse'
+                };
+                typeTag.textContent = typeLabels[slide.type] || 'Cours';
+                typeTag.className = 'type-tag type-' + (slide.type || 'cours');
+            }
+        }
+
+        function goNext() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                renderSlide(currentSlide);
+            }
+        }
+
+        function goPrev() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                renderSlide(currentSlide);
+            }
+        }
+
+        // ============================================================
+        // CODE D'ACCÈS — mot de passe : WEB2026
+        // Encodage base64 pour éviter l'exposition en clair : V0VCMjAyNg==
+        // ============================================================
+        function checkAccess() {
+            const input = document.getElementById('accessInput');
+            const error = document.getElementById('accessError');
+            const expected = 'V0VCMjAyNg==';
+            const entered = btoa(input.value.trim());
+            if (entered === expected) {
+                document.getElementById('accessOverlay').classList.add('hidden');
+                document.getElementById('presentationContainer').classList.add('active');
+                renderSlide(currentSlide);
+            } else {
+                error.classList.add('visible');
+                input.value = '';
+                input.focus();
+                setTimeout(() => error.classList.remove('visible'), 2500);
+            }
+        }
+
+        document.getElementById('accessBtn').addEventListener('click', checkAccess);
+        document.getElementById('accessInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') checkAccess();
+        });
+
+        // ============================================================
+        // NAVIGATION CLAVIER
+        // ============================================================
+        document.addEventListener('keydown', function(e) {
+            const container = document.getElementById('presentationContainer');
+            if (!container.classList.contains('active')) return;
+            switch (e.key) {
+                case 'ArrowRight':
+                case ' ':
+                case 'PageDown':
+                    e.preventDefault();
+                    goNext();
+                    break;
+                case 'ArrowLeft':
+                case 'PageUp':
+                    e.preventDefault();
+                    goPrev();
+                    break;
+                case 'Escape':
+                    if (confirm('Quitter la projection ?')) {
+                        document.getElementById('presentationContainer').classList.remove('active');
+                        document.getElementById('accessOverlay').classList.remove('hidden');
+                        currentSlide = 0;
+                    }
+                    break;
+            }
+        });
+
+        // ============================================================
+        // NAVIGATION TACTILE
+        // ============================================================
+        let touchStartX = 0;
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        document.addEventListener('touchend', function(e) {
+            const deltaX = e.changedTouches[0].screenX - touchStartX;
+            if (Math.abs(deltaX) > 60) {
+                if (deltaX < 0) goNext();
+                else goPrev();
+            }
+        });
+    </script>
+
+</body>
+</html>

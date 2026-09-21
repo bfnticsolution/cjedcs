@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Formation Développement Web · Présentation du parcours</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        :root {
+            --bleu: #0B3FA5;
+            --bleu-profond: #072a6e;
+            --bleu-clair: #e8f0fe;
+            --orange: #FF6B35;
+            --orange-clair: #fff4e5;
+            --vert: #059669;
+            --vert-clair: #ecfdf5;
+            --violet: #7c3aed;
+            --violet-clair: #f3e8ff;
+            --rouge: #dc2626;
+            --rouge-clair: #fef2f2;
+            --jaune: #f59e0b;
+            --jaune-clair: #fffbeb;
+            --texte: #1e293b;
+            --texte-secondaire: #475569;
+            --blanc: #ffffff;
+            --bordure: #e2e8f0;
+            --transition: 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background: #0d1117;
+            color: var(--texte);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            -webkit-font-smoothing: antialiased;
+            user-select: none;
+        }
+
+        .access-overlay {
+            position: fixed; inset: 0; z-index: 99999;
+            background: linear-gradient(135deg, var(--bleu-profond) 0%, #0d1b3e 100%);
+            display: flex; align-items: center; justify-content: center;
+            transition: opacity 0.7s ease, visibility 0.7s ease;
+        }
+        .access-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .access-card {
+            background: var(--blanc); border-radius: 2rem; padding: 3rem 2.5rem;
+            text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            max-width: 420px; width: 90%; animation: floatIn 0.8s ease;
+        }
+        @keyframes floatIn {
+            from { opacity: 0; transform: translateY(40px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .access-card .logo-symbol {
+            background: var(--bleu); color: white; width: 64px; height: 64px;
+            border-radius: 18px; display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 1.6rem; margin: 0 auto 1.2rem;
+        }
+        .access-card h2 { color: var(--bleu); font-size: 1.4rem; margin-bottom: 0.5rem; }
+        .access-card p { color: #475569; margin-bottom: 1.8rem; font-size: 0.9rem; }
+        .access-input {
+            width: 100%; padding: 0.9rem 1.3rem; border: 2px solid var(--bordure);
+            border-radius: 14px; font-family: inherit; font-size: 1rem;
+            text-align: center; letter-spacing: 2px; transition: var(--transition); margin-bottom: 1rem;
+        }
+        .access-input:focus { outline: none; border-color: var(--bleu); box-shadow: 0 0 0 4px rgba(11,63,165,0.1); }
+        .access-btn {
+            width: 100%; padding: 0.9rem; background: var(--orange); color: white;
+            border: none; border-radius: 14px; font-weight: 700; font-size: 1rem;
+            font-family: inherit; cursor: pointer; transition: var(--transition);
+        }
+        .access-btn:hover { background: #e55a2b; transform: translateY(-2px); }
+        .access-error {
+            color: #dc2626; font-size: 0.85rem; margin-top: 0.5rem;
+            display: none; font-weight: 600;
+        }
+        .access-error.visible { display: block; animation: shake 0.5s ease; }
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        .presentation-container {
+            display: none; position: fixed; inset: 0; background: #0d1117; z-index: 100;
+        }
+        .presentation-container.active { display: block; }
+        .slide-stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+        .slide-content {
+            background: white; width: 100%; height: 100%;
+            overflow-y: auto; padding: 3rem 4.5rem;
+            position: relative; animation: slideIn 0.4s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: scale(0.97); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .nav-hint {
+            position: fixed; bottom: 1rem; right: 1rem; z-index: 500;
+            color: rgba(255,255,255,0.3); font-size: 0.7rem;
+            font-weight: 600; letter-spacing: 0.5px; pointer-events: none;
+        }
+
+        .progress-dots {
+            position: fixed; bottom: 1rem; left: 50%;
+            transform: translateX(-50%); z-index: 500;
+            display: flex; gap: 6px;
+        }
+        .progress-dots .dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: rgba(255,255,255,0.2); transition: 0.3s;
+        }
+        .progress-dots .dot.active { background: var(--orange); width: 24px; border-radius: 4px; }
+
+        .anim-item { opacity: 0; transform: translateY(15px); animation: fadeUp 0.5s ease forwards; }
+        .anim-item:nth-child(1) { animation-delay: 0.05s; }
+        .anim-item:nth-child(2) { animation-delay: 0.15s; }
+        .anim-item:nth-child(3) { animation-delay: 0.25s; }
+        .anim-item:nth-child(4) { animation-delay: 0.35s; }
+        .anim-item:nth-child(5) { animation-delay: 0.45s; }
+        .anim-item:nth-child(6) { animation-delay: 0.55s; }
+        .anim-item:nth-child(7) { animation-delay: 0.65s; }
+        .anim-item:nth-child(8) { animation-delay: 0.75s; }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+        h1 { font-size: 3rem; font-weight: 800; letter-spacing: -1px; color: var(--bleu); line-height: 1.1; }
+        h2 { font-size: 2.1rem; font-weight: 700; color: var(--bleu); line-height: 1.2; margin-bottom: 1rem; }
+        h3 { font-size: 1.4rem; font-weight: 700; color: var(--texte); }
+        h4 { font-size: 1.15rem; font-weight: 700; }
+        p { font-size: 1.25rem; line-height: 1.55; color: var(--texte); }
+        li { font-size: 1.15rem; line-height: 1.65; }
+        .lead { font-size: 1.4rem; color: var(--texte-secondaire); line-height: 1.5; }
+
+        .slide-title {
+            background: linear-gradient(135deg, #0B3FA5 0%, #072a6e 100%);
+            color: white; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; text-align: center;
+        }
+        .slide-title h1 { color: white; font-size: 3.5rem; }
+        .slide-title .lead { color: rgba(255,255,255,0.85); margin-top: 1rem; }
+        .slide-title .meta {
+            color: rgba(255,255,255,0.6); font-size: 1rem; margin-top: 2rem;
+            letter-spacing: 1px;
+        }
+        .slide-title .badge-top {
+            background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+            padding: 0.4rem 1.1rem; border-radius: 999px; font-size: 0.8rem;
+            font-weight: 700; letter-spacing: 1.5px; margin-bottom: 1.5rem;
+        }
+
+        .slide-final {
+            background: linear-gradient(135deg, #FF6B35 0%, #e55a2b 100%);
+            color: white; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; text-align: center;
+        }
+        .slide-final h1 { color: white; font-size: 3rem; }
+        .slide-final .lead { color: rgba(255,255,255,0.9); }
+        .btn-big {
+            display: inline-flex; align-items: center; gap: 0.7rem;
+            background: white; color: var(--orange);
+            padding: 1.1rem 2.2rem; border-radius: 14px;
+            font-weight: 800; font-size: 1.15rem; margin-top: 2rem;
+            text-decoration: none; transition: 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .btn-big:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(0,0,0,0.3); }
+
+        .cours-content { max-width: 1050px; margin: 0 auto; }
+        .cours-content h2 { margin-bottom: 1.2rem; }
+        .cours-content p { margin-bottom: 1rem; }
+        .cours-content ul { padding-left: 1.5rem; margin-bottom: 1rem; }
+        .cours-content li { margin-bottom: 0.4rem; }
+
+        .box {
+            border-radius: 12px; padding: 1rem 1.4rem; margin: 1rem 0;
+            font-size: 1.05rem; border-left: 5px solid;
+            display: flex; align-items: flex-start; gap: 0.7rem;
+        }
+        .box i { font-size: 1.2rem; flex-shrink: 0; margin-top: 0.15rem; }
+        .box-tip { background: var(--bleu-clair); border-color: var(--bleu); color: #0a2c5c; }
+        .box-important { background: var(--orange-clair); border-color: var(--orange); color: #6b3a1f; }
+        .box-success { background: var(--vert-clair); border-color: var(--vert); color: #064e3b; }
+        .box-warning { background: var(--rouge-clair); border-color: var(--rouge); color: #7f1d1d; }
+        .box-info { background: var(--violet-clair); border-color: var(--violet); color: #3b0764; }
+
+        .table-simple {
+            width: 100%; border-collapse: collapse; font-size: 1.05rem;
+            background: white; border-radius: 12px; overflow: hidden; margin: 1rem 0;
+        }
+        .table-simple th {
+            background: var(--bleu); color: white; padding: 0.8rem 1.1rem;
+            text-align: left; font-weight: 700; font-size: 1rem;
+        }
+        .table-simple td { padding: 0.65rem 1.1rem; border-bottom: 1px solid var(--bordure); }
+        .table-simple tr:last-child td { border-bottom: none; }
+
+        .jour-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 1rem; margin-top: 1.5rem;
+        }
+        .jour-card {
+            background: #f8fafc; border-radius: 14px; padding: 1.2rem 1rem;
+            border-top: 5px solid var(--bleu); text-align: left;
+        }
+        .jour-card .num {
+            font-size: 0.75rem; font-weight: 800; color: var(--bleu);
+            letter-spacing: 1.5px; margin-bottom: 0.4rem;
+        }
+        .jour-card h4 { font-size: 1rem; margin-bottom: 0.3rem; color: var(--texte); }
+        .jour-card p { font-size: 0.85rem; color: var(--texte-secondaire); }
+
+        .cards-3 {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 1.2rem; margin: 1.5rem 0;
+        }
+        .info-card {
+            background: #f8fafc; border-radius: 16px; padding: 1.5rem;
+            border: 1px solid var(--bordure); text-align: center;
+        }
+        .info-card i {
+            font-size: 2.4rem; color: var(--bleu);
+            margin-bottom: 0.8rem; display: block;
+        }
+        .info-card h4 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+        .info-card p { font-size: 0.95rem; color: var(--texte-secondaire); }
+
+        .objectif-item {
+            display: flex; align-items: center; gap: 1rem;
+            padding: 0.85rem 0; border-bottom: 1px solid var(--bordure);
+        }
+        .objectif-item:last-child { border-bottom: none; }
+        .objectif-num {
+            background: var(--bleu); color: white; width: 42px; height: 42px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 1.2rem; flex-shrink: 0;
+        }
+        .objectif-text { font-size: 1.2rem; font-weight: 600; }
+
+        .check-item {
+            display: flex; align-items: flex-start; gap: 0.7rem;
+            padding: 0.55rem 0; border-bottom: 1px dashed var(--bordure);
+        }
+        .check-item:last-child { border-bottom: none; }
+        .check-item .num-circle {
+            background: var(--vert); color: white; width: 26px; height: 26px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.8rem; flex-shrink: 0;
+        }
+        .check-item .txt { font-size: 1.05rem; }
+
+        .slide-besoin { background: #f0fdf4; }
+        .slide-deroule { background: #f5f3ff; }
+        .slide-regles { background: #fff7ed; }
+        .slide-faq { background: #f0f9ff; }
+
+        .faq-item {
+            background: white; border-radius: 12px; padding: 1rem 1.4rem;
+            margin-bottom: 0.8rem; border-left: 5px solid var(--bleu);
+        }
+        .faq-item h4 {
+            color: var(--bleu); font-size: 1.05rem;
+            margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.5rem;
+        }
+        .faq-item p { font-size: 0.95rem; color: var(--texte-secondaire); margin: 0; }
+
+        @media (max-width: 768px) {
+            .slide-content { padding: 2rem 1.5rem; }
+            h1 { font-size: 1.8rem; }
+            h2 { font-size: 1.4rem; }
+            p, li { font-size: 1rem; }
+            .jour-grid { grid-template-columns: 1fr 1fr; }
+            .cards-3 { grid-template-columns: 1fr; }
+            .access-card { padding: 2rem 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- =========================================================
+         ÉCRAN DE CODE D'ACCÈS
+         Mot de passe : WEB2026 (base64 : V0VCMjAyNg==)
+         ========================================================= -->
+    <div class="access-overlay" id="accessOverlay">
+        <div class="access-card">
+            <div class="logo-symbol">WEB</div>
+            <h2>Présentation de la formation</h2>
+            <p>Formation Développement Web — 7 jours<br>Saisissez le code d'accès.</p>
+            <input type="password" class="access-input" id="accessInput" placeholder="Code d'accès" autocomplete="off" />
+            <button class="access-btn" id="accessBtn"><i class="fas fa-play"></i> Commencer</button>
+            <div class="access-error" id="accessError">Code incorrect. Réessayez.</div>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         CONTENEUR PROJECTION
+         ========================================================= -->
+    <div class="presentation-container" id="presentationContainer">
+        <div class="slide-stage" id="slideStage"></div>
+        <div class="progress-dots" id="progressDots"></div>
+        <div class="nav-hint">← → · Échap pour quitter</div>
+    </div>
+
+    <script>
+        // ============================================================
+        // SLIDES — PRÉSENTATION DE LA FORMATION (20 slides)
+        // ============================================================
+        const slidesData = [
+
+        // ---------- SLIDE 1 : TITRE ----------
+        {
+            content: `
+                <div class="badge-top anim-item"><i class="fas fa-graduation-cap"></i> FORMATION · 7 JOURS · 20 HEURES</div>
+                <h1 class="anim-item">Développement Web</h1>
+                <p class="lead anim-item" style="font-size:1.6rem; margin-top:1rem;">
+                    De zéro à la mise en ligne d'un site web complet
+                </p>
+                <p class="lead anim-item" style="font-size:1.15rem; margin-top:1.5rem;">
+                    Une formation pratique, progressive et accessible à tous
+                </p>
+                <p class="meta anim-item">Présentation du parcours · Avant de commencer</p>
+            `,
+            className: 'slide-title'
+        },
+
+        // ---------- SLIDE 2 : BIENVENUE ----------
+        {
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Bienvenue dans cette formation</h2>
+                    <p class="anim-item" style="font-size:1.35rem;">
+                        Vous allez apprendre à <strong>créer un site web complet</strong> de A à Z,
+                        puis à le <strong>publier en ligne</strong> pour que le monde entier puisse le voir.
+                    </p>
+                    <div class="cards-3">
+                        <div class="info-card anim-item">
+                            <i class="fas fa-clock"></i>
+                            <h4>20 heures</h4>
+                            <p>7 séances de 2h, étalées sur 7 jours</p>
+                        </div>
+                        <div class="info-card anim-item">
+                            <i class="fas fa-code"></i>
+                            <h4>3 langages</h4>
+                            <p>HTML, CSS et JavaScript</p>
+                        </div>
+                        <div class="info-card anim-item">
+                            <i class="fas fa-rocket"></i>
+                            <h4>1 projet final</h4>
+                            <p>Un site web publié et présenté</p>
+                        </div>
+                    </div>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Bonne nouvelle :</strong> cette formation ne demande <strong>aucun prérequis technique</strong>. Si vous savez utiliser un navigateur web, vous savez déjà assez pour commencer.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 3 : POUR QUI ----------
+        {
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">À qui s'adresse cette formation ?</h2>
+                    <p class="anim-item">Elle est conçue pour un public varié, avec des motivations différentes mais un objectif commun : apprendre à créer sur le Web.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Profil</th><th>Ce que la formation apporte</th></tr></thead>
+                        <tbody>
+                            <tr><td>Étudiants, élèves</td><td>Une compétence concrète et recherchée sur le marché</td></tr>
+                            <tr><td>Commerçants, entrepreneurs</td><td>Créer la vitrine en ligne de leur activité</td></tr>
+                            <tr><td>Enseignants, formateurs</td><td>Publier leurs cours et ressources en ligne</td></tr>
+                            <tr><td>Animateurs, associations</td><td>Présenter un projet, publier des réalisations</td></tr>
+                            <tr><td>Curieux, passionnés</td><td>Comprendre comment fonctionne le Web</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-important anim-item">
+                        <i class="fas fa-users"></i>
+                        <div><strong>Groupe hétérogène :</strong> certains découvriront tout, d'autres progresseront plus vite. Chaque séance prévoit des activités adaptées à tous les niveaux.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 4 : OBJECTIFS ----------
+        {
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">À la fin des 7 jours, vous saurez...</h2>
+                    <div style="margin-top:1.5rem;">
+                        <div class="objectif-item anim-item">
+                            <div class="objectif-num">1</div>
+                            <div class="objectif-text">Expliquer comment fonctionne un site web</div>
+                        </div>
+                        <div class="objectif-item anim-item">
+                            <div class="objectif-num">2</div>
+                            <div class="objectif-text">Écrire du HTML structuré et sémantique</div>
+                        </div>
+                        <div class="objectif-item anim-item">
+                            <div class="objectif-num">3</div>
+                            <div class="objectif-text">Appliquer du CSS pour habiller vos pages</div>
+                        </div>
+                        <div class="objectif-item anim-item">
+                            <div class="objectif-num">4</div>
+                            <div class="objectif-text">Concevoir une galerie responsive et des cartes modernes</div>
+                        </div>
+                        <div class="objectif-item anim-item">
+                            <div class="objectif-num">5</div>
+                            <div class="objectif-text">Créer plusieurs pages reliées par un menu commun</div>
+                        </div>
+                        <div class="objectif-item anim-item">
+                            <div class="objectif-num">6</div>
+                            <div class="objectif-text">Ajouter un formulaire fonctionnel avec JavaScript</div>
+                        </div>
+                        <div class="objectif-item anim-item">
+                            <div class="objectif-num">7</div>
+                            <div class="objectif-text">Publier votre site en ligne et le présenter</div>
+                        </div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 5 : LE PROGRAMME EN UN COUP D'ŒIL ----------
+        {
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Le programme en un coup d'œil</h2>
+                    <p class="anim-item">7 séances, 7 thèmes, une progression logique.</p>
+                    <div class="jour-grid">
+                        <div class="jour-card anim-item">
+                            <div class="num">JOUR 1</div>
+                            <h4>Premiers pas</h4>
+                            <p>Comprendre le Web, installer VS Code, écrire sa première page HTML.</p>
+                        </div>
+                        <div class="jour-card anim-item" style="border-top-color:var(--bleu);">
+                            <div class="num">JOUR 2</div>
+                            <h4>HTML approfondi</h4>
+                            <p>Titres, images, liens, listes, navigation entre pages.</p>
+                        </div>
+                        <div class="jour-card anim-item" style="border-top-color:var(--violet);">
+                            <div class="num" style="color:var(--violet);">JOUR 3</div>
+                            <h4>CSS mise en page</h4>
+                            <p>Couleurs, polices, marges, disposition en colonnes.</p>
+                        </div>
+                        <div class="jour-card anim-item" style="border-top-color:var(--vert);">
+                            <div class="num" style="color:var(--vert);">JOUR 4</div>
+                            <h4>CSS avancé</h4>
+                            <p>Grid, cartes, galerie responsive, media queries.</p>
+                        </div>
+                        <div class="jour-card anim-item" style="border-top-color:var(--orange);">
+                            <div class="num" style="color:var(--orange);">JOUR 5</div>
+                            <h4>Site multi-pages</h4>
+                            <p>Menu commun, footer, fil d'Ariane, page 404.</p>
+                        </div>
+                        <div class="jour-card anim-item" style="border-top-color:var(--jaune);">
+                            <div class="num" style="color:#b45309;">JOUR 6</div>
+                            <h4>Formulaires & JS</h4>
+                            <p>Formulaires HTML, styles, validation en JavaScript.</p>
+                        </div>
+                        <div class="jour-card anim-item" style="border-top-color:var(--rouge);">
+                            <div class="num" style="color:var(--rouge);">JOUR 7</div>
+                            <h4>Mise en ligne</h4>
+                            <p>GitHub Pages, publication, présentation finale.</p>
+                        </div>
+                        <div class="jour-card anim-item" style="border-top-color:var(--vert); background: var(--vert-clair);">
+                            <div class="num" style="color:var(--vert);">RÉSULTAT</div>
+                            <h4>Site en ligne</h4>
+                            <p>Un site web complet, publié, que vous pouvez partager.</p>
+                        </div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 6 : CE QUE VOUS ALLEZ CONSTRUIRE ----------
+        {
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Ce que vous allez construire</h2>
+                    <p class="anim-item">À la fin des 7 jours, vous aurez un site web complet comprenant :</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Élément</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>Une page d'accueil</strong></td><td>Présentation, message principal, appel à l'action</td></tr>
+                            <tr><td><strong>Une page À propos</strong></td><td>Qui vous êtes, votre histoire, votre mission</td></tr>
+                            <tr><td><strong>Une page Services</strong></td><td>Ce que vous proposez, en cartes modernes</td></tr>
+                            <tr><td><strong>Une galerie</strong></td><td>Images responsives, cliquables, avec effet au survol</td></tr>
+                            <tr><td><strong>Une page Contact</strong></td><td>Formulaire fonctionnel avec validation JavaScript</td></tr>
+                            <tr><td><strong>Un design cohérent</strong></td><td>Couleurs, polices, espacements professionnels</td></tr>
+                            <tr><td><strong>Une mise en ligne</strong></td><td>Accessible depuis n'importe quel appareil, dans le monde entier</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-success anim-item">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Chaque apprenant repart avec son propre site</strong>, à son nom, sur son sujet. Pas de copie, pas de modèle uniforme.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 7 : LES PRÉREQUIS ----------
+        {
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Les prérequis</h2>
+                    <p class="anim-item">Aucun prérequis technique. Mais quelques éléments facilitent la progression.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Requis</th><th>Recommandé</th></tr></thead>
+                        <tbody>
+                            <tr><td>Savoir utiliser un navigateur web</td><td>Avoir un ordinateur personnel</td></tr>
+                            <tr><td>Savoir créer et gérer des dossiers</td><td>Savoir taper au clavier</td></tr>
+                            <tr><td>Lire et écrire le français</td><td>Un peu d'anglais technique (facultatif)</td></tr>
+                            <tr><td>De la motivation</td><td>30 minutes de pratique quotidienne</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Aucun prérequis en programmation.</strong> Nous partons de zéro. Ceux qui ont déjà des bases progresseront simplement plus vite, avec des défis supplémentaires.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-besoin'
+        },
+
+        // ---------- SLIDE 8 : LES OUTILS ----------
+        {
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Les outils que nous utiliserons</h2>
+                    <p class="anim-item">Tous les outils sont gratuits. Aucun abonnement, aucune carte bancaire.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Outil</th><th>Rôle</th><th>Coût</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>VS Code</strong></td><td>Écrire le code</td><td>Gratuit</td></tr>
+                            <tr><td><strong>Live Server</strong></td><td>Prévisualiser en direct</td><td>Gratuit</td></tr>
+                            <tr><td><strong>Google Chrome / Firefox</strong></td><td>Afficher et tester le site</td><td>Gratuit</td></tr>
+                            <tr><td><strong>DeepSeek</strong></td><td>Assistance par intelligence artificielle</td><td>Gratuit</td></tr>
+                            <tr><td><strong>GitHub + GitHub Pages</strong></td><td>Stocker et publier le site</td><td>Gratuit</td></tr>
+                            <tr><td><strong>Git</strong></td><td>Gérer les versions du code</td><td>Gratuit</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-important anim-item">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>Aucun frais pour cette formation.</strong> Aucun hébergement payant, aucun domaine payant. Nous publions gratuitement sur GitHub Pages.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 9 : LE MATÉRIEL ----------
+        {
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Le matériel nécessaire</h2>
+                    <div class="cards-3">
+                        <div class="info-card anim-item">
+                            <i class="fas fa-laptop"></i>
+                            <h4>Un ordinateur</h4>
+                            <p>Windows, Linux ou Mac. Un ordinateur partagé est possible.</p>
+                        </div>
+                        <div class="info-card anim-item">
+                            <i class="fas fa-wifi"></i>
+                            <h4>Une connexion Internet</h4>
+                            <p>Pour installer les outils, utiliser DeepSeek et publier le site.</p>
+                        </div>
+                        <div class="info-card anim-item">
+                            <i class="fas fa-hdd"></i>
+                            <h4>Un espace de stockage</h4>
+                            <p>~500 Mo suffisent pour installer les outils et créer le site.</p>
+                        </div>
+                    </div>
+                    <div class="box box-warning anim-item">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div><strong>Si vous n'avez pas d'ordinateur :</strong> signalez-le au formateur. Des solutions existent (prêt, binôme, sessions partagées).</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 10 : COMMENT SE DÉROULE UNE SÉANCE ----------
+        {
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Comment se déroule une séance de 2h</h2>
+                    <p class="anim-item">Chaque séance suit la même structure, pour créer des repères.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Moment</th><th>Durée</th><th>Ce qu'on fait</th></tr></thead>
+                        <tbody>
+                            <tr><td>Accueil & rappel</td><td>5 min</td><td>Retour sur la séance précédente, questions</td></tr>
+                            <tr><td>Bloc 1</td><td>30 min</td><td>Cours + pratique immédiate</td></tr>
+                            <tr><td>Bloc 2</td><td>30 min</td><td>Cours + pratique immédiate</td></tr>
+                            <tr><td>Pause</td><td>5 min</td><td>Respiration</td></tr>
+                            <tr><td>Bloc 3</td><td>30 min</td><td>Cours + pratique immédiate</td></tr>
+                            <tr><td>Bloc 4 + exercice</td><td>15 min</td><td>Exercice final, correction collective</td></tr>
+                            <tr><td>Synthèse</td><td>5 min</td><td>Ce qu'on a appris, devoirs</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Principe fondamental :</strong> on code à chaque séance. Pas de théorie sans pratique. Vous ne serez jamais passif plus de 15 minutes.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-deroule'
+        },
+
+        // ---------- SLIDE 11 : LES RÈGLES DU GROUPE ----------
+        {
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Les règles du groupe</h2>
+                    <p class="anim-item">Pour que tout le monde progresse dans de bonnes conditions.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Règle</th><th>Pourquoi</th></tr></thead>
+                        <tbody>
+                            <tr><td>Arriver à l'heure</td><td>Chaque minute compte sur 2h</td></tr>
+                            <tr><td>Apporter son ordinateur chargé</td><td>Éviter les pertes de temps</td></tr>
+                            <tr><td>Poser ses questions</td><td>Aucune question n'est bête</td></tr>
+                            <tr><td>Ne pas comparer sa vitesse</td><td>Chacun progresse à son rythme</td></tr>
+                            <tr><td>Aider son voisin</td><td>Expliquer = mieux comprendre</td></tr>
+                            <tr><td>Noter ce qu'on apprend</td><td>Un carnet = mémoire externe</td></tr>
+                            <tr><td>Respecter le matériel</td><td>Les outils sont partagés</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-important anim-item">
+                        <i class="fas fa-handshake"></i>
+                        <div><strong>Esprit de la formation :</strong> bienveillance, entraide et rigueur. Personne ne reste bloqué seul.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-regles'
+        },
+
+        // ---------- SLIDE 12 : CE QU'ON ATTEND DE VOUS ----------
+        {
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Ce qu'on attend de vous</h2>
+                    <p class="anim-item">Vous n'avez pas besoin d'être parfait. Mais vous devez être présent.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Attendu</th><th>Pourquoi</th></tr></thead>
+                        <tbody>
+                            <tr><td>Pratiquer en dehors des séances</td><td>15-30 min par jour transforment tout</td></tr>
+                            <tr><td>Refaire les exercices</td><td>La répétition crée les réflexes</td></tr>
+                            <tr><td>Prendre des notes</td><td>Vous ne vous souviendrez pas de tout</td></tr>
+                            <tr><td>Signaler un blocage</td><td>Résoudre un problème seul peut prendre des heures</td></tr>
+                            <tr><td>Apporter le matériel demandé</td><td>Images, textes, contenus du site</td></tr>
+                            <tr><td>Respecter les autres</td><td>Chacun a son rythme</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-success anim-item">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Rappelez-vous :</strong> vous n'êtes pas là pour tout savoir à la fin. Vous êtes là pour acquérir des bases solides, que vous approfondirez ensuite.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 13 : CE QUE VOUS ALLEZ SAVOIR FAIRE (COMPÉTENCES) ----------
+        {
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Les compétences que vous allez acquérir</h2>
+                    <p class="anim-item">Compétences concrètes, vérifiables, mesurables à la fin du parcours.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Compétence</th><th>Jour</th></tr></thead>
+                        <tbody>
+                            <tr><td>Écrire du HTML valide et structuré</td><td>Jours 1 et 2</td></tr>
+                            <tr><td>Créer un design avec CSS</td><td>Jours 3 et 4</td></tr>
+                            <tr><td>Organiser un site en plusieurs pages</td><td>Jour 5</td></tr>
+                            <tr><td>Créer un formulaire et le valider</td><td>Jour 6</td></tr>
+                            <tr><td>Publier un site sur Internet</td><td>Jour 7</td></tr>
+                            <tr><td>Utiliser l'IA (DeepSeek) comme assistant</td><td>Tous les jours</td></tr>
+                            <tr><td>Utiliser Git et GitHub</td><td>Jour 7</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>À la fin, vous pourrez</strong> créer un site vitrine personnel, publier un portfolio, ou présenter une activité en ligne.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 14 : LA MÉTHODE DEEPSEEK ----------
+        {
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">La méthode « assisté par IA »</h2>
+                    <p class="anim-item">Nous utilisons DeepSeek comme assistant, mais nous gardons la main sur le code.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>L'IA fait</th><th>Vous faites</th></tr></thead>
+                        <tbody>
+                            <tr><td>Génère une base de code</td><td>Lisez, adaptez, comprenez</td></tr>
+                            <tr><td>Propose des exemples</td><td>Choisissez, modifiez</td></tr>
+                            <tr><td>Corrige les erreurs simples</td><td>Vérifiez le résultat</td></tr>
+                            <tr><td>Explique une balise</td><td>Testez-la dans votre code</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-warning anim-item">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div><strong>Règle absolue :</strong> ne jamais copier-coller du code sans le lire. Un code que vous ne comprenez pas est un code que vous ne maîtriserez jamais.</div>
+                    </div>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>L'IA est un outil, pas une béquille.</strong> Elle accélère votre progression. Mais ce sont vos doigts qui tapent, vos yeux qui relisent, votre cerveau qui comprend.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 15 : CE QUE VOUS ALLEZ VRAIMENT APPRENDRE ----------
+        {
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Ce que vous allez vraiment apprendre</h2>
+                    <p class="anim-item">Au-delà du code, la formation développe des compétences transversales utiles partout.</p>
+                    <div class="cards-3">
+                        <div class="info-card anim-item">
+                            <i class="fas fa-puzzle-piece"></i>
+                            <h4>Résoudre des problèmes</h4>
+                            <p>Décomposer un problème, tester, corriger, recommencer.</p>
+                        </div>
+                        <div class="info-card anim-item">
+                            <i class="fas fa-eye"></i>
+                            <h4>Attention aux détails</h4>
+                            <p>Une virgule manquante peut tout casser. On apprend la rigueur.</p>
+                        </div>
+                        <div class="info-card anim-item">
+                            <i class="fas fa-brain"></i>
+                            <h4>Apprendre à apprendre</h4>
+                            <p>Chercher une solution soi-même, c'est une compétence à vie.</p>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Ces compétences</strong> vous serviront bien au-delà du développement web.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 16 : QUESTIONS FRÉQUENTES ----------
+        {
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Questions fréquentes</h2>
+                    <div class="faq-item anim-item">
+                        <h4><i class="fas fa-question-circle"></i> Faut-il être bon en informatique ?</h4>
+                        <p>Non. Si vous savez utiliser un navigateur et gérer des dossiers, vous savez assez pour commencer.</p>
+                    </div>
+                    <div class="faq-item anim-item">
+                        <h4><i class="fas fa-question-circle"></i> Et si je suis perdu en cours de route ?</h4>
+                        <p>Les séances sont progressives. Le formateur circule pendant les exercices. Aucun apprenant ne reste bloqué.</p>
+                    </div>
+                    <div class="faq-item anim-item">
+                        <h4><i class="fas fa-question-circle"></i> Faut-il un ordinateur puissant ?</h4>
+                        <p>Non. Un ordinateur de 8 Go de RAM avec un processeur i3 suffit largement. Les outils sont légers.</p>
+                    </div>
+                    <div class="faq-item anim-item">
+                        <h4><i class="fas fa-question-circle"></i> Combien de temps pour pratiquer entre les séances ?</h4>
+                        <p>15 à 30 minutes par jour. C'est ce qui fait la différence entre « j'ai suivi » et « je sais faire ».</p>
+                    </div>
+                    <div class="faq-item anim-item">
+                        <h4><i class="fas fa-question-circle"></i> Vais-je recevoir un certificat ?</h4>
+                        <p>Une attestation de fin de formation est remise à ceux qui ont suivi les 7 séances et présenté leur projet final.</p>
+                    </div>
+                </div>
+            `,
+            className: 'slide-faq'
+        },
+
+        // ---------- SLIDE 17 : APRÈS LA FORMATION ----------
+        {
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Après la formation : et ensuite ?</h2>
+                    <p class="anim-item">Cette formation est un point de départ. Voici les directions possibles.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Direction</th><th>Pour quoi faire</th></tr></thead>
+                        <tbody>
+                            <tr><td>Approfondir CSS</td><td>Animations, transitions, frameworks</td></tr>
+                            <tr><td>Apprendre JavaScript</td><td>Sites interactifs, applications web</td></tr>
+                            <tr><td>Découvrir PHP + MySQL</td><td>Sites dynamiques, bases de données</td></tr>
+                            <tr><td>Apprendre React ou Vue</td><td>Applications modernes, SPA</td></tr>
+                            <tr><td>Se lancer en freelance</td><td>Créer des sites pour des clients</td></tr>
+                            <tr><td>Postuler à un emploi</td><td>Développeur junior, intégrateur web</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Conseil :</strong> ne sautez pas les étapes. Maîtrisez bien HTML/CSS avant de vous lancer dans JavaScript ou PHP. La base est essentielle.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 18 : RÉCAPITULATIF ----------
+        {
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Avant de commencer : récapitulatif</h2>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Élément</th><th>Détail</th></tr></thead>
+                        <tbody>
+                            <tr><td>Durée totale</td><td>20 heures sur 7 jours</td></tr>
+                            <tr><td>Durée par séance</td><td>2 heures</td></tr>
+                            <tr><td>Niveau</td><td>Débutant à intermédiaire</td></tr>
+                            <tr><td>Prérequis</td><td>Aucun</td></tr>
+                            <tr><td>Outils</td><td>VS Code, Git, GitHub, DeepSeek — tous gratuits</td></tr>
+                            <tr><td>Langages appris</td><td>HTML, CSS, JavaScript (bases)</td></tr>
+                            <tr><td>Projet final</td><td>Un site web complet publié en ligne</td></tr>
+                            <tr><td>Attestation</td><td>Remise à la fin de la 7<sup>e</sup> séance</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-important anim-item">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>À retenir :</strong> cette formation est <strong>pratique</strong>, <strong>gratuite en outils</strong>, et <strong>adaptée à tous les niveaux</strong>. Vous n'avez aucune raison de ne pas réussir.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 19 : CONSEILS POUR RÉUSSIR ----------
+        {
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Cinq conseils pour réussir</h2>
+                    <div style="margin-top:1.5rem;">
+                        <div class="objectif-item anim-item">
+                            <div class="objectif-num" style="background:var(--vert);">1</div>
+                            <div class="objectif-text">Pratiquez tous les jours, même 15 minutes</div>
+                        </div>
+                        <div class="objectif-item anim-item">
+                            <div class="objectif-num" style="background:var(--vert);">2</div>
+                            <div class="objectif-text">Notez les erreurs que vous faites — elles reviendront</div>
+                        </div>
+                        <div class="objectif-item anim-item">
+                            <div class="objectif-num" style="background:var(--vert);">3</div>
+                            <div class="objectif-text">Ne copiez jamais sans comprendre</div>
+                        </div>
+                        <div class="objectif-item anim-item">
+                            <div class="objectif-num" style="background:var(--vert);">4</div>
+                            <div class="objectif-text">Posez vos questions dès qu'un doute apparaît</div>
+                        </div>
+                        <div class="objectif-item anim-item">
+                            <div class="objectif-num" style="background:var(--vert);">5</div>
+                            <div class="objectif-text">Aidez les autres — enseigner, c'est apprendre deux fois</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.5rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>La régularité bat le talent.</strong> Ceux qui pratiquent un peu chaque jour progressent plus vite que ceux qui bachotent la veille.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 20 : APPEL À COMMENCER ----------
+        {
+            content: `
+                <h1 class="anim-item">C'est parti.</h1>
+                <p class="lead anim-item" style="font-size:1.6rem; margin-top:1.5rem; color:white;">
+                    Rendez-vous au Jour 1 pour votre première ligne de code.
+                </p>
+                <p class="anim-item" style="color:rgba(255,255,255,0.9); font-size:1.15rem; margin-top:1rem; max-width:700px;">
+                    Dans 7 jours, vous aurez un site web en ligne. Ce site vous appartiendra.
+                    Il portera votre nom, votre projet, votre ambition.
+                </p>
+                <a href="jour1.html" class="btn-big anim-item">
+                    <i class="fas fa-play"></i> Commencer le Jour 1
+                </a>
+                <p class="anim-item" style="color:rgba(255,255,255,0.7); font-size:0.95rem; margin-top:2.5rem;">
+                    Vous pouvez aussi revenir à tout moment à cette présentation.
+                </p>
+            `,
+            className: 'slide-final'
+        }
+
+        ];
+
+        // ============================================================
+        // ÉTAT
+        // ============================================================
+        let currentSlide = 0;
+        const totalSlides = slidesData.length;
+
+        // ============================================================
+        // AFFICHAGE
+        // ============================================================
+        function renderSlide(index) {
+            const stage = document.getElementById('slideStage');
+            const slide = slidesData[index];
+            stage.innerHTML = `<div class="slide-content ${slide.className || ''}">${slide.content}</div>`;
+            renderDots();
+        }
+
+        function renderDots() {
+            const dots = document.getElementById('progressDots');
+            dots.innerHTML = '';
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'dot' + (i === currentSlide ? ' active' : '');
+                dots.appendChild(dot);
+            }
+        }
+
+        function goNext() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                renderSlide(currentSlide);
+            }
+        }
+
+        function goPrev() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                renderSlide(currentSlide);
+            }
+        }
+
+        // ============================================================
+        // CODE D'ACCÈS — WEB2026 (base64 : V0VCMjAyNg==)
+        // ============================================================
+        function checkAccess() {
+            const input = document.getElementById('accessInput');
+            const error = document.getElementById('accessError');
+            const expected = 'V0VCMjAyNg==';
+            const entered = btoa(input.value.trim());
+            if (entered === expected) {
+                document.getElementById('accessOverlay').classList.add('hidden');
+                document.getElementById('presentationContainer').classList.add('active');
+                renderSlide(currentSlide);
+            } else {
+                error.classList.add('visible');
+                input.value = '';
+                input.focus();
+                setTimeout(() => error.classList.remove('visible'), 2500);
+            }
+        }
+
+        document.getElementById('accessBtn').addEventListener('click', checkAccess);
+        document.getElementById('accessInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') checkAccess();
+        });
+
+        // ============================================================
+        // NAVIGATION CLAVIER
+        // ============================================================
+        document.addEventListener('keydown', function(e) {
+            const container = document.getElementById('presentationContainer');
+            if (!container.classList.contains('active')) return;
+            switch (e.key) {
+                case 'ArrowRight':
+                case ' ':
+                case 'PageDown':
+                    e.preventDefault();
+                    goNext();
+                    break;
+                case 'ArrowLeft':
+                case 'PageUp':
+                    e.preventDefault();
+                    goPrev();
+                    break;
+                case 'Escape':
+                    if (confirm('Quitter la présentation ?')) {
+                        document.getElementById('presentationContainer').classList.remove('active');
+                        document.getElementById('accessOverlay').classList.remove('hidden');
+                        currentSlide = 0;
+                    }
+                    break;
+            }
+        });
+
+        // ============================================================
+        // NAVIGATION TACTILE
+        // ============================================================
+        let touchStartX = 0;
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        document.addEventListener('touchend', function(e) {
+            const deltaX = e.changedTouches[0].screenX - touchStartX;
+            if (Math.abs(deltaX) > 60) {
+                if (deltaX < 0) goNext();
+                else goPrev();
+            }
+        });
+    </script>
+
+</body>
+</html>

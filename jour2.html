@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Formation Développement Web · Jour 2 — HTML approfondi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        /* ===== VARIABLES ===== */
+        :root {
+            --bleu: #0B3FA5;
+            --bleu-profond: #072a6e;
+            --bleu-clair: #e8f0fe;
+            --orange: #FF6B35;
+            --orange-clair: #fff4e5;
+            --vert: #059669;
+            --vert-clair: #ecfdf5;
+            --violet: #7c3aed;
+            --violet-clair: #f3e8ff;
+            --rouge: #dc2626;
+            --rouge-clair: #fef2f2;
+            --jaune: #f59e0b;
+            --jaune-clair: #fffbeb;
+            --texte: #1e293b;
+            --texte-secondaire: #475569;
+            --blanc: #ffffff;
+            --bordure: #e2e8f0;
+            --transition: 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background: #0d1117;
+            color: var(--texte);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            -webkit-font-smoothing: antialiased;
+            user-select: none;
+        }
+
+        /* ===== ÉCRAN DE CODE D'ACCÈS ===== */
+        .access-overlay {
+            position: fixed; inset: 0; z-index: 99999;
+            background: linear-gradient(135deg, var(--bleu-profond) 0%, #0d1b3e 100%);
+            display: flex; align-items: center; justify-content: center;
+            transition: opacity 0.7s ease, visibility 0.7s ease;
+        }
+        .access-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .access-card {
+            background: var(--blanc); border-radius: 2rem; padding: 3rem 2.5rem;
+            text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            max-width: 420px; width: 90%; animation: floatIn 0.8s ease;
+        }
+        @keyframes floatIn {
+            from { opacity: 0; transform: translateY(40px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .access-card .logo-symbol {
+            background: var(--bleu); color: white; width: 64px; height: 64px;
+            border-radius: 18px; display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 1.6rem; margin: 0 auto 1.2rem;
+        }
+        .access-card h2 { color: var(--bleu); font-size: 1.4rem; margin-bottom: 0.5rem; }
+        .access-card p { color: #475569; margin-bottom: 1.8rem; font-size: 0.9rem; }
+        .access-input {
+            width: 100%; padding: 0.9rem 1.3rem; border: 2px solid var(--bordure);
+            border-radius: 14px; font-family: inherit; font-size: 1rem;
+            text-align: center; letter-spacing: 2px; transition: var(--transition); margin-bottom: 1rem;
+        }
+        .access-input:focus { outline: none; border-color: var(--bleu); box-shadow: 0 0 0 4px rgba(11,63,165,0.1); }
+        .access-btn {
+            width: 100%; padding: 0.9rem; background: var(--orange); color: white;
+            border: none; border-radius: 14px; font-weight: 700; font-size: 1rem;
+            font-family: inherit; cursor: pointer; transition: var(--transition);
+        }
+        .access-btn:hover { background: #e55a2b; transform: translateY(-2px); }
+        .access-error {
+            color: #dc2626; font-size: 0.85rem; margin-top: 0.5rem;
+            display: none; font-weight: 600;
+        }
+        .access-error.visible { display: block; animation: shake 0.5s ease; }
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        /* ===== CONTAINER PROJECTION ===== */
+        .presentation-container {
+            display: none; position: fixed; inset: 0; background: #0d1117; z-index: 100;
+        }
+        .presentation-container.active { display: block; }
+        .slide-stage {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .slide-content {
+            background: white; width: 100%; height: 100%;
+            overflow-y: auto; padding: 3rem 4.5rem;
+            position: relative; animation: slideIn 0.4s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: scale(0.97); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .slide-header {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(8px);
+            padding: 0.6rem 1.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--bordure);
+            font-size: 0.8rem; font-weight: 600;
+        }
+        .slide-header .bloc-tag {
+            background: var(--bleu); color: white; padding: 0.25rem 0.75rem;
+            border-radius: 999px; font-size: 0.7rem; letter-spacing: 0.5px;
+        }
+        .slide-header .type-tag {
+            padding: 0.25rem 0.75rem; border-radius: 999px;
+            font-size: 0.7rem; letter-spacing: 0.5px; font-weight: 700;
+        }
+        .type-cours { background: var(--bleu-clair); color: var(--bleu); }
+        .type-pratique { background: var(--vert-clair); color: var(--vert); }
+        .type-exercice { background: var(--orange-clair); color: var(--orange); }
+        .type-synthese { background: var(--violet-clair); color: var(--violet); }
+        .slide-header .num { color: var(--texte-secondaire); }
+
+        .nav-hint {
+            position: fixed; bottom: 1rem; right: 1rem; z-index: 500;
+            color: rgba(255,255,255,0.3); font-size: 0.7rem;
+            font-weight: 600; letter-spacing: 0.5px; pointer-events: none;
+        }
+
+        /* ===== ANIMATIONS ===== */
+        .anim-item { opacity: 0; transform: translateY(15px); animation: fadeUp 0.5s ease forwards; }
+        .anim-item:nth-child(1) { animation-delay: 0.05s; }
+        .anim-item:nth-child(2) { animation-delay: 0.15s; }
+        .anim-item:nth-child(3) { animation-delay: 0.25s; }
+        .anim-item:nth-child(4) { animation-delay: 0.35s; }
+        .anim-item:nth-child(5) { animation-delay: 0.45s; }
+        .anim-item:nth-child(6) { animation-delay: 0.55s; }
+        .anim-item:nth-child(7) { animation-delay: 0.65s; }
+        .anim-item:nth-child(8) { animation-delay: 0.75s; }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+        /* ===== TYPOGRAPHIE ===== */
+        h1 { font-size: 3rem; font-weight: 800; letter-spacing: -1px; color: var(--bleu); line-height: 1.1; }
+        h2 { font-size: 2.1rem; font-weight: 700; color: var(--bleu); line-height: 1.2; margin-bottom: 1rem; }
+        h3 { font-size: 1.4rem; font-weight: 700; color: var(--texte); }
+        h4 { font-size: 1.15rem; font-weight: 700; }
+        p { font-size: 1.25rem; line-height: 1.55; color: var(--texte); }
+        li { font-size: 1.15rem; line-height: 1.65; }
+        .lead { font-size: 1.4rem; color: var(--texte-secondaire); line-height: 1.5; }
+
+        /* ===== SLIDE DE TITRE ===== */
+        .slide-title {
+            background: linear-gradient(135deg, #0B3FA5 0%, #072a6e 100%);
+            color: white; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; text-align: center;
+        }
+        .slide-title h1 { color: white; font-size: 3.2rem; }
+        .slide-title .lead { color: rgba(255,255,255,0.85); margin-top: 1rem; }
+        .slide-title .meta {
+            color: rgba(255,255,255,0.6); font-size: 1rem; margin-top: 2rem;
+            letter-spacing: 1px;
+        }
+
+        /* ===== SLIDE PLAN ===== */
+        .bloc-plan {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 1rem; margin-top: 2rem;
+        }
+        .bloc-item {
+            background: #f8fafc; border-radius: 16px; padding: 1.5rem 1.2rem;
+            border-top: 5px solid var(--bleu); text-align: left;
+        }
+        .bloc-item .num {
+            font-size: 0.75rem; font-weight: 800; color: var(--bleu);
+            letter-spacing: 1.5px; margin-bottom: 0.5rem;
+        }
+        .bloc-item h4 { color: var(--texte); margin-bottom: 0.4rem; font-size: 1.05rem; }
+        .bloc-item p { font-size: 0.9rem; color: var(--texte-secondaire); }
+        .bloc-item .duree {
+            font-size: 0.75rem; font-weight: 700; color: var(--orange);
+            margin-top: 0.6rem; display: block;
+        }
+
+        /* ===== SLIDE COURS ===== */
+        .cours-content { max-width: 1000px; margin: 0 auto; }
+        .cours-content h2 { margin-bottom: 1.2rem; }
+        .cours-content p { margin-bottom: 1rem; }
+        .cours-content ul { padding-left: 1.5rem; margin-bottom: 1rem; }
+        .cours-content li { margin-bottom: 0.4rem; }
+
+        /* ===== CODE ===== */
+        pre {
+            background: #1e293b; color: #e2e8f0;
+            padding: 1.3rem 1.5rem; border-radius: 12px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 1rem; line-height: 1.65;
+            overflow-x: auto; margin: 1rem 0;
+            border-left: 4px solid var(--orange);
+        }
+        pre .tag { color: #7dd3fc; }
+        pre .attr { color: #fbbf24; }
+        pre .val { color: #86efac; }
+        pre .txt { color: #e2e8f0; }
+        pre .com { color: #64748b; font-style: italic; }
+        code {
+            background: #f1f5f9; padding: 0.15rem 0.4rem;
+            border-radius: 4px; font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.9em; color: #db2777;
+        }
+
+        /* ===== BOXES ===== */
+        .box {
+            border-radius: 12px; padding: 1rem 1.4rem; margin: 1rem 0;
+            font-size: 1.05rem; border-left: 5px solid;
+            display: flex; align-items: flex-start; gap: 0.7rem;
+        }
+        .box i { font-size: 1.2rem; flex-shrink: 0; margin-top: 0.15rem; }
+        .box-tip { background: var(--bleu-clair); border-color: var(--bleu); color: #0a2c5c; }
+        .box-important { background: var(--orange-clair); border-color: var(--orange); color: #6b3a1f; }
+        .box-success { background: var(--vert-clair); border-color: var(--vert); color: #064e3b; }
+        .box-warning { background: var(--rouge-clair); border-color: var(--rouge); color: #7f1d1d; }
+        .box-info { background: var(--violet-clair); border-color: var(--violet); color: #3b0764; }
+
+        /* ===== SLIDE PRATIQUE ===== */
+        .slide-pratique { background: #f0fdf4; }
+        .pratique-etapes {
+            background: white; border-radius: 14px; padding: 1.5rem 2rem;
+            border: 2px solid var(--vert); margin-top: 1.2rem;
+        }
+        .pratique-etapes ol { padding-left: 1.5rem; }
+        .pratique-etapes li { margin-bottom: 0.7rem; font-size: 1.1rem; }
+        .check-item {
+            display: flex; align-items: flex-start; gap: 0.7rem;
+            padding: 0.6rem 0; border-bottom: 1px dashed var(--bordure);
+        }
+        .check-item:last-child { border-bottom: none; }
+        .check-item .num-circle {
+            background: var(--vert); color: white; width: 28px; height: 28px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
+        }
+        .check-item .txt { font-size: 1.05rem; }
+
+        /* ===== SLIDE EXERCICE ===== */
+        .slide-exercice { background: #fff7ed; }
+
+        /* ===== SLIDE SYNTHÈSE ===== */
+        .slide-synthese { background: #f5f3ff; }
+
+        /* ===== TABLEAU ===== */
+        .table-simple {
+            width: 100%; border-collapse: collapse; font-size: 1.05rem;
+            background: white; border-radius: 12px; overflow: hidden;
+            margin: 1rem 0;
+        }
+        .table-simple th {
+            background: var(--bleu); color: white; padding: 0.8rem 1.1rem;
+            text-align: left; font-weight: 700; font-size: 1rem;
+        }
+        .table-simple td { padding: 0.65rem 1.1rem; border-bottom: 1px solid var(--bordure); }
+        .table-simple tr:last-child td { border-bottom: none; }
+
+        /* ===== DEUX COLONNES ===== */
+        .cols-2 {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 1.5rem; margin-top: 1rem;
+        }
+        .mini-card {
+            background: #f8fafc; border-radius: 12px; padding: 1.2rem;
+            border: 1px solid var(--bordure);
+        }
+        .mini-card h4 { color: var(--bleu); margin-bottom: 0.4rem; }
+        .mini-card p { font-size: 0.95rem; color: var(--texte-secondaire); }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .slide-content { padding: 2rem 1.5rem; }
+            h1 { font-size: 1.8rem; }
+            h2 { font-size: 1.4rem; }
+            p, li { font-size: 1rem; }
+            .bloc-plan { grid-template-columns: 1fr 1fr; }
+            .cols-2 { grid-template-columns: 1fr; }
+            .access-card { padding: 2rem 1.5rem; }
+            pre { font-size: 0.85rem; }
+            .slide-header { font-size: 0.7rem; padding: 0.5rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- =========================================================
+         ÉCRAN DE CODE D'ACCÈS
+         Mot de passe : WEB2026 (base64 : V0VCMjAyNg==)
+         ========================================================= -->
+    <div class="access-overlay" id="accessOverlay">
+        <div class="access-card">
+            <div class="logo-symbol">WEB</div>
+            <h2>Jour 2 — HTML approfondi</h2>
+            <p>Formation Développement Web<br>Saisissez le code d'accès.</p>
+            <input type="password" class="access-input" id="accessInput" placeholder="Code d'accès" autocomplete="off" />
+            <button class="access-btn" id="accessBtn"><i class="fas fa-arrow-right"></i> Commencer</button>
+            <div class="access-error" id="accessError">Code incorrect. Réessayez.</div>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         CONTENEUR PROJECTION
+         ========================================================= -->
+    <div class="presentation-container" id="presentationContainer">
+        <div class="slide-header" id="slideHeader" style="display:none;">
+            <div>
+                <span class="bloc-tag" id="blocTag">BLOC 1</span>
+                <span class="type-tag" id="typeTag">Cours</span>
+            </div>
+            <div class="num"><span id="slideNum">1</span> / <span id="slideTotal">20</span></div>
+        </div>
+        <div class="slide-stage" id="slideStage"></div>
+        <div class="nav-hint">← → · Échap pour quitter</div>
+    </div>
+
+    <script>
+        // ============================================================
+        // DONNÉES DES SLIDES — JOUR 2 : HTML APPROFONDI
+        // ============================================================
+        const slidesData = [
+
+        // ---------- SLIDE 1 : TITRE ----------
+        {
+            type: 'title',
+            bloc: '—',
+            content: `
+                <h1>HTML approfondi</h1>
+                <p class="lead">Jour 2 — Structurer un vrai contenu</p>
+                <p class="lead" style="font-size:1.15rem; margin-top:1.5rem;">
+                    Titres · Images · Liens · Listes · Navigation entre pages
+                </p>
+                <p class="meta">DURÉE : 2 HEURES · NIVEAU : DÉBUTANT → INTERMÉDIAIRE</p>
+            `,
+            className: 'slide-title'
+        },
+
+        // ---------- SLIDE 2 : PLAN ----------
+        {
+            type: 'cours',
+            bloc: '—',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Programme des 2 heures</h2>
+                    <p class="anim-item">Quatre blocs de 30 minutes. Le Jour 1 a posé les bases ; aujourd'hui, on structure.</p>
+                    <div class="bloc-plan">
+                        <div class="bloc-item anim-item">
+                            <div class="num">BLOC 1</div>
+                            <h4>Le texte structuré</h4>
+                            <p>Titres hiérarchisés, emphase, listes.</p>
+                            <span class="duree">30 min</span>
+                        </div>
+                        <div class="bloc-item anim-item">
+                            <div class="num">BLOC 2</div>
+                            <h4>Liens & navigation</h4>
+                            <p>Créer 3 pages reliées entre elles.</p>
+                            <span class="duree">30 min</span>
+                        </div>
+                        <div class="bloc-item anim-item">
+                            <div class="num">BLOC 3</div>
+                            <h4>Images & sémantique</h4>
+                            <p>Intégrer des images, structurer proprement.</p>
+                            <span class="duree">30 min</span>
+                        </div>
+                        <div class="bloc-item anim-item">
+                            <div class="num">BLOC 4</div>
+                            <h4>Menu commun & IA</h4>
+                            <p>Navigation partagée, DeepSeek, exercice final.</p>
+                            <span class="duree">30 min</span>
+                        </div>
+                    </div>
+                    <div class="box box-tip anim-item" style="margin-top:1.5rem;">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>Objectif du jour :</strong> transformer la page brute du Jour 1 en un vrai site à plusieurs pages.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 3 : COURS — RÉVISION ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Où en sommes-nous ?</h2>
+                    <p class="anim-item">Rappel express du Jour 1 avant d'aller plus loin.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Acquis</th><th>Statut</th></tr></thead>
+                        <tbody>
+                            <tr><td>Structure d'un fichier HTML (DOCTYPE, html, head, body)</td><td>✅ Jour 1</td></tr>
+                            <tr><td>Balises de texte : h1, h2, p</td><td>✅ Jour 1</td></tr>
+                            <tr><td>Balises médias : img, a, button</td><td>✅ Jour 1 (aperçu)</td></tr>
+                            <tr><td>Listes : ul, li</td><td>✅ Jour 1 (aperçu)</td></tr>
+                            <tr><td>Live Server, VS Code</td><td>✅ Jour 1</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-important anim-item">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>Aujourd'hui :</strong> on approfondit chaque balise vue en aperçu, et on ajoute de nouvelles pour structurer un vrai site.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 4 : COURS — HIÉRARCHIE DES TITRES ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">La hiérarchie des titres : h1 à h6</h2>
+                    <p class="anim-item">HTML propose 6 niveaux de titres. On les utilise du plus important au moins important.</p>
+                    <pre class="anim-item"><span class="tag">&lt;h1&gt;</span><span class="txt">Titre principal — une seule fois par page</span><span class="tag">&lt;/h1&gt;</span>
+<span class="tag">&lt;h2&gt;</span><span class="txt">Grande section</span><span class="tag">&lt;/h2&gt;</span>
+<span class="tag">&lt;h3&gt;</span><span class="txt">Sous-section</span><span class="tag">&lt;/h3&gt;</span>
+<span class="tag">&lt;h4&gt;</span><span class="txt">Détail</span><span class="tag">&lt;/h4&gt;</span>
+<span class="tag">&lt;h5&gt;</span><span class="txt">Détail plus fin</span><span class="tag">&lt;/h5&gt;</span>
+<span class="tag">&lt;h6&gt;</span><span class="txt">Le plus petit niveau</span><span class="tag">&lt;/h6&gt;</span></pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Règle</th><th>Pourquoi</th></tr></thead>
+                        <tbody>
+                            <tr><td>Un seul <code>&lt;h1&gt;</code> par page</td><td>C'est le titre principal — il résume la page</td></tr>
+                            <tr><td>Ne pas sauter de niveau</td><td>Après un h1 vient un h2, pas un h4</td></tr>
+                            <tr><td>Les titres structurent la page</td><td>Ils permettent aux lecteurs et aux moteurs de recherche de comprendre</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Analogie :</strong> un livre a un titre (h1), des chapitres (h2), des sous-sections (h3). Le Web fonctionne pareil.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 5 : COURS — TEXTE : STRONG, EM, BR, HR ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Mettre en valeur le texte</h2>
+                    <p class="anim-item">Quatre balises pour insister, séparer ou mettre en valeur.</p>
+                    <pre class="anim-item"><span class="tag">&lt;p&gt;</span><span class="txt">Ceci est </span><span class="tag">&lt;strong&gt;</span><span class="txt">très important</span><span class="tag">&lt;/strong&gt;</span><span class="txt">.</span><span class="tag">&lt;/p&gt;</span>
+
+<span class="tag">&lt;p&gt;</span><span class="txt">Ceci est </span><span class="tag">&lt;em&gt;</span><span class="txt">mis en valeur</span><span class="tag">&lt;/em&gt;</span><span class="txt">.</span><span class="tag">&lt;/p&gt;</span>
+
+<span class="tag">&lt;p&gt;</span><span class="txt">Première ligne</span><span class="tag">&lt;br&gt;</span><span class="txt">Deuxième ligne</span><span class="tag">&lt;/p&gt;</span>
+
+<span class="tag">&lt;hr&gt;</span></pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Balise</th><th>Effet</th><th>Usage</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>&lt;strong&gt;</code></td><td>Texte en gras</td><td>Information importante</td></tr>
+                            <tr><td><code>&lt;em&gt;</code></td><td>Texte en italique</td><td>Accent, mise en valeur</td></tr>
+                            <tr><td><code>&lt;br&gt;</code></td><td>Saut de ligne</td><td>Forcer un retour à la ligne</td></tr>
+                            <tr><td><code>&lt;hr&gt;</code></td><td>Ligne horizontale</td><td>Séparer deux sections</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-warning anim-item">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div><strong>Attention :</strong> <code>&lt;br&gt;</code> et <code>&lt;hr&gt;</code> sont auto-fermantes — pas de <code>&lt;/br&gt;</code>.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 6 : COURS — LES LISTES ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Les listes : ul, ol, li</h2>
+                    <p class="anim-item">Deux types de listes : à puces (non ordonnée) et numérotée (ordonnée).</p>
+                    <pre class="anim-item"><span class="com">&lt;!-- Liste à puces --&gt;</span>
+<span class="tag">&lt;ul&gt;</span>
+  <span class="tag">&lt;li&gt;</span><span class="txt">Premier élément</span><span class="tag">&lt;/li&gt;</span>
+  <span class="tag">&lt;li&gt;</span><span class="txt">Deuxième élément</span><span class="tag">&lt;/li&gt;</span>
+<span class="tag">&lt;/ul&gt;</span>
+
+<span class="com">&lt;!-- Liste numérotée --&gt;</span>
+<span class="tag">&lt;ol&gt;</span>
+  <span class="tag">&lt;li&gt;</span><span class="txt">Étape 1</span><span class="tag">&lt;/li&gt;</span>
+  <span class="tag">&lt;li&gt;</span><span class="txt">Étape 2</span><span class="tag">&lt;/li&gt;</span>
+<span class="tag">&lt;/ol&gt;</span></pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Balise</th><th>Type</th><th>Quand l'utiliser</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>&lt;ul&gt;</code></td><td>Liste à puces</td><td>Éléments sans ordre précis</td></tr>
+                            <tr><td><code>&lt;ol&gt;</code></td><td>Liste numérotée</td><td>Étapes dans un ordre précis</td></tr>
+                            <tr><td><code>&lt;li&gt;</code></td><td>Élément de liste</td><td>À utiliser dans ul ou ol</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>On peut imbriquer les listes :</strong> une <code>&lt;ul&gt;</code> à l'intérieur d'un <code>&lt;li&gt;</code> crée un sous-niveau.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 7 : COURS — LES LIENS ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 1',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Les liens : le cœur du Web</h2>
+                    <p class="anim-item">La balise <code>&lt;a&gt;</code> relie les pages entre elles. Trois types de liens.</p>
+                    <pre class="anim-item"><span class="com">&lt;!-- Lien externe (vers un autre site) --&gt;</span>
+<span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"https://developer.mozilla.org"</span><span class="tag">&gt;</span><span class="txt">Documentation MDN</span><span class="tag">&lt;/a&gt;</span>
+
+<span class="com">&lt;!-- Lien interne (vers une page de votre site) --&gt;</span>
+<span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"contact.html"</span><span class="tag">&gt;</span><span class="txt">Nous contacter</span><span class="tag">&lt;/a&gt;</span>
+
+<span class="com">&lt;!-- Lien ancre (vers une section de la même page) --&gt;</span>
+<span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"#services"</span><span class="tag">&gt;</span><span class="txt">Voir nos services</span><span class="tag">&lt;/a&gt;</span>
+<span class="tag">&lt;h2</span> <span class="attr">id</span>=<span class="val">"services"</span><span class="tag">&gt;</span><span class="txt">Nos services</span><span class="tag">&lt;/h2&gt;</span></pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Type</th><th>Exemple</th><th>Comportement</th></tr></thead>
+                        <tbody>
+                            <tr><td>Externe</td><td><code>href="https://..."</code></td><td>Ouvre un autre site</td></tr>
+                            <tr><td>Interne</td><td><code>href="page.html"</code></td><td>Ouvre une page du même dossier</td></tr>
+                            <tr><td>Ancre</td><td><code>href="#section"</code></td><td>Descend vers une section de la page</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-important anim-item">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>C'est cette balise</strong> qui fait d'un ensemble de pages un <em>site</em> web.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 8 : PRATIQUE — 3 PAGES RELIÉES ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 2',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : créer 3 pages reliées</h2>
+                    <p class="anim-item">Nous allons créer un mini-site à 3 pages, toutes liées entre elles.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Dans votre dossier <code>mon-site</code>, créez 2 nouveaux fichiers : <code>contact.html</code> et <code>apropos.html</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Dans chacun, tapez <code>!</code> + <strong>Tab</strong> pour générer la structure de base.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Dans <code>index.html</code>, ajoutez en haut du <code>&lt;body&gt;</code> : <code>&lt;a href="apropos.html"&gt;À propos&lt;/a&gt;</code> et <code>&lt;a href="contact.html"&gt;Contact&lt;/a&gt;</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Dans <code>apropos.html</code>, ajoutez un <code>&lt;h1&gt;</code>, un <code>&lt;p&gt;</code> et un lien retour <code>&lt;a href="index.html"&gt;Accueil&lt;/a&gt;</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Faites pareil dans <code>contact.html</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">6</div>
+                            <div class="txt">Testez : ouvrez <code>index.html</code> avec Live Server, cliquez sur les liens. Vous naviguez entre vos pages !</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Votre premier site à 3 pages fonctionne.</strong> On va maintenant l'enrichir.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 9 : COURS — LES IMAGES ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 2',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Les images : src, alt et dimensions</h2>
+                    <p class="anim-item">La balise <code>&lt;img&gt;</code> affiche une image. Elle a besoin de 2 attributs obligatoires.</p>
+                    <pre class="anim-item"><span class="tag">&lt;img</span> <span class="attr">src</span>=<span class="val">"images/photo.jpg"</span> 
+     <span class="attr">alt</span>=<span class="val">"Description de l'image"</span>
+     <span class="attr">width</span>=<span class="val">"400"</span><span class="tag">&gt;</span></pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Attribut</th><th>Rôle</th><th>Obligatoire ?</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>src</code></td><td>Chemin vers l'image (URL ou fichier local)</td><td>Oui</td></tr>
+                            <tr><td><code>alt</code></td><td>Description si l'image ne charge pas</td><td>Oui (accessibilité)</td></tr>
+                            <tr><td><code>width</code></td><td>Largeur en pixels</td><td>Non — recommandé</td></tr>
+                            <tr><td><code>height</code></td><td>Hauteur en pixels</td><td>Non — recommandé</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Bonne pratique :</strong> ne jamais mettre une image géante (3000px) dans une petite case. Redimensionnez d'abord.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 10 : COURS — ORGANISER LES FICHIERS ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 2',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Organiser les fichiers du projet</h2>
+                    <p class="anim-item">Un projet propre évite 90 % des problèmes d'images cassées.</p>
+                    <pre class="anim-item">mon-site/
+├── index.html
+├── apropos.html
+├── contact.html
+└── images/
+    ├── photo1.jpg
+    ├── photo2.jpg
+    └── logo.png</pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Règle</th><th>Pourquoi</th></tr></thead>
+                        <tbody>
+                            <tr><td>Un dossier <code>images/</code> séparé</td><td>On retrouve ses images facilement</td></tr>
+                            <tr><td>Noms de fichiers sans espaces ni accents</td><td><code>photo1.jpg</code> pas <code>photo élève.jpg</code></td></tr>
+                            <tr><td>Noms en minuscules</td><td>Certains serveurs sont sensibles à la casse</td></tr>
+                            <tr><td>Formats : .jpg, .png, .webp</td><td>JPG pour photos, PNG pour logos</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-warning anim-item">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div><strong>Erreur classique :</strong> mettre <code>src="C:\Users\hp\Bureau\photo.jpg"</code>. Non ! Utilisez un <strong>chemin relatif</strong> : <code>src="images/photo.jpg"</code>.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 11 : PRATIQUE — AJOUTER 3 IMAGES ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 2',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : ajouter 3 images</h2>
+                    <p class="anim-item">Téléchargez ou copiez 3 images dans votre dossier <code>images/</code>.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Dans <code>mon-site</code>, créez un dossier <code>images</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Copiez 3 images dedans. Renommez-les <code>photo1.jpg</code>, <code>photo2.jpg</code>, <code>photo3.jpg</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Dans <code>index.html</code>, sous votre <code>&lt;h1&gt;</code>, ajoutez les 3 balises <code>&lt;img&gt;</code> correspondantes.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Ajoutez <code>alt</code> à chaque image avec une description courte.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Limitez la largeur : <code>width="300"</code> sur chaque image.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">6</div>
+                            <div class="txt">Enregistrez. Regardez le navigateur. Les 3 images apparaissent.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Si une image ne s'affiche pas :</strong> vérifiez son nom exact et son emplacement dans <code>images/</code>.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 12 : COURS — BALISES SÉMANTIQUES ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Les balises sémantiques</h2>
+                    <p class="anim-item">HTML moderne propose des balises qui décrivent <em>le rôle</em> de chaque zone de la page.</p>
+                    <pre class="anim-item"><span class="tag">&lt;header&gt;</span>
+  <span class="tag">&lt;h1&gt;</span><span class="txt">Titre du site</span><span class="tag">&lt;/h1&gt;</span>
+<span class="tag">&lt;/header&gt;</span>
+
+<span class="tag">&lt;nav&gt;</span>
+  <span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"index.html"</span><span class="tag">&gt;</span><span class="txt">Accueil</span><span class="tag">&lt;/a&gt;</span>
+<span class="tag">&lt;/nav&gt;</span>
+
+<span class="tag">&lt;main&gt;</span>
+  <span class="tag">&lt;p&gt;</span><span class="txt">Contenu principal de la page</span><span class="tag">&lt;/p&gt;</span>
+<span class="tag">&lt;/main&gt;</span>
+
+<span class="tag">&lt;footer&gt;</span>
+  <span class="tag">&lt;p&gt;</span><span class="txt">© 2026 — Tous droits réservés</span><span class="tag">&lt;/p&gt;</span>
+<span class="tag">&lt;/footer&gt;</span></pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Balise</th><th>Rôle</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>&lt;header&gt;</code></td><td>En-tête de la page (titre, logo)</td></tr>
+                            <tr><td><code>&lt;nav&gt;</code></td><td>Menu de navigation</td></tr>
+                            <tr><td><code>&lt;main&gt;</code></td><td>Contenu principal (unique par page)</td></tr>
+                            <tr><td><code>&lt;section&gt;</code></td><td>Une section thématique</td></tr>
+                            <tr><td><code>&lt;article&gt;</code></td><td>Un contenu autonome (article de blog)</td></tr>
+                            <tr><td><code>&lt;footer&gt;</code></td><td>Pied de page</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Visuellement, ces balises ne changent rien.</strong> Mais elles rendent le code plus clair pour vous, pour les autres développeurs et pour les moteurs de recherche.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 13 : PRATIQUE — RESTRUCTURER ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : restructurer la page</h2>
+                    <p class="anim-item">On transforme la page en vraie structure sémantique.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Ouvrez <code>index.html</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Enveloppez votre <code>&lt;h1&gt;</code> et le <code>&lt;p&gt;</code> d'intro dans un <code>&lt;header&gt;</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Créez un <code>&lt;nav&gt;</code> juste en dessous, avec les 3 liens vers vos pages.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Enveloppez le reste du contenu (images, texte) dans un <code>&lt;main&gt;</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Ajoutez un <code>&lt;footer&gt;</code> à la fin avec « © 2026 — Mon site ».</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">6</div>
+                            <div class="txt">Enregistrez. Le rendu visuel est identique, mais le code est bien plus propre.</div>
+                        </div>
+                    </div>
+                    <div class="box box-info anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>Réutilisez cette structure</strong> dans <code>apropos.html</code> et <code>contact.html</code>. Copiez la partie <code>&lt;header&gt;</code> + <code>&lt;nav&gt;</code> et <code>&lt;footer&gt;</code>.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 14 : COURS — COMMENTAIRES ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Les commentaires HTML</h2>
+                    <p class="anim-item">Un commentaire est une note invisible dans la page, visible seulement dans le code.</p>
+                    <pre class="anim-item"><span class="com">&lt;!-- Ceci est un commentaire --&gt;</span>
+
+<span class="tag">&lt;h1&gt;</span><span class="txt">Titre</span><span class="tag">&lt;/h1&gt;</span>
+
+<span class="com">&lt;!-- 
+   Section temporairement désactivée
+   &lt;img src="photo.jpg" alt="Photo"&gt;
+--&gt;</span></pre>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Usage</th><th>Exemple</th></tr></thead>
+                        <tbody>
+                            <tr><td>Expliquer une zone du code</td><td><code>&lt;!-- Navigation principale --&gt;</code></td></tr>
+                            <tr><td>Désactiver temporairement du code</td><td><code>&lt;!-- &lt;img src="..."&gt; --&gt;</code></td></tr>
+                            <tr><td>Laisser un rappel à soi-même</td><td><code>&lt;!-- TODO : changer la photo --&gt;</code></td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-important anim-item">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>À retenir :</strong> les commentaires sont visibles dans le code source de la page (F12). Ne mettez jamais d'informations sensibles dedans.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 15 : COURS — CARACTÈRES SPÉCIAUX ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 3',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Les caractères spéciaux (entités HTML)</h2>
+                    <p class="anim-item">Certains caractères ne peuvent pas s'écrire directement en HTML : ils ont un code spécial.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>Caractère</th><th>Code HTML</th><th>Quand l'utiliser</th></tr></thead>
+                        <tbody>
+                            <tr><td>&lt;</td><td><code>&amp;lt;</code></td><td>Afficher un chevron ouvrant</td></tr>
+                            <tr><td>&gt;</td><td><code>&amp;gt;</code></td><td>Afficher un chevron fermant</td></tr>
+                            <tr><td>&amp;</td><td><code>&amp;amp;</code></td><td>Afficher une esperluette</td></tr>
+                            <tr><td>©</td><td><code>&amp;copy;</code></td><td>Symbole copyright</td></tr>
+                            <tr><td>€</td><td><code>&amp;euro;</code></td><td>Symbole euro</td></tr>
+                            <tr><td>é</td><td><code>&amp;eacute;</code></td><td>Lettre accentuée (rare en UTF-8)</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>En UTF-8 (notre cas)</strong>, les accents s'écrivent directement. On n'utilise les entités que pour <code>&lt;</code>, <code>&gt;</code>, <code>&amp;</code> ou des symboles spécifiques.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 16 : PRATIQUE — MENU COMMUN ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 4',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : créer un menu de navigation commun</h2>
+                    <p class="anim-item">Le même menu sur les 3 pages, pour permettre une navigation fluide.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Dans <code>index.html</code>, notez la partie <code>&lt;nav&gt;</code> : les liens vers les 3 pages.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Copiez ce bloc <code>&lt;nav&gt;</code> (Ctrl+C).</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Collez-le dans <code>apropos.html</code> et <code>contact.html</code>, juste après leur <code>&lt;header&gt;</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Vérifiez que les liens sont identiques dans les 3 fichiers.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Ouvrez chaque page avec Live Server. Naviguez librement entre les 3 pages.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Vous avez un site navigable.</strong> C'est la base de tout site moderne.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 17 : COURS — CHECKLIST CONTENU ----------
+        {
+            type: 'cours',
+            bloc: 'BLOC 4',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Checklist d'une page bien structurée</h2>
+                    <p class="anim-item">Avant de considérer une page terminée, vérifiez ces 7 points.</p>
+                    <table class="table-simple anim-item">
+                        <thead><tr><th>#</th><th>Vérification</th></tr></thead>
+                        <tbody>
+                            <tr><td>1</td><td>La page commence par <code>&lt;!DOCTYPE html&gt;</code> et <code>&lt;html lang="fr"&gt;</code></td></tr>
+                            <tr><td>2</td><td>Un seul <code>&lt;h1&gt;</code> par page, avec le titre principal</td></tr>
+                            <tr><td>3</td><td>Les niveaux de titre se suivent (h1, h2, h3…) sans saut</td></tr>
+                            <tr><td>4</td><td>Chaque <code>&lt;img&gt;</code> a un <code>alt</code> descriptif</td></tr>
+                            <tr><td>5</td><td>Les liens fonctionnent (testés au clic)</td></tr>
+                            <tr><td>6</td><td>La structure <code>header / nav / main / footer</code> est respectée</td></tr>
+                            <tr><td>7</td><td>Le code est indenté, lisible, sans balises inutiles</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Conseil :</strong> gardez cette liste près de vous. Elle deviendra un réflexe.</div>
+                    </div>
+                </div>
+            `,
+            className: ''
+        },
+
+        // ---------- SLIDE 18 : PRATIQUE — PROMPT DEEPSEEK ----------
+        {
+            type: 'pratique',
+            bloc: 'BLOC 4',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Pratique : DeepSeek pour générer une page complète</h2>
+                    <p class="anim-item">Nous allons générer une page HTML entière, puis l'adapter.</p>
+                    <div class="pratique-etapes anim-item">
+                        <div class="check-item">
+                            <div class="num-circle">1</div>
+                            <div class="txt">Ouvrez <code>chat.deepseek.com</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">2</div>
+                            <div class="txt">Collez ce prompt : <em>« Donne-moi uniquement le code HTML complet d'une page avec : un header contenant un h1, une nav avec 3 liens, un main contenant un h2, un paragraphe, une image et une liste ul de 3 éléments, et un footer. Pas de CSS, pas d'explication. »</em></div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">3</div>
+                            <div class="txt">Copiez le code.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">4</div>
+                            <div class="txt">Dans VS Code, créez un nouveau fichier <code>services.html</code>. Collez-y le code.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">5</div>
+                            <div class="txt">Adaptez les textes : remplacez le contenu par le vôtre.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle">6</div>
+                            <div class="txt">Testez avec Live Server. Le fichier <code>services.html</code> s'ajoute à votre site.</div>
+                        </div>
+                    </div>
+                    <div class="box box-important anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-info-circle"></i>
+                        <div><strong>Point clé :</strong> DeepSeek propose une base. Vous adaptez, corrigez, comprenez. Ne collez jamais brut sans lire.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-pratique'
+        },
+
+        // ---------- SLIDE 19 : EXERCICE FINAL ----------
+        {
+            type: 'exercice',
+            bloc: 'BLOC 4',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Exercice final : créer une page « À propos »</h2>
+                    <p class="anim-item">Vous allez produire une page complète et bien structurée, de zéro.</p>
+                    <div class="pratique-etapes anim-item" style="border-color:var(--orange);">
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">1</div>
+                            <div class="txt">Créez un fichier <code>apropos.html</code> s'il n'existe pas encore.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">2</div>
+                            <div class="txt">Structure obligatoire : <code>header</code> + <code>nav</code> + <code>main</code> + <code>footer</code>.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">3</div>
+                            <div class="txt">Dans le <code>main</code> : un <code>&lt;h1&gt;</code>, deux <code>&lt;h2&gt;</code>, 3 paragraphes, une <code>&lt;ul&gt;</code> de 4 éléments.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">4</div>
+                            <div class="txt">Ajoutez une image avec un <code>alt</code> pertinent.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">5</div>
+                            <div class="txt">Le <code>nav</code> doit contenir les 4 liens vers toutes vos pages.</div>
+                        </div>
+                        <div class="check-item">
+                            <div class="num-circle" style="background:var(--orange);">6</div>
+                            <div class="txt">Passez la checklist des 7 points avant de valider.</div>
+                        </div>
+                    </div>
+                    <div class="box box-success anim-item" style="margin-top:1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong>Durée :</strong> 10 minutes. Le formateur circule pour corriger en direct.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-exercice'
+        },
+
+        // ---------- SLIDE 20 : SYNTHÈSE ----------
+        {
+            type: 'synthese',
+            bloc: '—',
+            content: `
+                <div class="cours-content">
+                    <h2 class="anim-item">Ce que vous savez faire maintenant</h2>
+                    <ul class="anim-item" style="font-size:1.2rem; line-height:1.8;">
+                        <li>Hiérarchiser les titres avec h1 à h6</li>
+                        <li>Mettre en valeur du texte avec strong, em, br, hr</li>
+                        <li>Créer des listes à puces (ul) et numérotées (ol)</li>
+                        <li>Relier des pages entre elles avec la balise <code>&lt;a&gt;</code></li>
+                        <li>Intégrer des images avec <code>&lt;img&gt;</code>, <code>src</code> et <code>alt</code></li>
+                        <li>Organiser un projet (dossier <code>images/</code>, noms propres)</li>
+                        <li>Structurer avec header, nav, main, section, article, footer</li>
+                        <li>Commenter le code et connaître les entités HTML</li>
+                        <li>Construire un menu de navigation partagé</li>
+                    </ul>
+                    <div class="box box-important anim-item" style="margin-top:1.5rem;">
+                        <i class="fas fa-tasks"></i>
+                        <div><strong>Pour le Jour 3 (CSS) :</strong> apportez vos 3 pages actuelles terminées et fonctionnelles. Nous allons leur donner un vrai style : couleurs, polices, marges, disposition.</div>
+                    </div>
+                    <div class="box box-tip anim-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <div><strong>Conseil entre les séances :</strong> refaites une page complète de zéro, sans regarder les notes. C'est en répétant qu'on ancre les réflexes.</div>
+                    </div>
+                </div>
+            `,
+            className: 'slide-synthese'
+        }
+
+        ];
+
+        // ============================================================
+        // ÉTAT
+        // ============================================================
+        let currentSlide = 0;
+        const totalSlides = slidesData.length;
+
+        // ============================================================
+        // AFFICHAGE
+        // ============================================================
+        function renderSlide(index) {
+            const stage = document.getElementById('slideStage');
+            const slide = slidesData[index];
+            stage.innerHTML = `<div class="slide-content ${slide.className || ''}">${slide.content}</div>`;
+
+            const header = document.getElementById('slideHeader');
+            if (slide.type === 'title') {
+                header.style.display = 'none';
+            } else {
+                header.style.display = 'flex';
+                document.getElementById('blocTag').textContent = slide.bloc || '—';
+                document.getElementById('slideNum').textContent = index + 1;
+                document.getElementById('slideTotal').textContent = totalSlides;
+
+                const typeTag = document.getElementById('typeTag');
+                const typeLabels = {
+                    'cours': 'Cours',
+                    'pratique': 'Pratique',
+                    'exercice': 'Exercice',
+                    'synthese': 'Synthèse'
+                };
+                typeTag.textContent = typeLabels[slide.type] || 'Cours';
+                typeTag.className = 'type-tag type-' + (slide.type || 'cours');
+            }
+        }
+
+        function goNext() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                renderSlide(currentSlide);
+            }
+        }
+
+        function goPrev() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                renderSlide(currentSlide);
+            }
+        }
+
+        // ============================================================
+        // CODE D'ACCÈS — WEB2026 (base64 : V0VCMjAyNg==)
+        // ============================================================
+        function checkAccess() {
+            const input = document.getElementById('accessInput');
+            const error = document.getElementById('accessError');
+            const expected = 'V0VCMjAyNg==';
+            const entered = btoa(input.value.trim());
+            if (entered === expected) {
+                document.getElementById('accessOverlay').classList.add('hidden');
+                document.getElementById('presentationContainer').classList.add('active');
+                renderSlide(currentSlide);
+            } else {
+                error.classList.add('visible');
+                input.value = '';
+                input.focus();
+                setTimeout(() => error.classList.remove('visible'), 2500);
+            }
+        }
+
+        document.getElementById('accessBtn').addEventListener('click', checkAccess);
+        document.getElementById('accessInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') checkAccess();
+        });
+
+        // ============================================================
+        // NAVIGATION CLAVIER
+        // ============================================================
+        document.addEventListener('keydown', function(e) {
+            const container = document.getElementById('presentationContainer');
+            if (!container.classList.contains('active')) return;
+            switch (e.key) {
+                case 'ArrowRight':
+                case ' ':
+                case 'PageDown':
+                    e.preventDefault();
+                    goNext();
+                    break;
+                case 'ArrowLeft':
+                case 'PageUp':
+                    e.preventDefault();
+                    goPrev();
+                    break;
+                case 'Escape':
+                    if (confirm('Quitter la projection ?')) {
+                        document.getElementById('presentationContainer').classList.remove('active');
+                        document.getElementById('accessOverlay').classList.remove('hidden');
+                        currentSlide = 0;
+                    }
+                    break;
+            }
+        });
+
+        // ============================================================
+        // NAVIGATION TACTILE
+        // ============================================================
+        let touchStartX = 0;
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        document.addEventListener('touchend', function(e) {
+            const deltaX = e.changedTouches[0].screenX - touchStartX;
+            if (Math.abs(deltaX) > 60) {
+                if (deltaX < 0) goNext();
+                else goPrev();
+            }
+        });
+    </script>
+
+</body>
+</html>
