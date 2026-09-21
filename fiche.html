@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fiche Formateur · Formation Développement Web</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        :root {
+            --bleu: #0B3FA5;
+            --bleu-profond: #072a6e;
+            --bleu-clair: #e8f0fe;
+            --orange: #FF6B35;
+            --orange-clair: #fff4e5;
+            --vert: #059669;
+            --vert-clair: #ecfdf5;
+            --violet: #7c3aed;
+            --violet-clair: #f3e8ff;
+            --rouge: #dc2626;
+            --rouge-clair: #fef2f2;
+            --jaune: #f59e0b;
+            --jaune-clair: #fffbeb;
+            --texte: #1e293b;
+            --texte-secondaire: #475569;
+            --bordure: #e2e8f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            background: #f4f6fa;
+            color: var(--texte);
+            line-height: 1.55;
+        }
+
+        .page {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 2.5rem 3rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            min-height: 100vh;
+        }
+
+        /* En-tête */
+        .header {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            border-bottom: 3px solid var(--bleu);
+            padding-bottom: 1rem; margin-bottom: 2rem;
+        }
+        .header-left h1 {
+            color: var(--bleu); font-size: 1.7rem; font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        .header-left p {
+            color: var(--texte-secondaire); font-size: 0.9rem; margin-top: 0.2rem;
+        }
+        .header-right {
+            text-align: right; font-size: 0.85rem; color: var(--texte-secondaire);
+        }
+        .header-right strong { color: var(--bleu); font-weight: 700; }
+        .badge {
+            background: var(--orange); color: white;
+            padding: 0.25rem 0.7rem; border-radius: 999px;
+            font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;
+            display: inline-block; margin-bottom: 0.3rem;
+        }
+
+        h2 {
+            font-size: 1.3rem; font-weight: 800; color: var(--bleu);
+            margin: 1.8rem 0 0.9rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 2px solid var(--bleu-clair);
+            display: flex; align-items: center; gap: 0.6rem;
+        }
+        h2 i { color: var(--orange); font-size: 1.1rem; }
+
+        h3 {
+            font-size: 1.05rem; font-weight: 700; color: var(--texte);
+            margin: 1.2rem 0 0.5rem;
+        }
+
+        p { font-size: 0.95rem; margin-bottom: 0.7rem; }
+        ul { padding-left: 1.3rem; margin-bottom: 0.8rem; }
+        li { font-size: 0.93rem; margin-bottom: 0.35rem; }
+
+        table {
+            width: 100%; border-collapse: collapse;
+            font-size: 0.88rem; margin: 0.8rem 0;
+        }
+        th {
+            background: var(--bleu); color: white;
+            padding: 0.6rem 0.8rem; text-align: left;
+            font-weight: 700; font-size: 0.85rem;
+        }
+        td {
+            padding: 0.55rem 0.8rem;
+            border-bottom: 1px solid var(--bordure);
+            vertical-align: top;
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:nth-child(even) td { background: #f8fafc; }
+
+        .box {
+            border-radius: 10px; padding: 0.85rem 1.1rem;
+            margin: 0.9rem 0; font-size: 0.92rem;
+            border-left: 4px solid;
+            display: flex; align-items: flex-start; gap: 0.6rem;
+        }
+        .box i { flex-shrink: 0; margin-top: 0.15rem; }
+        .box-tip { background: var(--bleu-clair); border-color: var(--bleu); color: #0a2c5c; }
+        .box-warning { background: var(--orange-clair); border-color: var(--orange); color: #6b3a1f; }
+        .box-danger { background: var(--rouge-clair); border-color: var(--rouge); color: #7f1d1d; }
+        .box-success { background: var(--vert-clair); border-color: var(--vert); color: #064e3b; }
+
+        .timing-table th:first-child { width: 70px; }
+        .timing-table th:nth-child(2) { width: 90px; }
+        .timing-table th:last-child { width: 90px; }
+
+        .jour-card {
+            background: #f8fafc; border-radius: 12px;
+            padding: 1rem 1.2rem; margin: 0.8rem 0;
+            border-left: 5px solid var(--bleu);
+        }
+        .jour-card h3 { margin-top: 0; color: var(--bleu); }
+        .jour-card .meta {
+            font-size: 0.82rem; color: var(--texte-secondaire);
+            margin-bottom: 0.6rem; font-style: italic;
+        }
+
+        .question-item {
+            background: #f8fafc; border-radius: 8px;
+            padding: 0.7rem 1rem; margin-bottom: 0.6rem;
+            border-left: 3px solid var(--jaune);
+            font-size: 0.9rem;
+        }
+        .question-item strong { color: var(--bleu); display: block; margin-bottom: 0.2rem; }
+
+        .print-note {
+            background: var(--vert-clair); color: #064e3b;
+            padding: 0.5rem 0.9rem; border-radius: 6px;
+            font-size: 0.82rem; margin-bottom: 1.5rem;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+
+        .signature {
+            margin-top: 2.5rem;
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 2rem; padding-top: 1rem;
+            border-top: 1px solid var(--bordure);
+        }
+        .signature div {
+            font-size: 0.85rem; color: var(--texte-secondaire);
+        }
+        .signature .line {
+            border-bottom: 1px solid #94a3b8;
+            height: 30px; margin-bottom: 0.3rem;
+        }
+
+        @media print {
+            body { background: white; }
+            .page { box-shadow: none; padding: 0; }
+            .print-note { display: none; }
+            h2 { page-break-after: avoid; }
+            .jour-card { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+
+    <!-- EN-TÊTE -->
+    <div class="header">
+        <div class="header-left">
+            <div class="badge">FICHE FORMATEUR</div>
+            <h1>Formation Développement Web</h1>
+            <p>Notes pédagogiques · Timing · Réponses types · Gestion de groupe</p>
+        </div>
+        <div class="header-right">
+            <strong>NTIC Solution</strong><br>
+            Banfora, Burkina Faso<br>
+            Version 1.0 · 2026
+        </div>
+    </div>
+
+    <div class="print-note">
+        <i class="fas fa-print"></i>
+        <span>Document destiné au formateur. Imprimez en A4 recto-verso ou consultez sur écran pendant la session.</span>
+    </div>
+
+    <!-- SECTION 1 : CADRE GÉNÉRAL -->
+    <h2><i class="fas fa-info-circle"></i> 1. Cadre général</h2>
+    <table>
+        <tr><td><strong>Public</strong></td><td>Groupe hétérogène : étudiants, commerçants, enseignants, animateurs, entrepreneurs — 6 à 15 apprenants</td></tr>
+        <tr><td><strong>Durée totale</strong></td><td>20 heures sur 7 jours · 2 heures par séance</td></tr>
+        <tr><td><strong>Prérequis</strong></td><td>Aucun prérequis technique</td></tr>
+        <tr><td><strong>Objectif final</strong></td><td>Chaque apprenant publie son propre site web en ligne et le présente</td></tr>
+        <tr><td><strong>Outils</strong></td><td>VS Code · Git · GitHub · GitHub Pages · DeepSeek · Chrome/Firefox</td></tr>
+        <tr><td><strong>Code d'accès</strong></td><td><code>WEB2026</code> pour tous les supports projetés</td></tr>
+        <tr><td><strong>Langues</strong></td><td>Français (support et oral)</td></tr>
+    </table>
+
+    <!-- SECTION 2 : STRUCTURE TYPE D'UNE SÉANCE -->
+    <h2><i class="fas fa-clock"></i> 2. Structure type d'une séance (2h)</h2>
+    <table class="timing-table">
+        <thead><tr><th>Durée</th><th>Moment</th><th>Action du formateur</th></tr></thead>
+        <tbody>
+            <tr><td>5 min</td><td>Accueil</td><td>Salutations, retour sur la séance précédente, questions ouvertes</td></tr>
+            <tr><td>30 min</td><td>Bloc 1</td><td>Projection slides « Cours » + « Pratique » — circule pendant la pratique</td></tr>
+            <tr><td>30 min</td><td>Bloc 2</td><td>Idem — vérifie que chaque apprenant a bien avancé</td></tr>
+            <tr><td>5 min</td><td>Pause</td><td>Respiration, discussion libre</td></tr>
+            <tr><td>30 min</td><td>Bloc 3</td><td>Idem — ajuste le rythme selon le groupe</td></tr>
+            <tr><td>15 min</td><td>Bloc 4 + exercice</td><td>Exercice final, correction collective projetée</td></tr>
+            <tr><td>5 min</td><td>Synthèse</td><td>Récapitulatif + annonce des devoirs pour la séance suivante</td></tr>
+        </tbody>
+    </table>
+
+    <div class="box box-tip">
+        <i class="fas fa-lightbulb"></i>
+        <div><strong>Règle d'or :</strong> ne jamais projeter une slide « Cours » sans enchaîner aussitôt sur une slide « Pratique ». Le cerveau retient ce qu'il fait, pas ce qu'il voit.</div>
+    </div>
+
+    <!-- SECTION 3 : OBJECTIFS PAR JOUR -->
+    <h2><i class="fas fa-calendar-day"></i> 3. Objectifs par jour (vue synthétique)</h2>
+
+    <div class="jour-card">
+        <h3>Jour 1 — Premiers pas</h3>
+        <p class="meta">Comprendre le Web · Installer VS Code · Écrire son premier index.html</p>
+        <ul>
+            <li><strong>À la fin, chaque apprenant sait :</strong> expliquer Internet/Web/site/page, installer VS Code et Live Server, générer du HTML avec DeepSeek, afficher sa première page</li>
+            <li><strong>Exercice final :</strong> page de présentation personnelle (h1 + p + img + ul + a)</li>
+            <li><strong>Devoir :</strong> refaire le fichier index.html de zéro</li>
+        </ul>
+    </div>
+
+    <div class="jour-card" style="border-left-color:var(--violet);">
+        <h3 style="color:var(--violet);">Jour 2 — HTML approfondi</h3>
+        <p class="meta">Titres hiérarchisés · Images · Liens · Listes · Navigation entre pages</p>
+        <ul>
+            <li><strong>À la fin :</strong> hiérarchiser les titres h1-h6, insérer images et liens, créer 3 pages reliées, utiliser les balises sémantiques</li>
+            <li><strong>Exercice final :</strong> page « À propos » structurée</li>
+            <li><strong>Devoir :</strong> 3 images + 2 textes courts sur son sujet</li>
+        </ul>
+    </div>
+
+    <div class="jour-card" style="border-left-color:var(--vert);">
+        <h3 style="color:var(--vert);">Jour 3 — CSS mise en page</h3>
+        <p class="meta">Sélecteurs · Couleurs · Polices · Box model · Flexbox</p>
+        <ul>
+            <li><strong>À la fin :</strong> relier un style.css externe, écrire des règles CSS, contrôler couleurs/polices/marges, disposer 2 blocs côte à côte</li>
+            <li><strong>Exercice final :</strong> appliquer le style à tout le site</li>
+            <li><strong>Devoir :</strong> refaire un style.css de zéro sur une page</li>
+        </ul>
+    </div>
+
+    <div class="jour-card" style="border-left-color:var(--orange);">
+        <h3 style="color:var(--orange);">Jour 4 — CSS avancé & galerie</h3>
+        <p class="meta">Variables CSS · Grid · Cartes · Ombres · Galerie responsive · Media queries</p>
+        <ul>
+            <li><strong>À la fin :</strong> utiliser les variables CSS, créer une grille Grid, concevoir des cartes modernes, galerie responsive</li>
+            <li><strong>Exercice final :</strong> galerie de 6 photos responsive</li>
+            <li><strong>Devoir :</strong> refaire une galerie de zéro</li>
+        </ul>
+    </div>
+
+    <div class="jour-card" style="border-left-color:var(--jaune);">
+        <h3 style="color:#b45309;">Jour 5 — Site multi-pages</h3>
+        <p class="meta">Navigation commune · Fil d'Ariane · Footer pro · Page 404 · Maillage</p>
+        <ul>
+            <li><strong>À la fin :</strong> uniformiser le menu, signaler la page active, structurer l'arborescence, créer footer et page 404</li>
+            <li><strong>Exercice final :</strong> créer une page « Équipe » intégrée</li>
+            <li><strong>Devoir :</strong> ajouter une 7<sup>e</sup> page libre (blog, tarifs, FAQ)</li>
+        </ul>
+    </div>
+
+    <div class="jour-card" style="border-left-color:var(--rouge);">
+        <h3 style="color:var(--rouge);">Jour 6 — Formulaires & JavaScript</h3>
+        <p class="meta">Form HTML · Types de champs · Style · DOM · Validation</p>
+        <ul>
+            <li><strong>À la fin :</strong> créer un formulaire complet, le styliser, écrire du JS simple, manipuler le DOM, valider un formulaire</li>
+            <li><strong>Exercice final :</strong> formulaire complet avec validation JS</li>
+            <li><strong>Devoir :</strong> tester le formulaire sur mobile</li>
+        </ul>
+    </div>
+
+    <div class="jour-card" style="border-left-color:var(--vert);">
+        <h3 style="color:var(--vert);">Jour 7 — Mise en ligne</h3>
+        <p class="meta">GitHub · Git · GitHub Pages · Publication · Présentation</p>
+        <ul>
+            <li><strong>À la fin :</strong> créer un compte GitHub, publier le site, tester en ligne, présenter son projet</li>
+            <li><strong>Exercice final :</strong> présentation de 4 minutes devant le groupe</li>
+            <li><strong>Livrable :</strong> URL du site publié + attestation de fin de formation</li>
+        </ul>
+    </div>
+
+    <!-- SECTION 4 : GESTION DU GROUPE HÉTÉROGÈNE -->
+    <h2><i class="fas fa-users"></i> 4. Gestion d'un groupe hétérogène</h2>
+
+    <h3>Trois profils dans la salle</h3>
+    <table>
+        <thead><tr><th>Profil</th><th>Signes</th><th>Stratégie</th></tr></thead>
+        <tbody>
+            <tr>
+                <td><strong>Débutant total</strong></td>
+                <td>N'a jamais touché un éditeur de code, hésite sur les dossiers, tape lentement</td>
+                <td>Rassurer, accompagner physiquement, lui donner des consignes très détaillées (slide par slide), l'inciter à noter</td>
+            </tr>
+            <tr>
+                <td><strong>Intermédiaire</strong></td>
+                <td>A déjà utilisé Word/Excel, sait gérer des fichiers, avance vite sur les manipulations</td>
+                <td>Laisser avancer, proposer des défis bonus, l'inciter à aider les débutants</td>
+            </tr>
+            <tr>
+                <td><strong>Avancé</strong></td>
+                <td>Connaît déjà un peu HTML ou CSS, s'ennuie sur les slides de base</td>
+                <td>Lui confier des missions (aider les autres, préparer un exemple), lui proposer d'aller plus loin sur chaque exercice</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Techniques de gestion</h3>
+    <ul>
+        <li><strong>Binômes débutant + intermédiaire</strong> : le débutant progresse, l'intermédiaire consolide</li>
+        <li><strong>Rythme :</strong> ne jamais laisser un débutant plus de 3 minutes bloqué. Circuler en permanence.</li>
+        <li><strong>Pauses actives :</strong> pendant les 5 min de pause, demander à chacun ce qu'il a appris aujourd'hui</li>
+        <li><strong>Valorisation :</strong> montrer les réussites de chacun. Un débutant qui publie sa première page mérite un applaudissement.</li>
+        <li><strong>Exercice final :</strong> faire circuler les apprenants pour voir les écrans des autres. L'émulation fonctionne mieux que la comparaison.</li>
+    </ul>
+
+    <!-- SECTION 5 : MATÉRIEL ET PRÉPARATION -->
+    <h2><i class="fas fa-toolbox"></i> 5. Préparation matérielle</h2>
+
+    <h3>Avant chaque séance</h3>
+    <table>
+        <thead><tr><th>Élément</th><th>Vérification</th></tr></thead>
+        <tbody>
+            <tr><td>Projecteur / écran</td><td>Fonctionne, HDMI ou VGA disponible, testé 15 min avant</td></tr>
+            <tr><td>PC formateur</td><td>Fichier HTML du jour ouvert, code d'accès prêt (WEB2026)</td></tr>
+            <tr><td>Connexion Internet</td><td>Wi-Fi actif, débit suffisant, DeepSeek accessible</td></tr>
+            <tr><td>Multi-prise</td><td>Suffisamment de prises pour tous les PC</td></tr>
+            <tr><td>Tableau</td><td>Feutres ou craie, effaceur</td></tr>
+            <tr><td>Fiches apprenant</td><td>Imprimées en nombre suffisant (voir fiche 2)</td></tr>
+        </tbody>
+    </table>
+
+    <div class="box box-warning">
+        <i class="fas fa-exclamation-triangle"></i>
+        <div><strong>Important :</strong> tester la projection du fichier HTML 15 minutes avant le début. La moitié des incidents techniques se détectent à ce moment-là.</div>
+    </div>
+
+    <!-- SECTION 6 : RÉPONSES TYPES AUX QUESTIONS FRÉQUENTES -->
+    <h2><i class="fas fa-question-circle"></i> 6. Réponses types aux questions fréquentes</h2>
+
+    <div class="question-item">
+        <strong>« Est-ce que c'est trop dur pour moi ? »</strong>
+        Cette formation part de zéro. Si vous savez utiliser un navigateur et gérer des dossiers, vous savez assez. Nous avançons par petits pas, avec beaucoup de pratique.
+    </div>
+
+    <div class="question-item">
+        <strong>« Pourquoi mon CSS ne s'applique pas ? »</strong>
+        Ouvrez la console (F12). Vérifiez trois choses : (1) le fichier style.css existe, (2) la balise <code>&lt;link&gt;</code> est bien écrite, (3) le chemin est correct. 90 % des cas viennent de là.
+    </div>
+
+    <div class="question-item">
+        <strong>« Mon image ne s'affiche pas. »</strong>
+        Trois causes fréquentes : le nom du fichier ne correspond pas exactement (majuscules/minuscules comptent), l'image n'est pas dans le bon dossier, le chemin utilise des antislashs (\) au lieu de slashs (/).
+    </div>
+
+    <div class="question-item">
+        <strong>« Je ne comprends rien au JavaScript. »</strong>
+        C'est normal. Le JavaScript est un langage, il s'apprend sur plusieurs mois. Aujourd'hui, nous ne faisons que les bases : réagir à un clic, lire un champ, valider un formulaire. C'est tout.
+    </div>
+
+    <div class="question-item">
+        <strong>« Dois-je acheter un hébergement pour publier mon site ? »</strong>
+        Non. GitHub Pages est gratuit à vie pour les sites statiques (HTML + CSS + JS). Il faudra un hébergement payant plus tard, uniquement si vous ajoutez du PHP ou une base de données.
+    </div>
+
+    <div class="question-item">
+        <strong>« J'ai oublié mon mot de passe GitHub. »</strong>
+        Allez sur github.com → Sign in → Forgot password. GitHub envoie un lien de réinitialisation par email. Notez le nouveau mot de passe dans un carnet ou un gestionnaire.
+    </div>
+
+    <div class="question-item">
+        <strong>« Puis-je utiliser les images de Google ? »</strong>
+        Pour un site personnel ou un exercice : oui, en pratique. Pour un site professionnel publié : il faut utiliser des images libres de droits (Unsplash, Pexels, Pixabay) ou acheter les droits.
+    </div>
+
+    <div class="question-item">
+        <strong>« Et si je n'ai pas d'ordinateur ? »</strong>
+        Plusieurs solutions : partager le PC d'un camarade en binôme, utiliser un ordinateur du centre, ou travailler sur mobile avec un éditeur en ligne (CodePen, StackBlitz) pour suivre les exercices.
+    </div>
+
+    <div class="question-item">
+        <strong>« Est-ce que je peux refaire un site pour moi après la formation ? »</strong>
+        Absolument, et c'est même recommandé. La formation vous donne la méthode. Le deuxième site se fait en moitié moins de temps. Le troisième, en un après-midi.
+    </div>
+
+    <div class="question-item">
+        <strong>« Pourquoi on utilise l'IA ? Ça ne va pas me rendre paresseux ? »</strong>
+        L'IA est un assistant, pas un remplaçant. Elle écrit du code, mais vous devez le lire, le comprendre, l'adapter. Si vous ne comprenez pas une ligne, vous ne maîtrisez rien. La règle : ne jamais copier sans lire.
+    </div>
+
+    <!-- SECTION 7 : POINTS DE VIGILANCE -->
+    <h2><i class="fas fa-shield-alt"></i> 7. Points de vigilance</h2>
+
+    <div class="box box-danger">
+        <i class="fas fa-exclamation-circle"></i>
+        <div><strong>Ne jamais avancer sans vérifier.</strong> À la fin de chaque bloc, faites un tour rapide : tous les apprenants ont-ils bien fait l'étape précédente ? Sinon, corrigez avant d'avancer.</div>
+    </div>
+
+    <div class="box box-danger">
+        <i class="fas fa-exclamation-circle"></i>
+        <div><strong>Ne jamais laisser un apprenant bloqué seul plus de 3 minutes.</strong> Le découragement s'installe vite. Circulez en permanence pendant les phases de pratique.</div>
+    </div>
+
+    <div class="box box-danger">
+        <i class="fas fa-exclamation-circle"></i>
+        <div><strong>Ne jamais promettre ce qui n'est pas dans la formation.</strong> Si une question dépasse le cadre, notez-la et répondez à la séance suivante. L'honnêteté renforce la confiance.</div>
+    </div>
+
+    <div class="box box-warning">
+        <i class="fas fa-exclamation-triangle"></i>
+        <div><strong>Attention aux mots de passe GitHub.</strong> Faites noter à chaque apprenant son email, son nom d'utilisateur et son mot de passe GitHub dans un carnet. Sans cela, les sites publiés seront perdus.</div>
+    </div>
+
+    <div class="box box-warning">
+        <i class="fas fa-exclamation-triangle"></i>
+        <div><strong>Attention aux chemins d'images.</strong> À la fin du Jour 2, vérifiez que tous les chemins d'images sont relatifs (ex : <code>images/photo.jpg</code>) et non absolus (ex : <code>C:\Users\hp\Bureau\photo.jpg</code>).</div>
+    </div>
+
+    <!-- SECTION 8 : APRÈS LA FORMATION -->
+    <h2><i class="fas fa-graduation-cap"></i> 8. Après la formation</h2>
+    <ul>
+        <li><strong>Remise d'attestation :</strong> uniquement aux apprenants ayant suivi les 7 séances et présenté leur projet</li>
+        <li><strong>Envoi du récapitulatif :</strong> par WhatsApp, lien vers le site publié et le groupe WhatsApp du centre</li>
+        <li><strong>Suivi :</strong> proposer un rendez-vous 1 mois après pour voir les progrès</li>
+        <li><strong>Orientation :</strong> ceux qui veulent aller plus loin peuvent suivre la formation PHP/MySQL (niveau intermédiaire)</li>
+        <li><strong>Recommandation :</strong> ouvrir un compte GitHub à tous ceux qui n'en ont pas encore</li>
+    </ul>
+
+    <!-- SECTION 9 : ÉVALUATION -->
+    <h2><i class="fas fa-clipboard-check"></i> 9. Évaluation des acquis</h2>
+    <table>
+        <thead><tr><th>Critère</th><th>Observation</th><th>Indicateur</th></tr></thead>
+        <tbody>
+            <tr><td>Participation</td><td>Présence aux 7 séances</td><td>≥ 6 séances sur 7</td></tr>
+            <tr><td>Pratique quotidienne</td><td>Refaire les exercices à la maison</td><td>Au moins 4 fois sur 7</td></tr>
+            <tr><td>Compréhension HTML</td><td>Écrire une page simple sans aide</td><td>Fin Jour 2</td></tr>
+            <tr><td>Compréhension CSS</td><td>Appliquer un style externe</td><td>Fin Jour 3</td></tr>
+            <tr><td>Autonomie</td><td>Résoudre une erreur simple seul</td><td>Fin Jour 4</td></tr>
+            <tr><td>Site fonctionnel</td><td>Site multi-pages avec nav commun</td><td>Fin Jour 5</td></tr>
+            <tr><td>Interaction</td><td>Formulaire validé en JS</td><td>Fin Jour 6</td></tr>
+            <tr><td>Publication</td><td>Site en ligne accessible publiquement</td><td>Fin Jour 7</td></tr>
+            <tr><td>Présentation</td><td>Présentation de 4 min devant le groupe</td><td>Jour 7</td></tr>
+        </tbody>
+    </table>
+
+    <div class="box box-success">
+        <i class="fas fa-check-circle"></i>
+        <div><strong>L'évaluation est formative, pas sélective.</strong> Aucun apprenant ne doit être « recalé ». L'objectif est de mesurer les progrès, pas de trier.</div>
+    </div>
+
+    <!-- PIED DE PAGE -->
+    <div class="signature">
+        <div>
+            <div class="line"></div>
+            <strong>Nom du formateur :</strong> _________________________
+        </div>
+        <div>
+            <div class="line"></div>
+            <strong>Date de la session :</strong> _________________________
+        </div>
+    </div>
+
+    <p style="text-align:center; color:var(--texte-secondaire); font-size:0.8rem; margin-top:1.5rem;">
+        Document interne NTIC Solution · Formation Développement Web · Version 1.0 · 2026
+    </p>
+
+</div>
+</body>
+</html>
