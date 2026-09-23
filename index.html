@@ -544,16 +544,16 @@
             {
                 num: 3,
                 fichier: 'jour3.html',
-                titre: 'CSS — mise en page',
-                desc: 'Couleurs, polices, marges, disposition en colonnes. Habiller la page.',
+                titre: 'Créer et publier son site',
+                desc: 'Générer un site avec DeepSeek, le coller dans VS Code, le publier sur GitHub Pages et repartir avec son lien.',
                 duree: '2h',
-                status: 'upcoming'
+                status: 'available'
             },
             {
                 num: 4,
                 fichier: 'jour4.html',
-                titre: 'CSS avancé & galerie',
-                desc: 'Grilles, cartes, galerie d\'images responsive. Mise en page moderne.',
+                titre: 'Comprendre le code',
+                desc: 'Lire le code généré par DeepSeek, modifier couleurs, textes et images à sa guise.',
                 duree: '2h',
                 status: 'upcoming'
             },
@@ -576,8 +576,8 @@
             {
                 num: 7,
                 fichier: 'jour7.html',
-                titre: 'Mise en ligne',
-                desc: 'Publier sur GitHub Pages, tester, présenter son site au groupe.',
+                titre: 'Mise en ligne finale',
+                desc: 'Finaliser, personnaliser, présenter son site au groupe et célébrer.',
                 duree: '2h',
                 status: 'upcoming'
             }
@@ -624,13 +624,11 @@
                 const isUpcoming = j.status === 'upcoming';
                 const isAvailable = j.status === 'available';
 
-                // Classe de la carte
                 let cardClass = 'day-card';
                 if (isUpcoming) cardClass += ' upcoming';
                 else if (isDone) cardClass += ' done';
                 else cardClass += ' available';
 
-                // Statut affiché
                 let statusHtml = '';
                 if (isUpcoming) {
                     statusHtml = '<span class="day-status status-upcoming">À venir</span>';
@@ -640,7 +638,6 @@
                     statusHtml = '<span class="day-status status-available">Disponible</span>';
                 }
 
-                // Action
                 let actionHtml = '';
                 if (isUpcoming) {
                     actionHtml = '<span class="day-action"><i class="fas fa-lock"></i> Bientôt</span>';
@@ -650,7 +647,6 @@
                     actionHtml = '<span class="day-action"><i class="fas fa-arrow-right"></i> Ouvrir</span>';
                 }
 
-                // Case à cocher (uniquement pour les jours disponibles)
                 const checkHtml = (!isUpcoming)
                     ? `<div class="done-check ${isDone ? 'checked' : ''}" 
                             data-num="${j.num}" 
@@ -659,7 +655,6 @@
                        </div>`
                     : '';
 
-                // Lien ou div selon disponibilité
                 const tag = isAvailable ? 'a' : 'div';
                 const href = isAvailable ? `href="${j.fichier}"` : '';
 
@@ -680,7 +675,6 @@
                 `;
             });
 
-            // Attacher les événements sur les cases à cocher
             document.querySelectorAll('.done-check').forEach(el => {
                 el.addEventListener('click', function(e) {
                     e.preventDefault();
@@ -696,7 +690,7 @@
         // ============================================================
         function renderProgress() {
             const done = getDone();
-            // On ne compte que les jours disponibles (pour l'instant, seul le jour 1)
+            // On ne compte que les jours disponibles
             const availableNums = jours.filter(j => j.status === 'available').map(j => j.num);
             const doneAvailable = done.filter(n => availableNums.includes(n));
             const percent = (doneAvailable.length / jours.length) * 100;
@@ -716,11 +710,11 @@
             const contenus = {
                 1: 'Vocabulaire du Web · VS Code · Première page HTML',
                 2: 'Balises de texte · Images · Liens · Listes · Navigation',
-                3: 'Sélecteurs CSS · Couleurs · Polices · Marges · Colonnes',
-                4: 'Flexbox · Grid · Cartes · Galerie responsive',
+                3: 'DeepSeek · Génération de code · VS Code · GitHub Pages · Lien public',
+                4: 'Lecture du code · Couleurs · Textes · Images · Personnalisation',
                 5: 'Menu commun · Plusieurs pages reliées',
                 6: 'Formulaires · Champs · Validation · Interactions JS',
-                7: 'GitHub Pages · Publication · Présentation finale'
+                7: 'Finalisation · Présentation finale · Célébration'
             };
 
             jours.forEach(j => {
