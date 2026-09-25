@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Anatomie d'un site professionnel — NTIC Solution</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<style>
+:root {
+    --bleu: #0B3FA5;
+    --bleu-profond: #072a6e;
+    --bleu-clair: #e8f0fe;
+    --orange: #FF6B35;
+    --orange-clair: #fff4e5;
+    --vert: #059669;
+    --vert-clair: #ecfdf5;
+    --violet: #7c3aed;
+    --violet-clair: #f3e8ff;
+    --rouge: #dc2626;
+    --rouge-clair: #fef2f2;
+    --jaune: #f59e0b;
+    --jaune-clair: #fffbeb;
+    --texte: #1e293b;
+    --texte-secondaire: #475569;
+    --blanc: #ffffff;
+    --bordure: #e2e8f0;
+    --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    background: #0d1117;
+    color: var(--texte);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    -webkit-font-smoothing: antialiased;
+}
+.access-overlay {
+    position: fixed; inset: 0; z-index: 99999;
+    background: linear-gradient(135deg, var(--bleu) 0%, var(--bleu-profond) 100%);
+    display: flex; align-items: center; justify-content: center;
+    transition: opacity 0.7s ease, visibility 0.7s ease;
+}
+.access-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+.access-card {
+    background: var(--blanc); border-radius: 2rem; padding: 3rem 2.5rem;
+    text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+    max-width: 440px; width: 90%; animation: floatIn 0.8s ease;
+}
+@keyframes floatIn {
+    from { opacity: 0; transform: translateY(40px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.access-card .logo-symbol {
+    background: var(--bleu); color: white; width: 68px; height: 68px;
+    border-radius: 18px; display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; margin: 0 auto 1.2rem;
+}
+.access-card h2 { color: var(--bleu); font-size: 1.5rem; margin-bottom: 0.5rem; font-weight: 800; }
+.access-card p { color: var(--texte-secondaire); margin-bottom: 1.8rem; font-size: 0.92rem; line-height: 1.5; }
+.access-input {
+    width: 100%; padding: 0.9rem 1.3rem; border: 2px solid var(--bordure);
+    border-radius: 14px; font-family: inherit; font-size: 1rem;
+    text-align: center; letter-spacing: 2px; transition: var(--transition); margin-bottom: 1rem;
+}
+.access-input:focus { outline: none; border-color: var(--bleu); box-shadow: 0 0 0 4px rgba(11,63,165,0.15); }
+.access-btn {
+    width: 100%; padding: 0.9rem; background: var(--bleu); color: white;
+    border: none; border-radius: 14px; font-weight: 700; font-size: 1rem;
+    font-family: inherit; cursor: pointer; transition: var(--transition);
+}
+.access-btn:hover { background: var(--bleu-profond); transform: translateY(-2px); }
+.access-error { color: var(--rouge); font-size: 0.85rem; margin-top: 0.5rem; display: none; font-weight: 600; }
+.access-error.visible { display: block; animation: shake 0.5s ease; }
+@keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+}
+.presentation-container { display: none; position: fixed; inset: 0; background: #0d1117; z-index: 100; }
+.presentation-container.active { display: block; }
+.slide-stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.slide-content {
+    background: white; width: 100%; height: 100%;
+    overflow-y: auto; padding: 3rem 4.5rem;
+    position: relative; animation: slideIn 0.4s ease;
+}
+@keyframes slideIn {
+    from { opacity: 0; transform: scale(0.97); }
+    to { opacity: 1; transform: scale(1); }
+}
+.slide-header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+    background: rgba(255,255,255,0.95); backdrop-filter: blur(8px);
+    padding: 0.6rem 1.5rem; display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid var(--bordure); font-size: 0.8rem; font-weight: 600;
+}
+.slide-header .bloc-tag {
+    background: var(--bleu); color: white; padding: 0.25rem 0.75rem;
+    border-radius: 999px; font-size: 0.7rem; letter-spacing: 0.5px;
+}
+.slide-header .type-tag {
+    padding: 0.25rem 0.75rem; border-radius: 999px;
+    font-size: 0.7rem; letter-spacing: 0.5px; font-weight: 700;
+}
+.type-cours { background: var(--bleu-clair); color: var(--bleu); }
+.type-pratique { background: var(--vert-clair); color: var(--vert); }
+.type-exercice { background: var(--orange-clair); color: var(--orange); }
+.type-synthese { background: var(--violet-clair); color: var(--violet); }
+.slide-header .num { color: var(--texte-secondaire); }
+.nav-hint {
+    position: fixed; bottom: 1rem; right: 1rem; z-index: 500;
+    color: rgba(255,255,255,0.3); font-size: 0.7rem;
+    font-weight: 600; letter-spacing: 0.5px; pointer-events: none;
+}
+.anim-item { opacity: 0; transform: translateY(15px); animation: fadeUp 0.5s ease forwards; }
+.anim-item:nth-child(1) { animation-delay: 0.05s; }
+.anim-item:nth-child(2) { animation-delay: 0.15s; }
+.anim-item:nth-child(3) { animation-delay: 0.25s; }
+.anim-item:nth-child(4) { animation-delay: 0.35s; }
+.anim-item:nth-child(5) { animation-delay: 0.45s; }
+.anim-item:nth-child(6) { animation-delay: 0.55s; }
+.anim-item:nth-child(7) { animation-delay: 0.65s; }
+.anim-item:nth-child(8) { animation-delay: 0.75s; }
+@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+h1 { font-size: 3rem; font-weight: 800; letter-spacing: -1px; color: var(--bleu); line-height: 1.1; }
+h2 { font-size: 2.1rem; font-weight: 700; color: var(--bleu); line-height: 1.2; margin-bottom: 1rem; }
+h3 { font-size: 1.4rem; font-weight: 700; color: var(--texte); }
+h4 { font-size: 1.15rem; font-weight: 700; }
+p { font-size: 1.2rem; line-height: 1.55; color: var(--texte); }
+li { font-size: 1.1rem; line-height: 1.65; }
+.lead { font-size: 1.4rem; color: var(--texte-secondaire); line-height: 1.5; }
+.slide-title {
+    background: linear-gradient(135deg, var(--bleu) 0%, var(--bleu-profond) 100%);
+    color: white; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center;
+}
+.slide-title h1 { color: white; font-size: 3.2rem; }
+.slide-title .lead { color: rgba(255,255,255,0.9); margin-top: 1rem; }
+.slide-title .meta { color: rgba(255,255,255,0.65); font-size: 1rem; margin-top: 2rem; letter-spacing: 1px; }
+.slide-title .badge-top {
+    background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+    padding: 0.4rem 1.1rem; border-radius: 999px; font-size: 0.8rem;
+    font-weight: 700; letter-spacing: 1.5px; margin-bottom: 1.5rem;
+}
+.cours-content { max-width: 1050px; margin: 0 auto; }
+.cours-content h2 { margin-bottom: 1.2rem; }
+.cours-content p { margin-bottom: 1rem; }
+.cours-content ul { padding-left: 1.5rem; margin-bottom: 1rem; }
+.cours-content li { margin-bottom: 0.4rem; }
+code {
+    background: #f1f5f9; padding: 0.15rem 0.4rem;
+    border-radius: 4px; font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.9em; color: #db2777;
+}
+.box {
+    border-radius: 12px; padding: 1rem 1.4rem; margin: 1rem 0;
+    font-size: 1.05rem; border-left: 5px solid;
+    display: flex; align-items: flex-start; gap: 0.7rem;
+}
+.box i { font-size: 1.2rem; flex-shrink: 0; margin-top: 0.15rem; }
+.box-tip { background: var(--bleu-clair); border-color: var(--bleu); color: #0a2c5c; }
+.box-important { background: var(--orange-clair); border-color: var(--orange); color: #6b3a1f; }
+.box-success { background: var(--vert-clair); border-color: var(--vert); color: #064e3b; }
+.box-warning { background: var(--rouge-clair); border-color: var(--rouge); color: #7f1d1d; }
+.box-info { background: var(--violet-clair); border-color: var(--violet); color: #3b0764; }
+.slide-pratique { background: #f0fdf4; }
+.slide-exercice { background: #fff7ed; }
+.slide-synthese { background: #f5f3ff; }
+.table-simple {
+    width: 100%; border-collapse: collapse; font-size: 1rem;
+    background: white; border-radius: 12px; overflow: hidden; margin: 1rem 0;
+}
+.table-simple th {
+    background: var(--bleu); color: white; padding: 0.8rem 1.1rem;
+    text-align: left; font-weight: 700; font-size: 0.95rem;
+}
+.table-simple td { padding: 0.7rem 1.1rem; border-bottom: 1px solid var(--bordure); }
+.table-simple tr:last-child td { border-bottom: none; }
+
+/* Anatomie visuelle d'un site */
+.anatomie-site {
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 1rem;
+    border: 2px solid var(--bordure);
+    margin: 1.5rem 0;
+}
+.zone {
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: transform 0.2s;
+}
+.zone:hover { transform: translateX(4px); }
+.zone i { font-size: 1.3rem; }
+.zone small {
+    display: block;
+    font-weight: 500;
+    font-size: 0.78rem;
+    opacity: 0.85;
+    margin-top: 0.15rem;
+}
+.zone-header { background: linear-gradient(135deg, #4c1d95, #6d28d9); }
+.zone-hero { background: linear-gradient(135deg, #0B3FA5, #1e40af); min-height: 90px; }
+.zone-nav { background: linear-gradient(135deg, #c2410c, #ea580c); }
+.zone-main { background: linear-gradient(135deg, #047857, #059669); min-height: 80px; }
+.zone-aside { background: linear-gradient(135deg, #7c3aed, #a855f7); }
+.zone-footer { background: linear-gradient(135deg, #334155, #475569); }
+.zone-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 0.8rem;
+    margin-bottom: 0.8rem;
+}
+
+/* Tableau des rôles HTML CSS JS */
+.role-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+.role-card {
+    border-radius: 14px;
+    padding: 1.5rem 1.3rem;
+    text-align: center;
+    color: white;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+.role-card.html { background: linear-gradient(135deg, #059669, #047857); }
+.role-card.css { background: linear-gradient(135deg, #0B3FA5, #1e40af); }
+.role-card.js { background: linear-gradient(135deg, #f59e0b, #d97706); }
+.role-card i { font-size: 2.2rem; margin-bottom: 0.8rem; display: block; }
+.role-card h4 { color: white; font-size: 1.2rem; margin-bottom: 0.5rem; }
+.role-card p { color: rgba(255,255,255,0.92); font-size: 0.88rem; line-height: 1.5; margin: 0; }
+
+/* Liste des fonctionnalités */
+.fonctionnalites-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.9rem;
+    margin-top: 1rem;
+}
+.fonction-item {
+    background: white;
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    border-left: 4px solid var(--bleu);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    transition: transform 0.2s;
+}
+.fonction-item:hover { transform: translateX(4px); }
+.fonction-item i {
+    color: var(--bleu);
+    font-size: 1.2rem;
+    margin-top: 0.15rem;
+    flex-shrink: 0;
+}
+.fonction-item h4 {
+    font-size: 1rem;
+    color: var(--texte);
+    margin-bottom: 0.25rem;
+}
+.fonction-item p {
+    font-size: 0.85rem;
+    color: var(--texte-secondaire);
+    line-height: 1.5;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .slide-content { padding: 2rem 1.5rem; }
+    h1 { font-size: 1.8rem; }
+    h2 { font-size: 1.4rem; }
+    p, li { font-size: 1rem; }
+    .access-card { padding: 2rem 1.5rem; }
+    .slide-header { font-size: 0.7rem; padding: 0.5rem 1rem; }
+    .role-grid { grid-template-columns: 1fr; }
+    .fonctionnalites-grid { grid-template-columns: 1fr; }
+    .zone-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="access-overlay" id="accessOverlay">
+    <div class="access-card">
+        <div class="logo-symbol"><i class="fas fa-layer-group"></i></div>
+        <h2>Anatomie d'un site professionnel</h2>
+        <p>Formation CDEJ · NTIC Solution<br>Saisissez le code d'accès.</p>
+        <input type="password" class="access-input" id="accessInput" placeholder="Code d'accès" autocomplete="off" />
+        <button class="access-btn" id="accessBtn"><i class="fas fa-arrow-right"></i> Commencer</button>
+        <div class="access-error" id="accessError">Code incorrect. Réessayez.</div>
+    </div>
+</div>
+
+<div class="presentation-container" id="presentationContainer">
+    <div class="slide-header" id="slideHeader" style="display:none;">
+        <div>
+            <span class="bloc-tag" id="blocTag">BLOC 1</span>
+            <span class="type-tag" id="typeTag">Cours</span>
+        </div>
+        <div class="num"><span id="slideNum">1</span> / <span id="slideTotal">25</span></div>
+    </div>
+    <div class="slide-stage" id="slideStage"></div>
+    <div class="nav-hint">← → · Échap pour quitter</div>
+</div>
+
+<script>
+const slidesData = [
+
+/* SLIDE 1 — TITRE */
+{
+    type: 'title',
+    bloc: '—',
+    content: '\
+        <div class="badge-top"><i class="fas fa-layer-group"></i> COURS FONDAMENTAL</div>\
+        <h1>Anatomie d\'un site professionnel</h1>\
+        <p class="lead">Apprendre à nommer chaque partie pour savoir la demander</p>\
+        <p class="meta">DURÉE : 2 HEURES · NIVEAU : DÉBUTANT</p>\
+    ',
+    className: 'slide-title'
+},
+
+/* SLIDE 2 — POURQUOI CE COURS */
+{
+    type: 'cours',
+    bloc: '—',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Avant de demander, il faut savoir nommer</h2>\
+            <p class="anim-item" style="font-size:1.25rem;">Pour obtenir un bon site d\'une IA, il faut savoir <strong>de quoi on parle</strong>. C\'est tout l\'objet de cette séance.</p>\
+            <div class="box box-info anim-item" style="margin-top:2rem;">\
+                <i class="fas fa-lightbulb"></i>\
+                <div><strong>Imaginez un architecte</strong> qui ne connaît pas les mots « mur », « toit », « fenêtre ». Il ne pourrait rien commander. Pour un site, c\'est pareil : sans vocabulaire, pas de bon prompt.</div>\
+            </div>\
+            <p class="anim-item" style="margin-top:1.5rem; font-size:1.15rem;">À la fin de cette séance, vous saurez :</p>\
+            <ul class="anim-item">\
+                <li>Nommer <strong>chaque partie visible</strong> d\'un site (header, hero, footer…)</li>\
+                <li>Distinguer le rôle du <strong>HTML</strong>, du <strong>CSS</strong> et du <strong>JavaScript</strong></li>\
+                <li>Reconnaître les <strong>fonctionnalités</strong> possibles (formulaire, carrousel, calculatrice…)</li>\
+                <li>Employer les <strong>bons termes</strong> dans un prompt</li>\
+            </ul>\
+        </div>\
+    ',
+    className: ''
+},
+
+/* SLIDE 3 — VUE D'ENSEMBLE */
+{
+    type: 'cours',
+    bloc: 'BLOC 1',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Vue d\'ensemble — Les 6 zones d\'une page</h2>\
+            <p class="anim-item">Toute page web professionnelle est construite avec les mêmes zones. Les voici, dans l\'ordre où elles apparaissent quand on descend dans la page.</p>\
+            <div class="anatomie-site anim-item">\
+                <div class="zone zone-header">\
+                    <i class="fas fa-window-maximize"></i>\
+                    <div>1. HEADER<small>Le bandeau en haut — logo + nom du site</small></div>\
+                </div>\
+                <div class="zone zone-nav">\
+                    <i class="fas fa-bars"></i>\
+                    <div>2. NAVIGATION (NAV)<small>Le menu — liens vers les autres pages</small></div>\
+                </div>\
+                <div class="zone zone-hero">\
+                    <i class="fas fa-image"></i>\
+                    <div>3. HERO<small>La grande bannière d\'accueil avec image et titre</small></div>\
+                </div>\
+                <div class="zone-row">\
+                    <div class="zone zone-main" style="margin:0;">\
+                        <i class="fas fa-align-left"></i>\
+                        <div>4. MAIN<small>Le contenu principal — services, produits, texte</small></div>\
+                    </div>\
+                    <div class="zone zone-aside" style="margin:0;">\
+                        <i class="fas fa-columns"></i>\
+                        <div>5. ASIDE<small>Barre latérale (facultatif)</small></div>\
+                    </div>\
+                </div>\
+                <div class="zone zone-footer" style="margin-bottom:0;">\
+                    <i class="fas fa-shoe-prints"></i>\
+                    <div>6. FOOTER<small>Le pied de page — contacts, réseaux, mentions</small></div>\
+                </div>\
+            </div>\
+            <div class="box box-tip anim-item">\
+                <i class="fas fa-lightbulb"></i>\
+                <div><strong>Ces 6 zones sont universelles.</strong> Quel que soit le site (école, restaurant, boutique), on les retrouve toujours. Il suffit de savoir les nommer.</div>\
+            </div>\
+        </div>\
+    ',
+    className: ''
+},
+
+/* SLIDE 4 — HEADER */
+{
+    type: 'cours',
+    bloc: 'BLOC 1',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">1. Le HEADER — le bandeau d\'en-tête</h2>\
+            <p class="anim-item">C\'est la <strong>première bande horizontale</strong> en haut de la page. Elle reste souvent visible quand on fait défiler (on dit qu\'elle est « sticky »).</p>\
+            <table class="table-simple anim-item">\
+                <thead><tr><th>Contient</th><th>Rôle</th></tr></thead>\
+                <tbody>\
+                    <tr><td>Le logo</td><td>Identité visuelle du site</td></tr>\
+                    <tr><td>Le nom du site</td><td>Texte à côté du logo</td></tr>\
+                    <tr><td>Le menu (nav)</td><td>Souvent intégré dans le header</td></tr>\
+                    <tr><td>Le bouton de contact</td><td>Ou un bouton d\'action principal</td></tr>\
+                </tbody>\
+            </table>\
+            <div class="box box-important anim-item">\
+                <i class="fas fa-bookmark"></i>\
+                <div><strong>Vocabulaire à utiliser dans un prompt :</strong> « un header sticky avec le logo à gauche et un menu à droite ».</div>\
+            </div>\
+        </div>\
+    ',
+    className: ''
+},
+
+/* SLIDE 5 — NAVIGATION */
+{
+    type: 'cours',
+    bloc: 'BLOC 1',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">2. La NAVIGATION (NAV) — le menu</h2>\
+            <p class="anim-item">C\'est la zone qui permet de <strong>circuler entre les pages</strong> du site. Elle contient les liens cliquables vers les autres sections.</p>\
+            <table class="table-simple anim-item">\
+                <thead><tr><th>Type de menu</th><th>Description</th></tr></thead>\
+                <tbody>\
+                    <tr><td>Menu horizontal</td><td>Aligné sur une ligne — utilisé sur ordinateur</td></tr>\
+                    <tr><td>Menu hamburger</td><td>Icône à 3 barres — utilisé sur mobile (il se déploie au clic)</td></tr>\
+                    <tr><td>Menu déroulant</td><td>Sous-menu qui apparaît au survol</td></tr>\
+                    <tr><td>Menu sticky</td><td>Reste visible quand on fait défiler</td></tr>\
+                </tbody>\
+            </table>\
+            <div class="box box-tip anim-item">\
+                <i class="fas fa-lightbulb"></i>\
+                <div><strong>Vocabulaire à utiliser :</strong> « un menu horizontal sur desktop et un menu hamburger sur mobile », « un menu sticky qui reste visible au scroll ».</div>\
+            </div>\
+        </div>\
+    ',
+    className: ''
+},
+
+/* SLIDE 6 — HERO */
+{
+    type: 'cours',
+    bloc: 'BLOC 1',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">3. Le HERO — la bannière d\'accueil</h2>\
+            <p class="anim-item">C\'est la <strong>grande zone visuelle</strong> juste après le header. Elle donne la première impression. C\'est souvent la partie la plus travaillée d\'un site.</p>\
+            <table class="table-simple anim-item">\
+                <thead><tr><th>Élément</th><th>Rôle</th></tr></thead>\
+                <tbody>\
+                    <tr><td>Image de fond</td><td>Photo ou illustration plein écran</td></tr>\
+                    <tr><td>Overlay</td><td>Voile sombre qui rend le texte lisible</td></tr>\
+                    <tr><td>Titre principal (H1)</td><td>Grande accroche en 4-6 mots</td></tr>\
+                    <tr><td>Sous-titre</td><td>Une phrase qui précise l\'offre</td></tr>\
+                    <tr><td>Bouton d\'action (CTA)</td><td>« Nous contacter », « Voir nos produits »…</td></tr>\
+                </tbody>\
+            </table>\
+            <div class="box box-important anim-item">\
+                <i class="fas fa-star"></i>\
+                <div><strong>Vocabulaire à utiliser :</strong> « un hero avec image de fond, un overlay sombre, un titre H1, un sous-titre et un bouton d\'appel à l\'action ».</div>\
+            </div>\
+        </div>\
+    ',
+    className: ''
+},
+
+/* SLIDE 7 — MAIN */
+{
+    type: 'cours',
+    bloc: 'BLOC 1',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">4. Le MAIN — le contenu principal</h2>\
+            <p class="anim-item">C\'est la <strong>partie la plus longue</strong> du site. Elle contient tout ce pour quoi le visiteur est venu : les services, les produits, les informations.</p>\
+            <p class="anim-item">Le MAIN est <strong>découpé en sections</strong>. Une section = un sujet, avec un titre H2.</p>\
+            <table class="table-simple anim-item">\
+                <thead><tr><th>Exemple de section</th><th>Ce qu\'elle contient</th></tr></thead>\
+                <tbody>\
+                    <tr><td>Nos services</td><td>3 à 6 cartes avec titre + description</td></tr>\
+                    <tr><td>Nos produits</td><td>Grille de produits avec image et prix</td></tr>\
+                    <tr><td>Notre équipe</td><td>Photos + noms + rôles</td></tr>\
+                    <tr><td>Notre histoire</td><td>Texte en 2-3 paragraphes</td></tr>\
+                    <tr><td>Témoignages</td><td>Avis de clients</td></tr>\
+                    <tr><td>FAQ</td><td>Questions-réponses qui se déploient</td></tr>\
+                </tbody>\
+            </table>\
+            <div class="box box-tip anim-item">\
+                <i class="fas fa-lightbulb"></i>\
+                <div><strong>Vocabulaire :</strong> « une section Nos services avec 3 cartes », « une grille de 6 produits », « un accordéon FAQ ».</div>\
+            </div>\
+        </div>\
+    ',
+    className: ''
+},
+
+/* SLIDE 8 — ASIDE */
+{
+    type: 'cours',
+    bloc: 'BLOC 1',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">5. L\'ASIDE — la barre latérale (facultatif)</h2>\
+            <p class="anim-item">C\'est une <strong>colonne à côté du contenu principal</strong>. Elle contient des informations complémentaires.</p>\
+            <p class="anim-item">L\'ASIDE n\'est pas obligatoire. On le retrouve surtout sur les blogs et les sites d\'actualité.</p>\
+            <table class="table-simple anim-item">\
+                <thead><tr><th>Exemple d\'aside</th><th>Contenu</th></tr></thead>\
+                <tbody>\
+                    <tr><td>Articles récents</td><td>Liste des derniers articles</td></tr>\
+                    <tr><td>Catégories</td><td>Liste des thèmes du blog</td></tr>\
+                    <tr><td>Publicité</td><td>Encarts sponsorisés</td></tr>\
+                    <tr><td>Newsletter</td><td>Formulaire d\'inscription à la newsletter</td></tr>\
+                </tbody>\
+            </table>\
+            <div class="box box-info anim-item">\
+                <i class="fas fa-info-circle"></i>\
+                <div><strong>Vocabulaire :</strong> « une barre latérale (aside) à droite avec les articles récents et un formulaire de newsletter ».</div>\
+            </div>\
+        </div>\
+    ',
+    className: ''
+},
+
+/* SLIDE 9 — FOOTER */
+{
+    type: 'cours',
+    bloc: 'BLOC 1',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">6. Le FOOTER — le pied de page</h2>\
+            <p class="anim-item">C\'est la <strong>dernière bande</strong> en bas de la page. Elle est identique sur toutes les pages du site.</p>\
+            <p class="anim-item">Le footer contient en général <strong>3 ou 4 colonnes</strong> :</p>\
+            <table class="table-simple anim-item">\
+                <thead><tr><th>Colonne</th><th>Contenu</th></tr></thead>\
+                <tbody>\
+                    <tr><td>À propos</td><td>2-3 lignes de description du site</td></tr>\
+                    <tr><td>Contact</td><td>Téléphone, email, adresse</td></tr>\
+                    <tr><td>Liens utiles</td><td>Rappel des pages principales</td></tr>\
+                    <tr><td>Réseaux sociaux</td><td>Facebook, WhatsApp, Instagram…</td></tr>\
+                </tbody>\
+            </table>\
+            <p class="anim-item">On y trouve aussi souvent en bas : le <strong>copyright</strong> (« © 2026 – Mon Site »).</p>\
+            <div class="box box-important anim-item">\
+                <i class="fas fa-bookmark"></i>\
+                <div><strong>Vocabulaire :</strong> « un footer à 3 colonnes avec à propos, contact et réseaux sociaux, plus un copyright ».</div>\
+            </div>\
+        </div>\
+    ',
+    className: ''
+},
+
+/* SLIDE 10 — RÉCAP ZONES */
+{
+    type: 'cours',
+    bloc: 'BLOC 1',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Récapitulatif — Les 6 zones à retenir</h2>\
+            <table class="table-simple anim-item">\
+                <thead><tr><th>#</th><th>Nom</th><th>Rôle</th></tr></thead>\
+                <tbody>\
+                    <tr><td>1</td><td>HEADER</td><td>Bandeau du haut avec logo</td></tr>\
+                    <tr><td>2</td><td>NAV</td><td>Menu de navigation</td></tr>\
+                    <tr><td>3</td><td>HERO</td><td>Grande bannière d\'accueil</td></tr>\
+                    <tr><td>4</td><td>MAIN</td><td>Contenu principal (le plus long)</td></tr>\
+                    <tr><td>5</td><td>ASIDE</td><td>Barre latérale (facultatif)</td></tr>\
+                    <tr><td>6</td><td>FOOTER</td><td>Pied de page avec contacts</td></tr>\
+                </tbody>\
+            </table>\
+            <div class="box box-success anim-item">\
+                <i class="fas fa-check-circle"></i>\
+                <div><strong>Vous savez maintenant nommer les 6 zones.</strong> Vous pourrez les demander à une IA en les appelant par leur nom.</div>\
+            </div>\
+        </div>\
+    ',
+    className: ''
+},
+
+/* SLIDE 11 — HTML CSS JS */
+{
+    type: 'cours',
+    bloc: 'BLOC 2',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Les 3 langages du web et leurs rôles</h2>\
+            <p class="anim-item">Un site est construit avec 3 langages. Chacun a un rôle précis. Savoir les distinguer est essentiel pour bien demander.</p>\
+            <div class="role-grid anim-item">\
+                <div class="role-card html">\
+                    <i class="fas fa-cube"></i>\
+                    <h4>HTML</h4>\
+                    <p>La <strong>structure</strong>. C\'est le squelette : les titres, les paragraphes, les images, les liens.</p>\
+                </div>\
+                <div class="role-card css">\
+                    <i class="fas fa-paint-brush"></i>\
+                    <h4>CSS</h4>\
+                    <p>L\'<strong>apparence</strong>. Les couleurs, les polices, les marges, la mise en page.</p>\
+                </div>\
+                <div class="role-card js">\
+                    <i class="fas fa-bolt"></i>\
+                    <h4>JavaScript</h4>\
+                    <p>L\'<strong>interactivité</strong>. Les clics, les formulaires, les animations, les calculs.</p>\
+                </div>\
+            </div>\
+            <div class="box box-info anim-item" style="margin-top:1.5rem;">\
+                <i class="fas fa-lightbulb"></i>\
+                <div><strong>Analogie :</strong> HTML = le squelette. CSS = les vêtements et la peau. JavaScript = les muscles et le cerveau.</div>\
+            </div>\
+        </div>\
+    ',
+    className: ''
+},
+
+/* SLIDE 12 — CE QUE FAIT LE HTML */
+{
+    type: 'cours',
+    bloc: 'BLOC 2',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Ce que fait le HTML</h2>\
+            <p class="anim-item">Le HTML définit <strong>la structure et le contenu</strong> de chaque zone.</p>\
+            <table class="table-simple anim-item">\
+                <thead><tr><th>Balise HTML</th><th>Ce qu\'elle crée</th></tr></thead>\
+                <tbody>\
+                    <tr><td>&lt;header&gt;</td><td>Le bandeau d\'en-tête</td></tr>\
+                    <tr><td>&lt;nav&gt;</td><td>Le menu de navigation</td></tr>\
+                    <tr><td>&lt;main&gt;</td><td>Le contenu principal</td></tr>\
+                    <tr><td>&lt;section&gt;</td><td>Une section thématique</td></tr>\
+                    <tr><td>&lt;aside&gt;</td><td>La barre latérale</td></tr>\
+                    <tr><td>&lt;footer&gt;</td><td>Le pied de page</td></tr>\
+                    <tr><td>&lt;h1&gt; à &lt;h6&gt;</td><td>Les titres (6 niveaux)</td></tr>\
+                    <tr><td>&lt;p&gt;</td><td>Un paragraphe</td></tr>\
+                    <tr><td>&lt;img&gt;</td><td>Une image</td></tr>\
+                    <tr><td>&lt;a&gt;</td><td>Un lien cliquable</td></tr>\
+                    <tr><td>&lt;button&gt;</td><td>Un bouton</td></tr>\
+                    <tr><td>&lt;ul&gt; &lt;ol&gt; &lt;li&gt;</td><td>Des listes</td></tr>\
+                    <tr><td>&lt;form&gt; &lt;input&gt; &lt;textarea&gt;</td><td>Un formulaire et ses champs</td></tr>\
+                    <tr><td>&lt;table&gt;</td><td>Un tableau</td></tr>\
+                    <tr><td>&lt;video&gt; &lt;audio&gt;</td><td>Des médias</td></tr>\
+                </tbody>\
+            </table>\
+            <div class="box box-tip anim-item">\
+                <i class="fas fa-lightbulb"></i>\
+                <div><strong>Vocabulaire :</strong> « un header avec un h1 », « une section avec des cartes », « un footer avec 3 colonnes », « une liste à puces ».</div>\
+            </div>\
+        </div>\
+    ',
+    className: ''
+},
+
+/* SLIDE 13 — CE QUE FAIT LE CSS */
+{
+    type: 'cours',
+    bloc: 'BLOC 2',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Ce que fait le CSS</h2>\
+            <p class="anim-item">Le CSS contrôle <strong>l\'apparence</strong> : couleurs, polices, tailles, marges, disposition.</p>\
+            <table class="table-simple anim-item">\
+                <thead><tr><th>Propriété CSS</th><th>Effet</th></tr></thead>\
+                <tbody>\
+                    <tr><td>color</td><td>Couleur du texte</td></tr>\
+                    <tr><td>background</td><td>Couleur ou image de fond</td></tr>\
+                    <tr><td>font-family</td><td>Police d\'écriture</td></tr>\
+                    <tr><td>font-size</td><td>Taille du texte</td></tr>\
+                    <tr><td>font-weight</td><td>Graisse (normal, gras)</td></tr>\
+                    <tr><td>padding</td><td>Espace intérieur</td></tr>\
+                    <tr><td>margin</td><td>Espace extérieur</td></tr>\
+                    <tr><td>border-radius</td><td>Arrondi des coins</td></tr>\
+                    <tr><td>box-shadow</td><td>Ombre portée</td></tr>\
+                    <tr><td>display: flex</td><td>Alignement horizontal</td></tr>\
+                    <tr><td>display: grid</td><td>Grille en lignes et colonnes</td></tr>\
+                    <tr><td>transition</td><td>Animation douce au survol</td></tr>\
+                </tbody>\
+            </table>\
+            <div class="box box-tip anim-item">\
+                <i class="fas fa-lightbulb"></i>\
+                <div><strong>Vocabulaire :</strong> « des coins arrondis de 12px », « des ombres douces », « une grille de 3 colonnes », « une transition au survol ».</div>\
+            </div>\
+        </div>\
+    ',
+    className: ''
+},
+
+/* SLIDE 14 — CE QUE FAIT LE JS */
+{
+    type: 'cours',
+    bloc: 'BLOC 2',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Ce que fait le JavaScript</h2>\
+            <p class="anim-item">Le JavaScript rend le site <strong>vivant</strong> : il réagit aux actions de l\'utilisateur.</p>\
+            <table class="table-simple anim-item">\
+                <thead><tr><th>Fonctionnalité JS</th><th>Exemple concret</th></tr></thead>\
+                <tbody>\
+                    <tr><td>Menu hamburger</td><td>Ouvrir/fermer le menu au clic</td></tr>\
+                    <tr><td>Modal</td><td>Fenêtre qui s\'ouvre par-dessus la page</td></tr>\
+                    <tr><td>Carrousel</td><td>Diaporama d\'images qui défile tout seul</td></tr>\
+                    <tr><td>Lightbox</td><td>Image qui s\'agrandit au clic</td></tr>\
+                    <tr><td>Validation de formulaire</td><td>Vérifier que les champs sont bien remplis</td></tr>\
+                    <tr><td>Calculatrice</td><td>Effectuer des calculs en direct</td></tr>\
+                    <tr><td>Calendrier</td><td>Afficher un mois avec navigation</td></tr>\
+                    <tr><td>Recherche en direct</td><td>Filtrer un tableau en tapant</td></tr>\
+                    <tr><td>Animation au scroll</td><td>Éléments qui apparaissent en défilant</td></tr>\
+                    <tr><td>Envoi WhatsApp</td><td>Composer un message pré-rempli</td></tr>\
+                </tbody>\
+            </table>\
+            <div class="box box-important anim-item">\
+                <i class="fas fa-bookmark"></i>\
+                <div><strong>Vocabulaire :</strong> « un menu hamburger animé », « un modal de commande », « un carrousel automatique », « une validation de formulaire ».</div>\
+            </div>\
+        </div>\
+    ',
+    className: ''
+},
+
+/* SLIDE 15 — FONCTIONNALITÉS COMMUNES 1 */
+{
+    type: 'cours',
+    bloc: 'BLOC 3',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Fonctionnalités communes — Partie 1</h2>\
+            <p class="anim-item">Les fonctionnalités que l\'on retrouve sur la majorité des sites. Vous pouvez les demander par leur nom.</p>\
+            <div class="fonctionnalites-grid">\
+                <div class="fonction-item anim-item">\
+                    <i class="fas fa-bars"></i>\
+                    <div><h4>Menu hamburger</h4><p>Icône à 3 barres qui ouvre le menu sur mobile.</p></div>\
+                </div>\
+                <div class="fonction-item anim-item">\
+                    <i class="fas fa-window-restore"></i>\
+                    <div><h4>Modal</h4><p>Fenêtre qui s\'ouvre par-dessus la page (formulaire, message…).</p></div>\
+                </div>\
+                <div class="fonction-item anim-item">\
+                    <i class="fas fa-images"></i>\
+                    <div><h4>Carrousel</h4><p>Diaporama d\'images qui défile automatiquement.</p></div>\
+                </div>\
+                <div class="fonction-item anim-item">\
+                    <i class="fas fa-search-plus"></i>\
+                    <div><h4>Lightbox</h4><p>Image qui s\'agrandit en plein écran au clic.</p></div>\
+                </div>\
+                <div class="fonction-item anim-item">\
+                    <i class="fas fa-file-signature"></i>\
+                    <div><h4>Formulaire</h4><p>Champs à remplir (nom, email, message).</p></div>\
+                </div>\
+                <div class="fonction-item anim-item">\
+                    <i class="fas fa-check-circle"></i>\
+                    <div><h4>Validation</h4><p>Vérification automatique des champs avant envoi.</p></div>\
+                </div>\
+            </div>\
+        </div>\
+    ',
+    className: ''
+},
+
+/* SLIDE 16 — FONCTIONNALITÉS COMMUNES 2 */
+{
+    type: 'cours',
+    bloc: 'BLOC 3',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Fonctionnalités communes — Partie 2</h2>\
+            <div class="fonctionnalites-grid">\
+                <div class="fonction-item anim-item">\
+                    <i class="fas fa-toggle-down"></i>\
+                    <div><h4>Accordéon</h4><p>Blocs qui se déploient au clic (FAQ, sections repliables).</p></div>\
+                </div>\
+                <div class="fonction-item anim-item">\
+                    <i class="fas fa-calculator"></i>\
+                    <div><h4>Calculatrice</h4><p>Outil de calcul intégré (standard, scientifique, TVA…).</p></div>\
+                </div>\
+                <div class="fonction-item anim-item">\
+                    <i class="fas fa-calendar-alt"></i>\
+                    <div><h4>Calendrier</h4><p>Affichage d\'un mois avec navigation et notes.</p></div>\
+                </div>\
+                <div class="fonction-item anim-item">\
+                    <i class="fas fa-table"></i>\
+                    <div><h4>Tableau interactif</h4><p>Tableau avec recherche, tri, calculs automatiques.</p></div>\
+                </div>\
+                <div class="fonction-item anim-item">\
+                    <i class="fab fa-whatsapp"></i>\
+                    <div><h4>Envoi WhatsApp</h4><p>Bouton qui compose un message pré-rempli.</p></div>\
+                </div>\
+                <div class="fonction-item anim-item">\
+                    <i class="fas fa-map-marked-alt"></i>\
+                    <div><h4>Carte interactive</h4><p>Carte Google Maps avec un point de localisation.</p></div>\
+                </div>\
+            </div>\
+        </div>\
+    ',
+    className: ''
+},
+
+/* SLIDE 17 — FONCTIONNALITÉS AVANCÉES */
+{
+    type: 'cours',
+    bloc: 'BLOC 3',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Fonctionnalités avancées</h2>\
+            <p class="anim-item">Pour des sites plus complets. À demander une fois que les bases sont maîtrisées.</p>\
+            <div class="fonctionnalites-grid">\
+                <div class="fonction-item anim-item">\
+                    <i class="fas fa-video"></i>\
+                    <div><h4>Lecteur vidéo</h4><p>Vidéo HTML5 intégrée avec contrôles (play, pause, plein écran).</p></div>\
+                </div>\
+                <div class="fonction-item anim-item">\
+                    <i class="fas fa-chart-bar"></i>\
+                    <div><h4>Graphique</h4><p>Diagramme en barres, courbes ou secteurs.</p></div>\
+                </div>\
+                <div class="fonction-item anim-item">\
+                    <i class="fas fa-user-lock"></i>\
+                    <div><h4>Espace membre</h4><p>Connexion, inscription, espace personnel (nécessite un serveur).</p></div>\
+                </div>\
+                <div class="fonction-item anim-item">\
+                    <i class="fas fa-shopping-cart"></i>\
+                    <div><h4>Panier</h4><p>Ajout au panier, calcul du total, commande.</p></div>\
+                </div>\
+                <div class="fonction-item anim-item">\
+                    <i class="fas fa-globe"></i>\
+                    <div><h4>Multilingue</h4><p>Bouton pour changer de langue (français, anglais…).</p></div>\
+                </div>\
+                <div class="fonction-item anim-item">\
+                    <i class="fas fa-moon"></i>\
+                    <div><h4>Mode sombre</h4><p>Bouton pour basculer entre thème clair et sombre.</p></div>\
+                </div>\
+            </div>\
+            <div class="box box-info anim-item" style="margin-top:1.5rem;">\
+                <i class="fas fa-info-circle"></i>\
+                <div><strong>Attention :</strong> certaines fonctionnalités (espace membre, panier) nécessitent un serveur et une base de données. Elles ne peuvent pas être faites uniquement en HTML/CSS/JS.</div>\
+            </div>\
+        </div>\
+    ',
+    className: ''
+},
+
+/* SLIDE 18 — VOCABULAIRE DESIGN */
+{
+    type: 'cours',
+    bloc: 'BLOC 3',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Vocabulaire du design</h2>\
+            <p class="anim-item">Pour décrire un design dans un prompt, il faut connaître ces mots.</p>\
+            <table class="table-simple anim-item">\
+                <thead><tr><th>Terme</th><th>Signification</th></tr></thead>\
+                <tbody>\
+                    <tr><td>Palette de couleurs</td><td>Les 3-4 couleurs principales du site</td></tr>\
+                    <tr><td>Police (font)</td><td>Le style d\'écriture (Arial, Roboto, Plus Jakarta Sans…)</td></tr>\
+                    <tr><td>Typographie</td><td>L\'art de choisir et combiner les polices</td></tr>\
+                    <tr><td>Coins arrondis</td><td>border-radius — les bords arrondis des blocs</td></tr>\
+                    <tr><td>Ombre portée</td><td>box-shadow — l\'ombre sous les blocs</td></tr>\
+                    <tr><td>Carte (card)</td><td>Bloc rectangulaire avec image + titre + texte</td></tr>\
+                    <tr><td>Grille (grid)</td><td>Disposition en lignes et colonnes</td></tr>\
+                    <tr><td>Flexbox</td><td>Alignement horizontal d\'éléments</td></tr>\
+                    <tr><td>Hero</td><td>Grande bannière en haut de page</td></tr>\
+                    <tr><td>Call-to-action (CTA)</td><td>Bouton d\'action principal</td></tr>\
+                    <tr><td>Sticky</td><td>Qui reste visible au défilement</td></tr>\
+                    <tr><td>Responsive</td><td>Qui s\'adapte à toutes les tailles d\'écran</td></tr>\
+                    <tr><td>Mobile-first</td><td>Conçu d\'abord pour mobile, puis élargi</td></tr>\
+                    <tr><td>Overlay</td><td>Voile semi-transparent par-dessus une image</td></tr>\
+                    <tr><td>Hover</td><td>Effet au survol de la souris</td></tr>\
+                </tbody>\
+            </table>\
+        </div>\
+    ',
+    className: ''
+},
+
+/* SLIDE 19 — EXEMPLE : COMMENT DÉCRIRE UNE PAGE */
+{
+    type: 'cours',
+    bloc: 'BLOC 3',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Exemple : décrire une page avec les bons termes</h2>\
+            <p class="anim-item">Voici comment on décrit une page complète en utilisant le vocabulaire appris.</p>\
+            <div style="background:#f8fafc; border-radius:14px; padding:1.5rem 2rem; border:2px solid var(--bleu); margin-top:1.2rem;">\
+                <p style="font-size:0.95rem; line-height:1.8; margin:0;">\
+                <strong>Header sticky</strong> avec le logo à gauche et un <strong>menu horizontal</strong> à droite (qui devient <strong>menu hamburger</strong> sur mobile).<br><br>\
+                <strong>Hero</strong> avec image de fond, un <strong>overlay</strong> sombre, un titre <strong>H1</strong>, un sous-titre et un <strong>bouton d\'appel à l\'action</strong>.<br><br>\
+                <strong>Section Nos services</strong> : une <strong>grille de 3 cartes</strong>, chaque carte contient une icône, un titre <strong>H3</strong> et un paragraphe.<br><br>\
+                <strong>Section Nos produits</strong> : une <strong>grille de 6 cartes</strong> avec image, titre, prix et un bouton <strong>Commander</strong> qui ouvre un <strong>modal</strong>.<br><br>\
+                <strong>Section Galerie</strong> : un <strong>carrousel automatique</strong> avec des <strong>dots</strong> et des flèches précédent/suivant.<br><br>\
+                <strong>Footer</strong> à 3 colonnes : à propos, contact, réseaux sociaux. Plus un copyright en bas.\
+                </p>\
+            </div>\
+            <div class="box box-success anim-item" style="margin-top:1.5rem;">\
+                <i class="fas fa-check-circle"></i>\
+                <div><strong>Voilà comment on décrit une page complète.</strong> C\'est exactement ce qu\'un prompt doit contenir.</div>\
+            </div>\
+        </div>\
+    ',
+    className: ''
+},
+
+/* SLIDE 20 — EXERCICE 1 */
+{
+    type: 'exercice',
+    bloc: 'BLOC 4',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Exercice 1 : identifiez les zones</h2>\
+            <p class="anim-item">Ouvrez n\'importe quel site professionnel dans votre navigateur. Pour chacun, répondez par écrit :</p>\
+            <ol class="anim-item" style="font-size:1.1rem; line-height:2; padding-left:1.5rem;">\
+                <li>Le <strong>header</strong> : que contient-il ? Le logo ? Le nom ? Le menu ?</li>\
+                <li>La <strong>navigation</strong> : combien de liens ? Sont-ils sur une ligne ou en menu hamburger ?</li>\
+                <li>Le <strong>hero</strong> : y a-t-il une image ? Un overlay ? Un bouton d\'action ?</li>\
+                <li>Le <strong>main</strong> : combien de sections ? Lesquelles ?</li>\
+                <li>Y a-t-il un <strong>aside</strong> ? Si oui, que contient-il ?</li>\
+                <li>Le <strong>footer</strong> : combien de colonnes ? Que contient chaque colonne ?</li>\
+            </ol>\
+            <div class="box box-tip anim-item" style="margin-top:1rem;">\
+                <i class="fas fa-lightbulb"></i>\
+                <div><strong>Sites recommandés pour l\'exercice :</strong> nticsolution.org, menusqr.online, cav-or.com.</div>\
+            </div>\
+        </div>\
+    ',
+    className: 'slide-exercice'
+},
+
+/* SLIDE 21 — EXERCICE 2 */
+{
+    type: 'exercice',
+    bloc: 'BLOC 4',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Exercice 2 : rédigez la description d\'une page</h2>\
+            <p class="anim-item">Sans écrire de code, décrivez en français une page que vous aimeriez créer. Utilisez le vocabulaire appris.</p>\
+            <div style="background:white; border-radius:14px; padding:1.5rem 2rem; border:2px solid var(--orange); margin-top:1.2rem;">\
+                <h3 style="color:var(--orange); margin-bottom:1rem;"><i class="fas fa-tasks"></i> Consignes</h3>\
+                <ol style="padding-left:1.5rem; line-height:2;">\
+                    <li>Choisissez un sujet (école, commerce, passion, projet personnel)</li>\
+                    <li>Décrivez son <strong>header</strong> : logo, nom, menu</li>\
+                    <li>Décrivez son <strong>hero</strong> : image, titre H1, bouton</li>\
+                    <li>Listez <strong>3 à 5 sections</strong> de son main</li>\
+                    <li>Décrivez son <strong>footer</strong> : colonnes, contacts</li>\
+                    <li>Indiquez <strong>3 fonctionnalités</strong> (menu hamburger, modal, carrousel…)</li>\
+                    <li>Ajoutez une <strong>palette de 3-4 couleurs</strong> et <strong>2 polices</strong></li>\
+                </ol>\
+            </div>\
+            <div class="box box-success anim-item" style="margin-top:1.5rem;">\
+                <i class="fas fa-trophy"></i>\
+                <div><strong>Durée :</strong> 20 minutes. Cette description deviendra la base de votre premier prompt.</div>\
+            </div>\
+        </div>\
+    ',
+    className: 'slide-exercice'
+},
+
+/* SLIDE 22 — PASSER DU VOCABULAIRE AU PROMPT */
+{
+    type: 'cours',
+    bloc: 'BLOC 4',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Du vocabulaire au prompt</h2>\
+            <p class="anim-item">Voici comment le vocabulaire appris se transforme en prompt.</p>\
+            <table class="table-simple anim-item">\
+                <thead><tr><th>Ce que vous voulez</th><th>Ce que vous écrivez</th></tr></thead>\
+                <tbody>\
+                    <tr><td>Un bandeau en haut qui reste</td><td>« un header sticky »</td></tr>\
+                    <tr><td>Un menu qui se replie sur mobile</td><td>« un menu hamburger »</td></tr>\
+                    <tr><td>Une grande bannière d\'accueil</td><td>« un hero avec image de fond »</td></tr>\
+                    <tr><td>Des blocs rectangulaires alignés</td><td>« une grille de 3 cartes »</td></tr>\
+                    <tr><td>Une fenêtre qui s\'ouvre au clic</td><td>« un modal »</td></tr>\
+                    <tr><td>Un diaporama qui défile</td><td>« un carrousel automatique »</td></tr>\
+                    <tr><td>Un pied de page complet</td><td>« un footer à 3 colonnes »</td></tr>\
+                    <tr><td>Une image qui s\'agrandit</td><td>« une lightbox »</td></tr>\
+                    <tr><td>Un champ à remplir</td><td>« un formulaire avec validation »</td></tr>\
+                    <tr><td>Un bouton qui envoie un message WhatsApp</td><td>« un bouton d\'envoi WhatsApp »</td></tr>\
+                </tbody>\
+            </table>\
+            <div class="box box-info anim-item">\
+                <i class="fas fa-lightbulb"></i>\
+                <div><strong>Plus vous connaissez de termes, plus votre prompt est précis.</strong> Et plus votre site final correspond à ce que vous voulez.</div>\
+            </div>\
+        </div>\
+    ',
+    className: ''
+},
+
+/* SLIDE 23 — RÉCAPITULATIF GÉNÉRAL */
+{
+    type: 'cours',
+    bloc: 'BLOC 4',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Récapitulatif général</h2>\
+            <h3 class="anim-item" style="color:var(--bleu); margin-top:1rem;">Les zones d\'une page</h3>\
+            <p class="anim-item" style="font-size:1rem;">Header · Nav · Hero · Main · Aside · Footer</p>\
+\
+            <h3 class="anim-item" style="color:var(--bleu); margin-top:1.2rem;">Les 3 langages</h3>\
+            <p class="anim-item" style="font-size:1rem;">HTML (structure) · CSS (apparence) · JavaScript (interactivité)</p>\
+\
+            <h3 class="anim-item" style="color:var(--bleu); margin-top:1.2rem;">Les fonctionnalités de base</h3>\
+            <p class="anim-item" style="font-size:1rem;">Menu hamburger · Modal · Carrousel · Lightbox · Formulaire · Validation</p>\
+\
+            <h3 class="anim-item" style="color:var(--bleu); margin-top:1.2rem;">Les fonctionnalités avancées</h3>\
+            <p class="anim-item" style="font-size:1rem;">Accordéon · Calculatrice · Calendrier · Tableau interactif · Envoi WhatsApp · Carte</p>\
+\
+            <h3 class="anim-item" style="color:var(--bleu); margin-top:1.2rem;">Le vocabulaire de design</h3>\
+            <p class="anim-item" style="font-size:1rem;">Palette · Police · Coins arrondis · Ombres · Grille · Flexbox · Responsive</p>\
+        </div>\
+    ',
+    className: ''
+},
+
+/* SLIDE 24 — CE QUE VOUS SAVEZ FAIRE */
+{
+    type: 'synthese',
+    bloc: '—',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Ce que vous savez faire maintenant</h2>\
+            <ul class="anim-item" style="font-size:1.15rem; line-height:1.8;">\
+                <li>Identifier les <strong>6 zones</strong> d\'une page (header, nav, hero, main, aside, footer)</li>\
+                <li>Distinguer le rôle du <strong>HTML</strong>, du <strong>CSS</strong> et du <strong>JavaScript</strong></li>\
+                <li>Reconnaître les <strong>fonctionnalités de base</strong> (modal, carrousel, lightbox…)</li>\
+                <li>Nommer les <strong>fonctionnalités avancées</strong> (calculatrice, calendrier, tableau interactif…)</li>\
+                <li>Employer le <strong>vocabulaire du design</strong> (palette, grille, responsive…)</li>\
+                <li><strong>Décrire une page complète</strong> en français, sans écrire de code</li>\
+                <li>Traduire une envie en <strong>termes techniques</strong></li>\
+            </ul>\
+\
+            <div class="box box-important anim-item" style="margin-top:1.5rem;">\
+                <i class="fas fa-graduation-cap"></i>\
+                <div><strong>Vous avez maintenant le vocabulaire.</strong> La prochaine étape sera de l\'utiliser pour rédiger des prompts précis et obtenir des sites qui correspondent exactement à vos envies.</div>\
+            </div>\
+\
+            <div class="box box-tip anim-item">\
+                <i class="fas fa-lightbulb"></i>\
+                <div><strong>Conseil :</strong> gardez cette fiche près de vous. Chaque fois que vous voulez décrire un site, reprenez la liste des zones et des fonctionnalités.</div>\
+            </div>\
+        </div>\
+    ',
+    className: 'slide-synthese'
+},
+
+/* SLIDE 25 — ANNONCE SUITE */
+{
+    type: 'synthese',
+    bloc: '—',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">La suite</h2>\
+            <p class="anim-item" style="font-size:1.25rem;">Maintenant que vous savez <strong>nommer les choses</strong>, vous êtes prêts pour la prochaine étape :</p>\
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem; margin-top:1.5rem;">\
+                <div class="box box-tip" style="margin:0;">\
+                    <i class="fas fa-magic"></i>\
+                    <div><strong>Rédiger un prompt complet</strong><br>En utilisant le vocabulaire appris aujourd\'hui.</div>\
+                </div>\
+                <div class="box box-tip" style="margin:0;">\
+                    <i class="fas fa-rocket"></i>\
+                    <div><strong>Créer un site réel</strong><br>En utilisant le workflow en 6 étapes.</div>\
+                </div>\
+            </div>\
+\
+            <div class="box box-success anim-item" style="margin-top:2rem;">\
+                <i class="fas fa-flag-checkered"></i>\
+                <div><strong>Vous avez la base.</strong> Sans ce vocabulaire, impossible d\'écrire un bon prompt. C\'est cette séance qui fait toute la différence.</div>\
+            </div>\
+        </div>\
+    ',
+    className: 'slide-synthese'
+}
+
+];
+
+let currentSlide = 0;
+const totalSlides = slidesData.length;
+
+function renderSlide(index) {
+    const stage = document.getElementById('slideStage');
+    const slide = slidesData[index];
+    stage.innerHTML = '<div class="slide-content ' + (slide.className || '') + '">' + slide.content + '</div>';
+
+    const header = document.getElementById('slideHeader');
+    if (slide.type === 'title') {
+        header.style.display = 'none';
+    } else {
+        header.style.display = 'flex';
+        document.getElementById('blocTag').textContent = slide.bloc || '—';
+        document.getElementById('slideNum').textContent = index + 1;
+        document.getElementById('slideTotal').textContent = totalSlides;
+
+        const typeTag = document.getElementById('typeTag');
+        const typeLabels = {
+            'cours': 'Cours',
+            'pratique': 'Pratique',
+            'exercice': 'Exercice',
+            'synthese': 'Synthèse'
+        };
+        typeTag.textContent = typeLabels[slide.type] || 'Cours';
+        typeTag.className = 'type-tag type-' + (slide.type || 'cours');
+    }
+}
+
+function goNext() {
+    if (currentSlide < totalSlides - 1) {
+        currentSlide++;
+        renderSlide(currentSlide);
+    }
+}
+
+function goPrev() {
+    if (currentSlide > 0) {
+        currentSlide--;
+        renderSlide(currentSlide);
+    }
+}
+
+function checkAccess() {
+    const input = document.getElementById('accessInput');
+    const error = document.getElementById('accessError');
+    const expected = 'V0VCMjAyNg==';
+    const entered = btoa(input.value.trim());
+
+    if (entered === expected) {
+        document.getElementById('accessOverlay').classList.add('hidden');
+        document.getElementById('presentationContainer').classList.add('active');
+        renderSlide(currentSlide);
+    } else {
+        error.classList.add('visible');
+        input.value = '';
+        input.focus();
+        setTimeout(function() {
+            error.classList.remove('visible');
+        }, 2500);
+    }
+}
+
+document.getElementById('accessBtn').addEventListener('click', checkAccess);
+document.getElementById('accessInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') checkAccess();
+});
+
+document.addEventListener('keydown', function(e) {
+    const container = document.getElementById('presentationContainer');
+    if (!container.classList.contains('active')) return;
+    switch (e.key) {
+        case 'ArrowRight':
+        case ' ':
+        case 'PageDown':
+            e.preventDefault();
+            goNext();
+            break;
+        case 'ArrowLeft':
+        case 'PageUp':
+            e.preventDefault();
+            goPrev();
+            break;
+        case 'Escape':
+            if (confirm('Quitter la projection ?')) {
+                document.getElementById('presentationContainer').classList.remove('active');
+                document.getElementById('accessOverlay').classList.remove('hidden');
+                currentSlide = 0;
+            }
+            break;
+    }
+});
+
+let touchStartX = 0;
+document.addEventListener('touchstart', function(e) {
+    touchStartX = e.changedTouches[0].screenX;
+});
+document.addEventListener('touchend', function(e) {
+    const deltaX = e.changedTouches[0].screenX - touchStartX;
+    if (Math.abs(deltaX) > 60) {
+        if (deltaX < 0) goNext();
+        else goPrev();
+    }
+});
+</script>
+
+</body>
+</html>
