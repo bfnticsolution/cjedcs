@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Atelier · Rédiger un prompt parfait — NTIC Solution</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<style>
+:root {
+    --bleu: #0B3FA5;
+    --bleu-profond: #072a6e;
+    --bleu-clair: #e8f0fe;
+    --orange: #FF6B35;
+    --orange-clair: #fff4e5;
+    --vert: #059669;
+    --vert-clair: #ecfdf5;
+    --violet: #7c3aed;
+    --violet-clair: #f3e8ff;
+    --rouge: #dc2626;
+    --rouge-clair: #fef2f2;
+    --jaune: #f59e0b;
+    --jaune-clair: #fffbeb;
+    --texte: #1e293b;
+    --texte-secondaire: #475569;
+    --blanc: #ffffff;
+    --bordure: #e2e8f0;
+    --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    background: #0d1117;
+    color: var(--texte);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    -webkit-font-smoothing: antialiased;
+}
+.access-overlay {
+    position: fixed; inset: 0; z-index: 99999;
+    background: linear-gradient(135deg, var(--violet) 0%, #4c1d95 100%);
+    display: flex; align-items: center; justify-content: center;
+    transition: opacity 0.7s ease, visibility 0.7s ease;
+}
+.access-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+.access-card {
+    background: var(--blanc); border-radius: 2rem; padding: 3rem 2.5rem;
+    text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+    max-width: 440px; width: 90%; animation: floatIn 0.8s ease;
+}
+@keyframes floatIn {
+    from { opacity: 0; transform: translateY(40px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.access-card .logo-symbol {
+    background: var(--violet); color: white; width: 68px; height: 68px;
+    border-radius: 18px; display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; margin: 0 auto 1.2rem;
+}
+.access-card h2 { color: var(--violet); font-size: 1.5rem; margin-bottom: 0.5rem; font-weight: 800; }
+.access-card p { color: var(--texte-secondaire); margin-bottom: 1.8rem; font-size: 0.92rem; line-height: 1.5; }
+.access-input {
+    width: 100%; padding: 0.9rem 1.3rem; border: 2px solid var(--bordure);
+    border-radius: 14px; font-family: inherit; font-size: 1rem;
+    text-align: center; letter-spacing: 2px; transition: var(--transition); margin-bottom: 1rem;
+}
+.access-input:focus { outline: none; border-color: var(--violet); box-shadow: 0 0 0 4px rgba(124,58,237,0.15); }
+.access-btn {
+    width: 100%; padding: 0.9rem; background: var(--violet); color: white;
+    border: none; border-radius: 14px; font-weight: 700; font-size: 1rem;
+    font-family: inherit; cursor: pointer; transition: var(--transition);
+}
+.access-btn:hover { background: #6d28d9; transform: translateY(-2px); }
+.access-error { color: var(--rouge); font-size: 0.85rem; margin-top: 0.5rem; display: none; font-weight: 600; }
+.access-error.visible { display: block; animation: shake 0.5s ease; }
+@keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+}
+.presentation-container { display: none; position: fixed; inset: 0; background: #0d1117; z-index: 100; }
+.presentation-container.active { display: block; }
+.slide-stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.slide-content {
+    background: white; width: 100%; height: 100%;
+    overflow-y: auto; padding: 3rem 4.5rem;
+    position: relative; animation: slideIn 0.4s ease;
+}
+@keyframes slideIn {
+    from { opacity: 0; transform: scale(0.97); }
+    to { opacity: 1; transform: scale(1); }
+}
+.slide-header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+    background: rgba(255,255,255,0.95); backdrop-filter: blur(8px);
+    padding: 0.6rem 1.5rem; display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid var(--bordure); font-size: 0.8rem; font-weight: 600;
+}
+.slide-header .bloc-tag {
+    background: var(--violet); color: white; padding: 0.25rem 0.75rem;
+    border-radius: 999px; font-size: 0.7rem; letter-spacing: 0.5px;
+}
+.slide-header .type-tag {
+    padding: 0.25rem 0.75rem; border-radius: 999px;
+    font-size: 0.7rem; letter-spacing: 0.5px; font-weight: 700;
+}
+.type-cours { background: var(--bleu-clair); color: var(--bleu); }
+.type-pratique { background: var(--vert-clair); color: var(--vert); }
+.type-exercice { background: var(--orange-clair); color: var(--orange); }
+.type-synthese { background: var(--violet-clair); color: var(--violet); }
+.slide-header .num { color: var(--texte-secondaire); }
+.nav-hint {
+    position: fixed; bottom: 1rem; right: 1rem; z-index: 500;
+    color: rgba(255,255,255,0.3); font-size: 0.7rem;
+    font-weight: 600; letter-spacing: 0.5px; pointer-events: none;
+}
+.anim-item { opacity: 0; transform: translateY(15px); animation: fadeUp 0.5s ease forwards; }
+.anim-item:nth-child(1) { animation-delay: 0.05s; }
+.anim-item:nth-child(2) { animation-delay: 0.15s; }
+.anim-item:nth-child(3) { animation-delay: 0.25s; }
+.anim-item:nth-child(4) { animation-delay: 0.35s; }
+.anim-item:nth-child(5) { animation-delay: 0.45s; }
+.anim-item:nth-child(6) { animation-delay: 0.55s; }
+.anim-item:nth-child(7) { animation-delay: 0.65s; }
+.anim-item:nth-child(8) { animation-delay: 0.75s; }
+@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+h1 { font-size: 3rem; font-weight: 800; letter-spacing: -1px; color: var(--bleu); line-height: 1.1; }
+h2 { font-size: 2.1rem; font-weight: 700; color: var(--bleu); line-height: 1.2; margin-bottom: 1rem; }
+h3 { font-size: 1.4rem; font-weight: 700; color: var(--texte); }
+h4 { font-size: 1.15rem; font-weight: 700; }
+p { font-size: 1.25rem; line-height: 1.55; color: var(--texte); }
+li { font-size: 1.15rem; line-height: 1.65; }
+.lead { font-size: 1.4rem; color: var(--texte-secondaire); line-height: 1.5; }
+.slide-title {
+    background: linear-gradient(135deg, var(--violet) 0%, #4c1d95 100%);
+    color: white; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center;
+}
+.slide-title h1 { color: white; font-size: 3.2rem; }
+.slide-title .lead { color: rgba(255,255,255,0.9); margin-top: 1rem; }
+.slide-title .meta { color: rgba(255,255,255,0.65); font-size: 1rem; margin-top: 2rem; letter-spacing: 1px; }
+.slide-title .badge-top {
+    background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+    padding: 0.4rem 1.1rem; border-radius: 999px; font-size: 0.8rem;
+    font-weight: 700; letter-spacing: 1.5px; margin-bottom: 1.5rem;
+}
+.cours-content { max-width: 1050px; margin: 0 auto; }
+.cours-content h2 { margin-bottom: 1.2rem; }
+.cours-content p { margin-bottom: 1rem; }
+.cours-content ul { padding-left: 1.5rem; margin-bottom: 1rem; }
+.cours-content li { margin-bottom: 0.4rem; }
+pre {
+    background: #1e293b; color: #e2e8f0;
+    padding: 1.3rem 1.5rem; border-radius: 12px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.95rem; line-height: 1.7;
+    overflow-x: auto; margin: 1rem 0;
+    border-left: 4px solid var(--violet);
+    white-space: pre-wrap; word-wrap: break-word;
+}
+pre .com { color: #64748b; font-style: italic; }
+pre .kw { color: #f472b6; font-weight: 600; }
+code {
+    background: #f1f5f9; padding: 0.15rem 0.4rem;
+    border-radius: 4px; font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.9em; color: #db2777;
+}
+.box {
+    border-radius: 12px; padding: 1rem 1.4rem; margin: 1rem 0;
+    font-size: 1.05rem; border-left: 5px solid;
+    display: flex; align-items: flex-start; gap: 0.7rem;
+}
+.box i { font-size: 1.2rem; flex-shrink: 0; margin-top: 0.15rem; }
+.box-tip { background: var(--bleu-clair); border-color: var(--bleu); color: #0a2c5c; }
+.box-important { background: var(--orange-clair); border-color: var(--orange); color: #6b3a1f; }
+.box-success { background: var(--vert-clair); border-color: var(--vert); color: #064e3b; }
+.box-warning { background: var(--rouge-clair); border-color: var(--rouge); color: #7f1d1d; }
+.box-info { background: var(--violet-clair); border-color: var(--violet); color: #3b0764; }
+.slide-pratique { background: #f0fdf4; }
+.slide-exercice { background: #fff7ed; }
+.slide-synthese { background: #f5f3ff; }
+.table-simple {
+    width: 100%; border-collapse: collapse; font-size: 1rem;
+    background: white; border-radius: 12px; overflow: hidden; margin: 1rem 0;
+}
+.table-simple th {
+    background: var(--violet); color: white; padding: 0.8rem 1.1rem;
+    text-align: left; font-weight: 700; font-size: 0.95rem;
+}
+.table-simple td { padding: 0.7rem 1.1rem; border-bottom: 1px solid var(--bordure); }
+.table-simple tr:last-child td { border-bottom: none; }
+.regle-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 1.5rem; }
+.regle-card {
+    background: #f8fafc; border-radius: 12px; padding: 1.2rem;
+    border-left: 5px solid var(--violet); transition: transform 0.2s;
+}
+.regle-card:hover { transform: translateX(4px); }
+.regle-card .num {
+    display: inline-block; background: var(--violet); color: white;
+    width: 32px; height: 32px; border-radius: 50%;
+    line-height: 32px; text-align: center;
+    font-weight: 800; font-size: 0.9rem; margin-right: 0.5rem;
+}
+.regle-card h4 { display: inline-block; vertical-align: middle; color: var(--violet); font-size: 1.05rem; margin-bottom: 0.5rem; }
+.regle-card p { font-size: 0.92rem; color: var(--texte-secondaire); margin-bottom: 0.5rem; line-height: 1.5; }
+.regle-card .exemple {
+    font-family: 'Consolas', monospace; font-size: 0.8rem;
+    background: white; padding: 0.5rem 0.7rem;
+    border-radius: 6px; border: 1px solid var(--bordure);
+    color: var(--texte); line-height: 1.5;
+}
+.regle-card .exemple .good { color: var(--vert); font-weight: 700; }
+.regle-card .exemple .bad { color: var(--rouge); font-weight: 700; }
+.steps-container { margin-top: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+.step-item {
+    display: flex; align-items: flex-start; gap: 1.2rem;
+    background: white; border-radius: 14px; padding: 1.2rem 1.5rem;
+    border: 2px solid var(--bordure); transition: var(--transition);
+}
+.step-item:hover { border-color: var(--violet); transform: translateX(4px); }
+.step-num {
+    width: 46px; height: 46px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--violet) 0%, #4c1d95 100%);
+    color: white; display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 1.2rem; flex-shrink: 0;
+}
+.step-body { flex: 1; }
+.step-body h4 { color: var(--violet); font-size: 1.15rem; margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.5rem; }
+.step-body h4 i { font-size: 0.95rem; opacity: 0.7; }
+.step-body p { font-size: 0.95rem; color: var(--texte-secondaire); line-height: 1.55; margin: 0; }
+.step-body p strong { color: var(--texte); }
+.step-body .key {
+    display: inline-block; background: #1e293b; color: #86efac;
+    padding: 0.15rem 0.5rem; border-radius: 5px;
+    font-family: 'Consolas', monospace; font-size: 0.82rem; font-weight: 700;
+}
+.prompt-demo {
+    background: #1e293b; color: #e2e8f0;
+    padding: 1.5rem; border-radius: 12px;
+    font-family: 'Consolas', monospace;
+    font-size: 0.85rem; line-height: 1.7;
+    max-height: 500px; overflow-y: auto;
+    border-left: 4px solid var(--orange);
+    white-space: pre-wrap; word-wrap: break-word;
+}
+.prompt-demo .section-tag {
+    color: var(--orange); font-weight: 700;
+    text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px;
+}
+@media (max-width: 768px) {
+    .slide-content { padding: 2rem 1.5rem; }
+    h1 { font-size: 1.8rem; }
+    h2 { font-size: 1.4rem; }
+    p, li { font-size: 1rem; }
+    .regle-grid { grid-template-columns: 1fr; }
+    .access-card { padding: 2rem 1.5rem; }
+    pre, .prompt-demo { font-size: 0.8rem; }
+    .slide-header { font-size: 0.7rem; padding: 0.5rem 1rem; }
+    .step-item { padding: 1rem 1.2rem; gap: 0.9rem; }
+    .step-num { width: 38px; height: 38px; font-size: 1rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="access-overlay" id="accessOverlay">
+    <div class="access-card">
+        <div class="logo-symbol"><i class="fas fa-magic"></i></div>
+        <h2>Atelier · Rédiger un prompt parfait</h2>
+        <p>Formation CDEJ · NTIC Solution<br>Saisissez le code d'accès.</p>
+        <input type="password" class="access-input" id="accessInput" placeholder="Code d'accès" autocomplete="off" />
+        <button class="access-btn" id="accessBtn"><i class="fas fa-arrow-right"></i> Commencer</button>
+        <div class="access-error" id="accessError">Code incorrect. Réessayez.</div>
+    </div>
+</div>
+
+<div class="presentation-container" id="presentationContainer">
+    <div class="slide-header" id="slideHeader" style="display:none;">
+        <div>
+            <span class="bloc-tag" id="blocTag">BLOC 1</span>
+            <span class="type-tag" id="typeTag">Cours</span>
+        </div>
+        <div class="num"><span id="slideNum">1</span> / <span id="slideTotal">25</span></div>
+    </div>
+    <div class="slide-stage" id="slideStage"></div>
+    <div class="nav-hint">← → · Échap pour quitter</div>
+</div>
+
+<script>
+const slidesData = [
+
+{
+    type: 'title',
+    bloc: '—',
+    content: '\
+        <div class="badge-top"><i class="fas fa-magic"></i> ATELIER PRATIQUE</div>\
+        <h1>Rédiger un prompt parfait</h1>\
+        <p class="lead">Comment obtenir un site professionnel de DeepSeek<br>sans savoir coder</p>\
+        <p class="meta">DURÉE : 2 HEURES · NIVEAU : DÉBUTANT</p>\
+    ',
+    className: 'slide-title'
+},
+
+{
+    type: 'cours',
+    bloc: '—',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Aujourd\'hui, on ne code pas</h2>\
+            <p class="anim-item" style="font-size:1.3rem;">On apprend quelque chose de plus puissant : <strong>commander du code à une IA</strong>.</p>\
+            <div class="regle-grid" style="margin-top:2rem;">\
+                <div class="regle-card anim-item" style="border-left-color:var(--rouge);">\
+                    <h4 style="color:var(--rouge);"><i class="fas fa-times-circle"></i> La mauvaise approche</h4>\
+                    <p>Taper « Fais-moi un site » et espérer un miracle.</p>\
+                    <p style="font-size:0.85rem; margin-top:0.5rem; color:var(--rouge);"><strong>Résultat :</strong> un site générique, moche, qui ne ressemble à rien.</p>\
+                </div>\
+                <div class="regle-card anim-item" style="border-left-color:var(--vert);">\
+                    <h4 style="color:var(--vert);"><i class="fas fa-check-circle"></i> La bonne approche</h4>\
+                    <p>Décrire précisément ce qu\'on veut, section par section.</p>\
+                    <p style="font-size:0.85rem; margin-top:0.5rem; color:var(--vert);"><strong>Résultat :</strong> un site professionnel, prêt à publier.</p>\
+                </div>\
+            </div>\
+            <div class="box box-info anim-item" style="margin-top:2rem;">\
+                <i class="fas fa-lightbulb"></i>\
+                <div><strong>Le prompt, c\'est 80 % du résultat.</strong> Une IA est puissante, mais elle ne devine pas ce que vous voulez.</div>\
+            </div>\
+        </div>\
+    ',
+    className: ''
+},
+
+{
+    type: 'pratique',
+    bloc: 'BLOC 1',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Le workflow complet — 6 étapes</h2>\
+            <p class="anim-item" style="font-size:1.2rem;">De l\'idée jusqu\'à la prévisualisation. Suivez chaque étape, une par une.</p>\
+            <div class="steps-container">\
+                <div class="step-item anim-item">\
+                    <div class="step-num">1</div>\
+                    <div class="step-body">\
+                        <h4><i class="fas fa-lightbulb"></i> Avoir l\'idée du site</h4>\
+                        <p>Sur papier ou dans votre tête, décidez : <strong>quel site voulez-vous créer ?</strong> (école, commerce, passion, portfolio…). Notez les <strong>sections</strong>.</p>\
+                    </div>\
+                </div>\
+                <div class="step-item anim-item">\
+                    <div class="step-num">2</div>\
+                    <div class="step-body">\
+                        <h4><i class="fas fa-folder-plus"></i> Créer le dossier sur le Bureau</h4>\
+                        <p>Clic droit sur le Bureau → <strong>Nouveau</strong> → <strong>Dossier</strong>. Nommez-le sans espaces ni accents : <code>mon-site</code>.</p>\
+                    </div>\
+                </div>\
+                <div class="step-item anim-item">\
+                    <div class="step-num">3</div>\
+                    <div class="step-body">\
+                        <h4><i class="fas fa-robot"></i> Ouvrir DeepSeek et soumettre le prompt</h4>\
+                        <p>Allez sur <code>chat.deepseek.com</code>. Collez votre prompt <strong>complet</strong>. Attendez la génération. <strong>Copiez tout le code</strong> (Ctrl+C).</p>\
+                    </div>\
+                </div>\
+                <div class="step-item anim-item">\
+                    <div class="step-num">4</div>\
+                    <div class="step-body">\
+                        <h4><i class="fas fa-code"></i> Ouvrir VS Code et charger le dossier</h4>\
+                        <p><strong>File</strong> → <strong>Open Folder…</strong>. Sélectionnez le dossier <code>mon-site</code>. Cliquez sur <strong>Select Folder</strong>.</p>\
+                    </div>\
+                </div>\
+                <div class="step-item anim-item">\
+                    <div class="step-num">5</div>\
+                    <div class="step-body">\
+                        <h4><i class="fas fa-file-code"></i> Créer index.html et coller le code</h4>\
+                        <p>Cliquez sur <strong>New File</strong> à gauche. Nommez le fichier <code>index.html</code>. Collez le code (Ctrl+V). Enregistrez (Ctrl+S).</p>\
+                    </div>\
+                </div>\
+                <div class="step-item anim-item">\
+                    <div class="step-num">6</div>\
+                    <div class="step-body">\
+                        <h4><i class="fas fa-play"></i> Lancer Live Server</h4>\
+                        <p>En bas à droite de VS Code, cliquez sur <strong>Go Live</strong>. Le navigateur s\'ouvre avec votre site.</p>\
+                    </div>\
+                </div>\
+            </div>\
+            <div class="box box-success anim-item" style="margin-top:1.5rem;">\
+                <i class="fas fa-trophy"></i>\
+                <div><strong>À la fin,</strong> vous avez un site web complet dans votre navigateur.</div>\
+            </div>\
+        </div>\
+    ',
+    className: 'slide-pratique'
+},
+
+{
+    type: 'cours',
+    bloc: 'BLOC 1',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Étape 1 — Trouver l\'idée du site</h2>\
+            <p class="anim-item">Avant de toucher à l\'ordinateur, <strong>réfléchissez sur papier</strong>.</p>\
+            <table class="table-simple anim-item">\
+                <thead><tr><th>Question</th><th>Exemple</th></tr></thead>\
+                <tbody>\
+                    <tr><td>Quel est le sujet ?</td><td>« Un site pour mon école primaire »</td></tr>\
+                    <tr><td>Qui va le visiter ?</td><td>« Les parents d\'élèves et les enseignants »</td></tr>\
+                    <tr><td>Quelles sections ?</td><td>« Accueil, Présentation, Classes, Photos, Contact »</td></tr>\
+                    <tr><td>Quelles couleurs ?</td><td>« Bleu, blanc, jaune »</td></tr>\
+                    <tr><td>Quels contenus ?</td><td>« Nom de l\'école, 6 classes, photos, contacts »</td></tr>\
+                </tbody>\
+            </table>\
+            <div class="box box-tip anim-item">\
+                <i class="fas fa-lightbulb"></i>\
+                <div><strong>Astuce :</strong> plus vous notez de détails sur papier, plus votre prompt sera précis.</div>\
+            </div>\
+        </div>\
+    ',
+    className: ''
+},
+
+{
+    type: 'cours',
+    bloc: 'BLOC 1',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Étape 2 — Créer le dossier sur le Bureau</h2>\
+            <p class="anim-item">Un dossier propre = un projet propre.</p>\
+            <div class="steps-container">\
+                <div class="step-item anim-item" style="border-color:var(--bleu);">\
+                    <div class="step-num" style="background:var(--bleu);">A</div>\
+                    <div class="step-body">\
+                        <h4 style="color:var(--bleu);">Clic droit sur le Bureau</h4>\
+                        <p>Sur le fond de votre Bureau Windows, faites un <strong>clic droit</strong> dans un espace vide.</p>\
+                    </div>\
+                </div>\
+                <div class="step-item anim-item" style="border-color:var(--bleu);">\
+                    <div class="step-num" style="background:var(--bleu);">B</div>\
+                    <div class="step-body">\
+                        <h4 style="color:var(--bleu);">Nouveau → Dossier</h4>\
+                        <p>Dans le menu, cliquez sur <strong>Nouveau</strong>, puis <strong>Dossier</strong>.</p>\
+                    </div>\
+                </div>\
+                <div class="step-item anim-item" style="border-color:var(--bleu);">\
+                    <div class="step-num" style="background:var(--bleu);">C</div>\
+                    <div class="step-body">\
+                        <h4 style="color:var(--bleu);">Nommer le dossier</h4>\
+                        <p>Tapez le nom puis validez avec Entrée. <strong>Règles :</strong> pas d\'espaces, pas d\'accents, tout en minuscules. Ex : <code>mon-site</code>.</p>\
+                    </div>\
+                </div>\
+            </div>\
+            <div class="box box-warning anim-item" style="margin-top:1.5rem;">\
+                <i class="fas fa-exclamation-triangle"></i>\
+                <div><strong>Noms à ÉVITER :</strong> Mon Site, École, Projet 2026. Ces noms causent des bugs sur GitHub.</div>\
+            </div>\
+        </div>\
+    ',
+    className: ''
+},
+
+{
+    type: 'cours',
+    bloc: 'BLOC 1',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Étape 3 — Soumettre le prompt à DeepSeek</h2>\
+            <p class="anim-item">DeepSeek va générer votre code. Il faut lui donner <strong>toutes les informations d\'un coup</strong>.</p>\
+            <div class="steps-container">\
+                <div class="step-item anim-item" style="border-color:var(--orange);">\
+                    <div class="step-num" style="background:var(--orange);">1</div>\
+                    <div class="step-body">\
+                        <h4 style="color:var(--orange);">Ouvrir DeepSeek</h4>\
+                        <p>Allez sur <code>chat.deepseek.com</code>. Connectez-vous ou créez un compte gratuit.</p>\
+                    </div>\
+                </div>\
+                <div class="step-item anim-item" style="border-color:var(--orange);">\
+                    <div class="step-num" style="background:var(--orange);">2</div>\
+                    <div class="step-body">\
+                        <h4 style="color:var(--orange);">Coller votre prompt complet</h4>\
+                        <p>Collez votre prompt <strong>entier</strong> — rôle, contexte, sections, design, fonctionnalités, contraintes. Puis Entrée.</p>\
+                    </div>\
+                </div>\
+                <div class="step-item anim-item" style="border-color:var(--orange);">\
+                    <div class="step-num" style="background:var(--orange);">3</div>\
+                    <div class="step-body">\
+                        <h4 style="color:var(--orange);">Attendre la génération</h4>\
+                        <p>Ça peut prendre 30 secondes à 2 minutes. <strong>Ne touchez à rien pendant la génération.</strong></p>\
+                    </div>\
+                </div>\
+                <div class="step-item anim-item" style="border-color:var(--orange);">\
+                    <div class="step-num" style="background:var(--orange);">4</div>\
+                    <div class="step-body">\
+                        <h4 style="color:var(--orange);">Copier tout le code</h4>\
+                        <p>Cherchez le bouton <strong>Copy</strong> en haut du bloc de code. Sinon, sélectionnez tout et faites Ctrl+C.</p>\
+                    </div>\
+                </div>\
+            </div>\
+            <div class="box box-important anim-item" style="margin-top:1.5rem;">\
+                <i class="fas fa-clipboard"></i>\
+                <div><strong>Le code est dans votre presse-papier.</strong> Ne fermez pas DeepSeek.</div>\
+            </div>\
+        </div>\
+    ',
+    className: ''
+},
+
+{
+    type: 'cours',
+    bloc: 'BLOC 1',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Étape 4 — Ouvrir VS Code et charger le dossier</h2>\
+            <p class="anim-item">VS Code est l\'endroit où l\'on colle et enregistre le code.</p>\
+            <div class="steps-container">\
+                <div class="step-item anim-item" style="border-color:var(--violet);">\
+                    <div class="step-num" style="background:var(--violet);">1</div>\
+                    <div class="step-body">\
+                        <h4 style="color:var(--violet);">Lancer VS Code</h4>\
+                        <p>Cherchez l\'icône bleue <strong>VS Code</strong> dans la barre des tâches. Double-cliquez.</p>\
+                    </div>\
+                </div>\
+                <div class="step-item anim-item" style="border-color:var(--violet);">\
+                    <div class="step-num" style="background:var(--violet);">2</div>\
+                    <div class="step-body">\
+                        <h4 style="color:var(--violet);">File → Open Folder</h4>\
+                        <p>Cliquez sur <strong>File</strong>, puis <strong>Open Folder…</strong></p>\
+                    </div>\
+                </div>\
+                <div class="step-item anim-item" style="border-color:var(--violet);">\
+                    <div class="step-num" style="background:var(--violet);">3</div>\
+                    <div class="step-body">\
+                        <h4 style="color:var(--violet);">Sélectionner le dossier</h4>\
+                        <p>Naviguez jusqu\'au <strong>Bureau</strong>, sélectionnez <code>mon-site</code>, puis <strong>Select Folder</strong>.</p>\
+                    </div>\
+                </div>\
+                <div class="step-item anim-item" style="border-color:var(--violet);">\
+                    <div class="step-num" style="background:var(--violet);">4</div>\
+                    <div class="step-body">\
+                        <h4 style="color:var(--violet);">Vérifier le panneau gauche</h4>\
+                        <p>À gauche, vous devez voir le <strong>nom de votre dossier</strong>. Le panneau peut être vide : c\'est normal.</p>\
+                    </div>\
+                </div>\
+            </div>\
+        </div>\
+    ',
+    className: ''
+},
+
+{
+    type: 'pratique',
+    bloc: 'BLOC 1',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Étape 5 — Créer index.html et coller le code</h2>\
+            <p class="anim-item">C\'est le moment clé : le code généré devient un vrai fichier.</p>\
+            <div class="steps-container">\
+                <div class="step-item anim-item" style="border-color:var(--vert);">\
+                    <div class="step-num" style="background:var(--vert);">1</div>\
+                    <div class="step-body">\
+                        <h4 style="color:var(--vert);">Cliquer sur New File</h4>\
+                        <p>Dans le panneau gauche, survolez le nom du dossier. Cliquez sur <strong>New File</strong>.</p>\
+                    </div>\
+                </div>\
+                <div class="step-item anim-item" style="border-color:var(--vert);">\
+                    <div class="step-num" style="background:var(--vert);">2</div>\
+                    <div class="step-body">\
+                        <h4 style="color:var(--vert);">Nommer le fichier index.html</h4>\
+                        <p>Tapez exactement : <code>index.html</code>. Validez avec Entrée.</p>\
+                    </div>\
+                </div>\
+                <div class="step-item anim-item" style="border-color:var(--vert);">\
+                    <div class="step-num" style="background:var(--vert);">3</div>\
+                    <div class="step-body">\
+                        <h4 style="color:var(--vert);">Coller le code</h4>\
+                        <p>Le fichier s\'ouvre dans la zone d\'édition. Cliquez dedans puis faites Ctrl+V.</p>\
+                    </div>\
+                </div>\
+                <div class="step-item anim-item" style="border-color:var(--vert);">\
+                    <div class="step-num" style="background:var(--vert);">4</div>\
+                    <div class="step-body">\
+                        <h4 style="color:var(--vert);">Enregistrer avec Ctrl+S</h4>\
+                        <p>Appuyez sur Ctrl+S. <strong>Un point blanc apparaît</strong> près du nom tant que ce n\'est pas enregistré.</p>\
+                    </div>\
+                </div>\
+            </div>\
+            <div class="box box-warning anim-item" style="margin-top:1.5rem;">\
+                <i class="fas fa-exclamation-triangle"></i>\
+                <div><strong>Nom exact obligatoire :</strong> <code>index.html</code>. Pas Index.html, pas index.HTML, pas index.txt.</div>\
+            </div>\
+        </div>\
+    ',
+    className: 'slide-pratique'
+},
+
+{
+    type: 'pratique',
+    bloc: 'BLOC 1',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Étape 6 — Lancer Live Server</h2>\
+            <p class="anim-item">Live Server affiche votre site dans le navigateur.</p>\
+            <div class="steps-container">\
+                <div class="step-item anim-item" style="border-color:var(--bleu);">\
+                    <div class="step-num" style="background:var(--bleu);">1</div>\
+                    <div class="step-body">\
+                        <h4 style="color:var(--bleu);">Repérer la barre d\'état bleue</h4>\
+                        <p>En bas de la fenêtre VS Code, il y a une <strong>barre bleue</strong>.</p>\
+                    </div>\
+                </div>\
+                <div class="step-item anim-item" style="border-color:var(--bleu);">\
+                    <div class="step-num" style="background:var(--bleu);">2</div>\
+                    <div class="step-body">\
+                        <h4 style="color:var(--bleu);">Cliquer sur Go Live</h4>\
+                        <p>À droite de cette barre, cherchez l\'icône <strong>Go Live</strong> (un petit éclair).</p>\
+                    </div>\
+                </div>\
+                <div class="step-item anim-item" style="border-color:var(--bleu);">\
+                    <div class="step-num" style="background:var(--bleu);">3</div>\
+                    <div class="step-body">\
+                        <h4 style="color:var(--bleu);">Le navigateur s\'ouvre</h4>\
+                        <p>Une adresse du type <code>127.0.0.1:5500</code> s\'ouvre. <strong>Votre site s\'affiche.</strong></p>\
+                    </div>\
+                </div>\
+                <div class="step-item anim-item" style="border-color:var(--bleu);">\
+                    <div class="step-num" style="background:var(--bleu);">4</div>\
+                    <div class="step-body">\
+                        <h4 style="color:var(--bleu);">Tester la mise à jour automatique</h4>\
+                        <p>Modifiez un texte, faites Ctrl+S. Le navigateur se met à jour tout seul.</p>\
+                    </div>\
+                </div>\
+            </div>\
+            <div class="box box-success anim-item" style="margin-top:1.5rem;">\
+                <i class="fas fa-trophy"></i>\
+                <div><strong>Félicitations.</strong> Vous avez transformé un prompt en site web.</div>\
+            </div>\
+        </div>\
+    ',
+    className: 'slide-pratique'
+},
+
+{
+    type: 'cours',
+    bloc: 'BLOC 1',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Récapitulatif du workflow</h2>\
+            <table class="table-simple anim-item">\
+                <thead><tr><th>#</th><th>Étape</th><th>Outil</th></tr></thead>\
+                <tbody>\
+                    <tr><td>1</td><td>Trouver l\'idée et noter les sections</td><td>Papier / carnet</td></tr>\
+                    <tr><td>2</td><td>Créer le dossier sur le Bureau</td><td>Windows</td></tr>\
+                    <tr><td>3</td><td>Soumettre le prompt complet</td><td>DeepSeek</td></tr>\
+                    <tr><td>4</td><td>Ouvrir le dossier</td><td>VS Code → File → Open Folder</td></tr>\
+                    <tr><td>5</td><td>Créer index.html, coller, Ctrl+S</td><td>VS Code</td></tr>\
+                    <tr><td>6</td><td>Prévisualiser</td><td>Live Server (Go Live)</td></tr>\
+                </tbody>\
+            </table>\
+            <div class="box box-info anim-item" style="margin-top:1.5rem;">\
+                <i class="fas fa-list-ol"></i>\
+                <div><strong>Ces 6 étapes sont TOUJOURS les mêmes</strong>, quel que soit le projet.</div>\
+            </div>\
+        </div>\
+    ',
+    className: ''
+},
+
+{
+    type: 'cours',
+    bloc: 'BLOC 2',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Les 10 règles d\'or d\'un bon prompt</h2>\
+            <p class="anim-item">Maintenant que vous connaissez le workflow, on va voir ce qui fait un bon prompt.</p>\
+            <div class="regle-grid">\
+                <div class="regle-card anim-item">\
+                    <span class="num">1</span><h4>Donne un RÔLE à l\'IA</h4>\
+                    <p>Dis-lui qui elle doit être.</p>\
+                    <div class="exemple"><span class="good">✓</span> « Tu es un développeur senior. »<br><span class="bad">✗</span> « Fais un site. »</div>\
+                </div>\
+                <div class="regle-card anim-item">\
+                    <span class="num">2</span><h4>Décris le CONTEXTE</h4>\
+                    <p>Qui es-tu, où, pour qui ?</p>\
+                    <div class="exemple"><span class="good">✓</span> « Association à Gaoua, vend du Faso Dan Fani. »<br><span class="bad">✗</span> « Site pour mon association. »</div>\
+                </div>\
+            </div>\
+        </div>\
+    ',
+    className: ''
+},
+
+{
+    type: 'cours',
+    bloc: 'BLOC 2',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Règles 3 et 4</h2>\
+            <div class="regle-grid">\
+                <div class="regle-card anim-item">\
+                    <span class="num">3</span><h4>Liste les SECTIONS</h4>\
+                    <p>Dans l\'ordre, comme un menu.</p>\
+                    <div class="exemple"><span class="good">✓</span> « 1) Header 2) Hero 3) Produits 4) Galerie 5) Footer. »</div>\
+                </div>\
+                <div class="regle-card anim-item">\
+                    <span class="num">4</span><h4>Décris le DESIGN</h4>\
+                    <p>Couleurs précises, polices, ambiance.</p>\
+                    <div class="exemple"><span class="good">✓</span> « Palette : brun #6b4423, ocre #c98a3a. »<br><span class="bad">✗</span> « Fais joli. »</div>\
+                </div>\
+            </div>\
+        </div>\
+    ',
+    className: ''
+},
+
+{
+    type: 'cours',
+    bloc: 'BLOC 2',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Règles 5 et 6</h2>\
+            <div class="regle-grid">\
+                <div class="regle-card anim-item">\
+                    <span class="num">5</span><h4>Précise la TECHNOLOGIE</h4>\
+                    <p>Dis exactement ce que tu veux comme langage.</p>\
+                    <div class="exemple"><span class="good">✓</span> « HTML5, CSS3 et JavaScript pur. Un seul fichier. »</div>\
+                </div>\
+                <div class="regle-card anim-item">\
+                    <span class="num">6</span><h4>Exige le RESPONSIVE</h4>\
+                    <p>Donne les règles mobiles précises.</p>\
+                    <div class="exemple"><span class="good">✓</span> « Sur mobile : menu hamburger, produits en 2 colonnes. »</div>\
+                </div>\
+            </div>\
+        </div>\
+    ',
+    className: ''
+},
+
+{
+    type: 'cours',
+    bloc: 'BLOC 2',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Règles 7 et 8</h2>\
+            <div class="regle-grid">\
+                <div class="regle-card anim-item">\
+                    <span class="num">7</span><h4>Liste les FONCTIONNALITÉS</h4>\
+                    <p>Une par ligne, claire et précise.</p>\
+                    <div class="exemple"><span class="good">✓</span> « 1) Menu hamburger 2) Modal commande 3) Envoi WhatsApp 4) Lightbox. »</div>\
+                </div>\
+                <div class="regle-card anim-item">\
+                    <span class="num">8</span><h4>Interdis ce que tu ne veux PAS</h4>\
+                    <p>Les IA ont des tics par défaut. Bloque-les.</p>\
+                    <div class="exemple"><span class="good">✓</span> « N\'utilise PAS Arial. PAS d\'ombres cartoon. PAS de Bootstrap. »</div>\
+                </div>\
+            </div>\
+        </div>\
+    ',
+    className: ''
+},
+
+{
+    type: 'cours',
+    bloc: 'BLOC 2',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Règles 9 et 10</h2>\
+            <div class="regle-grid">\
+                <div class="regle-card anim-item">\
+                    <span class="num">9</span><h4>Exige un SEUL fichier</h4>\
+                    <p>Sinon l\'IA te livre 10 fichiers et du blabla.</p>\
+                    <div class="exemple"><span class="good">✓</span> « UN SEUL fichier index.html. Juste le code. Aucune explication. »</div>\
+                </div>\
+                <div class="regle-card anim-item">\
+                    <span class="num">10</span><h4>Itère si besoin</h4>\
+                    <p>Ne recommence pas tout, corrige juste un point.</p>\
+                    <div class="exemple"><span class="good">✓</span> « Le hero est trop sombre. Éclaircis l\'overlay de 30 %. Relivre le fichier complet. »</div>\
+                </div>\
+            </div>\
+            <div class="box box-success anim-item" style="margin-top:1.5rem;">\
+                <i class="fas fa-check-circle"></i>\
+                <div><strong>Ces 10 règles sont la base.</strong> Appliquez-les systématiquement.</div>\
+            </div>\
+        </div>\
+    ',
+    className: ''
+},
+
+{
+    type: 'cours',
+    bloc: 'BLOC 3',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">La formule magique</h2>\
+            <p class="anim-item">Un prompt parfait suit toujours la même structure.</p>\
+            <pre class="anim-item">Tu es <span class="kw">[RÔLE]</span>.\
+\
+Contexte : <span class="kw">[DESCRIPTION DU PROJET]</span>.\
+\
+Crée <span class="kw">[TYPE DE SITE]</span> avec :\
+\
+<span class="com">Sections (dans cet ordre) :</span>\
+1. <span class="kw">[SECTION 1]</span>\
+2. <span class="kw">[SECTION 2]</span>\
+3. <span class="kw">[SECTION 3]</span>\
+\
+<span class="com">Design :</span>\
+- Palette : <span class="kw">[COULEURS]</span>\
+- Polices : <span class="kw">[POLICES]</span>\
+- Style : <span class="kw">[AMBIANCE]</span>\
+\
+<span class="com">Fonctionnalités :</span>\
+- <span class="kw">[FONCTION 1]</span>\
+- <span class="kw">[FONCTION 2]</span>\
+\
+<span class="com">Contraintes :</span>\
+- <span class="kw">[TECHNO]</span>\
+- À ÉVITER : <span class="kw">[CE QUE TU NE VEUX PAS]</span>\
+\
+Livraison : UN SEUL fichier index.html complet.</pre>\
+            <div class="box box-tip anim-item">\
+                <i class="fas fa-lightbulb"></i>\
+                <div><strong>Cette formule marche pour n\'importe quel site.</strong></div>\
+            </div>\
+        </div>\
+    ',
+    className: ''
+},
+
+{
+    type: 'cours',
+    bloc: 'BLOC 3',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Exemple : prompt d\'un site simple</h2>\
+            <p class="anim-item">Voici le prompt complet pour un site de restaurant.</p>\
+            <pre class="anim-item">Tu es un <span class="kw">développeur web senior</span>.\
+\
+Contexte : je crée un site pour un <span class="kw">restaurant burkinabè à Bobo-Dioulasso</span>. Public : clients locaux et touristes.\
+\
+Crée un site vitrine avec :\
+1. Header sticky avec logo et menu\
+2. Hero avec image de fond de plat traditionnel\
+3. Section "Notre menu" — 6 plats avec photo et prix\
+4. Section "Notre histoire" — 2 paragraphes\
+5. Section "Réservation" — formulaire simple\
+6. Footer avec contacts et horaires\
+\
+<span class="com">Design :</span>\
+- Palette : orange #E67E22, brun #6B4423, crème #FAF6EF\
+- Police : Plus Jakarta Sans + Cormorant Garamond\
+- Style : chaleureux, moderne, épuré\
+\
+<span class="com">Fonctionnalités :</span>\
+- Menu hamburger sur mobile\
+- Animations au scroll\
+- Bouton WhatsApp flottant\
+\
+<span class="com">Contraintes :</span>\
+- HTML/CSS/JS pur, un seul fichier\
+- Responsive mobile-first\
+- À ÉVITER : Arial, ombres cartoon, Bootstrap\
+\
+Livraison : UN SEUL fichier index.html complet. Juste le code.</pre>\
+        </div>\
+    ',
+    className: ''
+},
+
+{
+    type: 'cours',
+    bloc: 'BLOC 3',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Exemple : site avancé avec calculs</h2>\
+            <p class="anim-item">Pour un site plus complexe, on ajoute des sections et on détaille chacune.</p>\
+            <table class="table-simple anim-item">\
+                <thead><tr><th>Section</th><th>Ce qu\'il faut préciser</th></tr></thead>\
+                <tbody>\
+                    <tr><td>Vidéo</td><td>Lecteur HTML5, contrôles, image d\'aperçu</td></tr>\
+                    <tr><td>Calendrier</td><td>Navigation mois, jour actuel surligné, notes</td></tr>\
+                    <tr><td>Calculatrice</td><td>4 modes : standard, scientifique, compta, géométrie</td></tr>\
+                    <tr><td>Tableau</td><td>Recherche en direct, tri, lignes alternées</td></tr>\
+                    <tr><td>Calculs auto</td><td>Formules : TVA, marge, pourcentage, intérêts, surfaces</td></tr>\
+                </tbody>\
+            </table>\
+        </div>\
+    ',
+    className: ''
+},
+
+{
+    type: 'pratique',
+    bloc: 'BLOC 3',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Le prompt complet à copier</h2>\
+            <p class="anim-item">Ce prompt génère un site avec vidéo, calendrier, calculatrice et tableau.</p>\
+            <div class="prompt-demo anim-item">Tu es un développeur web senior spécialisé en HTML/CSS/JavaScript pur.\
+\
+Contexte : je crée un site vitrine pour une association burkinabè. Le site doit être moderne, responsive, et prêt à être publié. Aucun framework.\
+\
+Crée un site complet en UN SEUL fichier index.html avec le CSS dans une balise style et le JavaScript dans une balise script.\
+\
+<span class="section-tag">Sections obligatoires :</span>\
+1. Header sticky avec logo et menu\
+2. Hero avec image de fond\
+3. Section "Nos services" — 3 cartes avec image\
+4. Section "Vidéo de présentation" — lecteur HTML5\
+5. Section "Nos produits" — 6 produits avec commande WhatsApp en modal\
+6. Section "Tableau de données" — tableau avec recherche\
+7. Section "Calculatrice universelle" — 4 modes\
+8. Section "Calendrier interactif" — navigation et notes\
+9. Section "Galerie" — carrousel automatique\
+10. Section "Contact"\
+11. Footer — 3 colonnes\
+\
+<span class="section-tag">Design :</span>\
+- Palette : #0B3FA5, #FF6B35, #059669, #f4f6fa, #ffffff\
+- Police : Plus Jakarta Sans\
+- Coins arrondis 8-24px\
+- Ombres douces multi-niveaux\
+\
+<span class="section-tag">Fonctionnalités :</span>\
+- Menu hamburger sur mobile\
+- Modal de commande WhatsApp\
+- Lightbox sur les images\
+- Recherche en temps réel\
+- Calculatrice fonctionnelle\
+- Calendrier dynamique\
+- Carrousel automatique\
+\
+<span class="section-tag">Contraintes :</span>\
+- HTML/CSS/JS pur UNIQUEMENT\
+- AUCUN framework\
+- UN SEUL fichier index.html\
+- PAS Arial, PAS d\'ombres cartoon\
+\
+<span class="section-tag">Livraison :</span>\
+Donne-moi UNIQUEMENT le code complet entre balises de code markdown. Aucune explication.</div>\
+            <div class="box box-important anim-item" style="margin-top:1.5rem;">\
+                <i class="fas fa-clipboard"></i>\
+                <div><strong>Ce prompt est long. C\'est normal.</strong> Un site complexe demande un prompt complexe.</div>\
+            </div>\
+        </div>\
+    ',
+    className: 'slide-pratique'
+},
+
+{
+    type: 'pratique',
+    bloc: 'BLOC 4',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">À vous de jouer : créez votre prompt</h2>\
+            <p class="anim-item">Choisissez un projet et rédigez votre prompt en suivant la formule.</p>\
+            <div style="background:white; border-radius:14px; padding:1.5rem 2rem; border:2px solid var(--vert); margin-top:1.2rem;">\
+                <h3 style="color:var(--vert); margin-bottom:1rem;"><i class="fas fa-tasks"></i> Votre projet</h3>\
+                <p style="margin-bottom:0.8rem;"><strong>Étape 1 — Choisissez un sujet :</strong></p>\
+                <ul style="margin-bottom:1rem;">\
+                    <li>Un site pour votre école</li>\
+                    <li>Un site pour votre commerce</li>\
+                    <li>Un site pour votre passion</li>\
+                    <li>Un site personnel (portfolio, CV)</li>\
+                </ul>\
+                <p style="margin-bottom:0.8rem;"><strong>Étape 2 — Remplissez la formule magique :</strong></p>\
+                <ul style="margin-bottom:1rem;">\
+                    <li>Rôle → « Tu es un développeur senior »</li>\
+                    <li>Contexte → qui vous êtes, où, pour qui</li>\
+                    <li>Sections → 5 à 8 sections minimum</li>\
+                    <li>Design → couleurs, polices, ambiance</li>\
+                    <li>Fonctionnalités → menu, formulaire, animations</li>\
+                    <li>Contraintes → HTML/CSS/JS pur, responsive</li>\
+                </ul>\
+                <p style="margin-bottom:0;"><strong>Étape 3 — Testez dans DeepSeek en suivant le workflow des 6 étapes.</strong></p>\
+            </div>\
+        </div>\
+    ',
+    className: 'slide-pratique'
+},
+
+{
+    type: 'pratique',
+    bloc: 'BLOC 4',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Test en direct</h2>\
+            <p class="anim-item">Un volontaire se propose. On teste son prompt ensemble, en direct.</p>\
+            <table class="table-simple anim-item">\
+                <thead><tr><th>Étape</th><th>Ce qu\'on regarde</th></tr></thead>\
+                <tbody>\
+                    <tr><td>1. Le volontaire lit son prompt</td><td>Est-il complet ?</td></tr>\
+                    <tr><td>2. On copie dans DeepSeek</td><td>Combien de temps pour générer ?</td></tr>\
+                    <tr><td>3. On enregistre le code</td><td>Dans index.html</td></tr>\
+                    <tr><td>4. On ouvre dans le navigateur</td><td>Le site s\'affiche-t-il correctement ?</td></tr>\
+                    <tr><td>5. On teste sur mobile</td><td>Le menu hamburger fonctionne-t-il ?</td></tr>\
+                </tbody>\
+            </table>\
+            <div class="box box-success anim-item" style="margin-top:1.5rem;">\
+                <i class="fas fa-check-circle"></i>\
+                <div><strong>À la fin :</strong> chaque participant repart avec un site professionnel qui fonctionne.</div>\
+            </div>\
+        </div>\
+    ',
+    className: 'slide-pratique'
+},
+
+{
+    type: 'cours',
+    bloc: 'BLOC 4',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Erreurs fréquentes à éviter</h2>\
+            <table class="table-simple anim-item">\
+                <thead><tr><th>Erreur</th><th>Correction</th></tr></thead>\
+                <tbody>\
+                    <tr><td>Prompt trop court</td><td>Ajoutez contexte, sections, design</td></tr>\
+                    <tr><td>Prompt trop vague</td><td>Remplacez « joli » par des codes couleurs</td></tr>\
+                    <tr><td>Pas de contraintes</td><td>Dites ce que vous ne voulez PAS</td></tr>\
+                    <tr><td>Pas de livraison précisée</td><td>« Un seul fichier. Juste le code. »</td></tr>\
+                    <tr><td>Accepter le premier résultat</td><td>Itérez : « change la couleur »</td></tr>\
+                    <tr><td>Oublier Ctrl+S</td><td>Toujours enregistrer avant de tester</td></tr>\
+                    <tr><td>Mauvais nom de fichier</td><td>index.html exactement</td></tr>\
+                </tbody>\
+            </table>\
+            <div class="box box-warning anim-item" style="margin-top:1.5rem;">\
+                <i class="fas fa-exclamation-triangle"></i>\
+                <div><strong>Rappelez-vous :</strong> un prompt clair = un résultat clair.</div>\
+            </div>\
+        </div>\
+    ',
+    className: ''
+},
+
+{
+    type: 'cours',
+    bloc: 'BLOC 4',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Comment itérer intelligemment</h2>\
+            <p class="anim-item">Quand le résultat ne vous plaît pas, corrigez par petites touches.</p>\
+            <pre class="anim-item"><span class="com">// Exemple 1 : changer une couleur</span>\
+« Le header est trop foncé. Utilise #0B3FA5 au lieu du noir.\
+Relivre le fichier complet. »\
+\
+<span class="com">// Exemple 2 : ajouter une section</span>\
+« Ajoute une section "Témoignages" entre\
+les produits et la galerie. »\
+\
+<span class="com">// Exemple 3 : corriger un problème mobile</span>\
+« Sur mobile, les produits ne sont pas en 2 colonnes.\
+Corrige le CSS. Relivre le fichier complet. »</pre>\
+            <div class="box box-tip anim-item">\
+                <i class="fas fa-lightbulb"></i>\
+                <div><strong>Règle :</strong> une demande = un changement. Puis Ctrl+A + Ctrl+V + Ctrl+S pour remplacer le code dans VS Code.</div>\
+            </div>\
+        </div>\
+    ',
+    className: ''
+},
+
+{
+    type: 'exercice',
+    bloc: 'BLOC 4',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Exercice pratique : votre prompt complet</h2>\
+            <p class="anim-item">C\'est le moment de mettre en pratique tout ce qu\'on a vu.</p>\
+            <div style="background:white; border-radius:14px; padding:1.5rem 2rem; border:2px solid var(--orange); margin-top:1.2rem;">\
+                <h3 style="color:var(--orange); margin-bottom:1rem;"><i class="fas fa-tasks"></i> Consignes</h3>\
+                <ol style="padding-left:1.5rem; line-height:2;">\
+                    <li>Choisissez un sujet de site</li>\
+                    <li>Rédigez votre prompt en suivant la formule magique</li>\
+                    <li>Incluez au minimum : 6 sections, une palette de 3-4 couleurs, 2 polices, 3 fonctionnalités interactives</li>\
+                    <li>Testez votre prompt dans DeepSeek</li>\
+                    <li>Enregistrez le code dans index.html sur votre Bureau</li>\
+                    <li>Ouvrez avec Live Server et vérifiez</li>\
+                    <li>Si besoin, itérez avec une correction précise</li>\
+                </ol>\
+            </div>\
+            <div class="box box-success anim-item" style="margin-top:1.5rem;">\
+                <i class="fas fa-trophy"></i>\
+                <div><strong>Durée :</strong> 30 minutes. Posez vos questions à tout moment.</div>\
+            </div>\
+        </div>\
+    ',
+    className: 'slide-exercice'
+},
+
+{
+    type: 'synthese',
+    bloc: '—',
+    content: '\
+        <div class="cours-content">\
+            <h2 class="anim-item">Ce que vous savez faire maintenant</h2>\
+            <ul class="anim-item" style="font-size:1.15rem; line-height:1.8;">\
+                <li>Suivre le <strong>workflow en 6 étapes</strong> : idée → dossier → DeepSeek → VS Code → coller → Live Server</li>\
+                <li>Rédiger un prompt structuré en 10 règles</li>\
+                <li>Utiliser la formule magique</li>\
+                <li>Décrire du design avec des mots précis</li>\
+                <li>Demander des fonctionnalités interactives</li>\
+                <li>Créer un fichier index.html dans VS Code</li>\
+                <li>Prévisualiser avec Live Server</li>\
+                <li>Itérer intelligemment pour améliorer un résultat</li>\
+                <li>Obtenir un site professionnel sans savoir coder</li>\
+            </ul>\
+\
+            <div class="box box-important anim-item" style="margin-top:1.5rem;">\
+                <i class="fas fa-graduation-cap"></i>\
+                <div><strong>La compétence la plus précieuse aujourd\'hui :</strong> savoir demander à une IA ce qu\'on veut obtenir. C\'est ce qui distingue ceux qui subissent l\'IA de ceux qui l\'utilisent.</div>\
+            </div>\
+\
+            <div class="box box-tip anim-item">\
+                <i class="fas fa-lightbulb"></i>\
+                <div><strong>Conseil :</strong> gardez cette fiche. Le workflow et la formule magique sont toujours les mêmes.</div>\
+            </div>\
+        </div>\
+    ',
+    className: 'slide-synthese'
+}
+
+];
+
+let currentSlide = 0;
+const totalSlides = slidesData.length;
+
+function renderSlide(index) {
+    const stage = document.getElementById('slideStage');
+    const slide = slidesData[index];
+    stage.innerHTML = '<div class="slide-content ' + (slide.className || '') + '">' + slide.content + '</div>';
+
+    const header = document.getElementById('slideHeader');
+    if (slide.type === 'title') {
+        header.style.display = 'none';
+    } else {
+        header.style.display = 'flex';
+        document.getElementById('blocTag').textContent = slide.bloc || '—';
+        document.getElementById('slideNum').textContent = index + 1;
+        document.getElementById('slideTotal').textContent = totalSlides;
+
+        const typeTag = document.getElementById('typeTag');
+        const typeLabels = {
+            'cours': 'Cours',
+            'pratique': 'Pratique',
+            'exercice': 'Exercice',
+            'synthese': 'Synthèse'
+        };
+        typeTag.textContent = typeLabels[slide.type] || 'Cours';
+        typeTag.className = 'type-tag type-' + (slide.type || 'cours');
+    }
+}
+
+function goNext() {
+    if (currentSlide < totalSlides - 1) {
+        currentSlide++;
+        renderSlide(currentSlide);
+    }
+}
+
+function goPrev() {
+    if (currentSlide > 0) {
+        currentSlide--;
+        renderSlide(currentSlide);
+    }
+}
+
+function checkAccess() {
+    const input = document.getElementById('accessInput');
+    const error = document.getElementById('accessError');
+    const expected = 'V0VCMjAyNg==';
+    const entered = btoa(input.value.trim());
+
+    if (entered === expected) {
+        document.getElementById('accessOverlay').classList.add('hidden');
+        document.getElementById('presentationContainer').classList.add('active');
+        renderSlide(currentSlide);
+    } else {
+        error.classList.add('visible');
+        input.value = '';
+        input.focus();
+        setTimeout(function() {
+            error.classList.remove('visible');
+        }, 2500);
+    }
+}
+
+document.getElementById('accessBtn').addEventListener('click', checkAccess);
+document.getElementById('accessInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') checkAccess();
+});
+
+document.addEventListener('keydown', function(e) {
+    const container = document.getElementById('presentationContainer');
+    if (!container.classList.contains('active')) return;
+    switch (e.key) {
+        case 'ArrowRight':
+        case ' ':
+        case 'PageDown':
+            e.preventDefault();
+            goNext();
+            break;
+        case 'ArrowLeft':
+        case 'PageUp':
+            e.preventDefault();
+            goPrev();
+            break;
+        case 'Escape':
+            if (confirm('Quitter la projection ?')) {
+                document.getElementById('presentationContainer').classList.remove('active');
+                document.getElementById('accessOverlay').classList.remove('hidden');
+                currentSlide = 0;
+            }
+            break;
+    }
+});
+
+let touchStartX = 0;
+document.addEventListener('touchstart', function(e) {
+    touchStartX = e.changedTouches[0].screenX;
+});
+document.addEventListener('touchend', function(e) {
+    const deltaX = e.changedTouches[0].screenX - touchStartX;
+    if (Math.abs(deltaX) > 60) {
+        if (deltaX < 0) goNext();
+        else goPrev();
+    }
+});
+</script>
+
+</body>
+</html>
