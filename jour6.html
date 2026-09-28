@@ -1,20 +1,19 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Formation CDEJ · Jour 6 — Formulaires & JavaScript</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formation CDEJ · Jour 6 — Architecture d'un site professionnel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
 :root {
     --bleu: #0B3FA5;
     --bleu-profond: #072a6e;
     --bleu-clair: #e8f0fe;
     --orange: #FF6B35;
-    --orange-vif: #ff5722;
     --orange-clair: #fff4e5;
     --vert: #059669;
     --vert-clair: #ecfdf5;
@@ -28,11 +27,9 @@
     --texte-secondaire: #475569;
     --blanc: #ffffff;
     --bordure: #e2e8f0;
-    --transition: 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
 * { margin: 0; padding: 0; box-sizing: border-box; }
-
 body {
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     background: #0d1117;
@@ -41,13 +38,10 @@ body {
     height: 100vh;
     width: 100vw;
     -webkit-font-smoothing: antialiased;
-    user-select: none;
 }
-
-/* ===== ACCÈS ===== */
 .access-overlay {
     position: fixed; inset: 0; z-index: 99999;
-    background: linear-gradient(135deg, var(--jaune) 0%, #b45309 100%);
+    background: linear-gradient(135deg, var(--bleu) 0%, var(--bleu-profond) 100%);
     display: flex; align-items: center; justify-content: center;
     transition: opacity 0.7s ease, visibility 0.7s ease;
 }
@@ -62,44 +56,34 @@ body {
     to { opacity: 1; transform: translateY(0) scale(1); }
 }
 .access-card .logo-symbol {
-    background: var(--jaune); color: white; width: 68px; height: 68px;
+    background: var(--bleu); color: white; width: 68px; height: 68px;
     border-radius: 18px; display: flex; align-items: center; justify-content: center;
-    font-weight: 800; font-size: 1.4rem; margin: 0 auto 1.2rem;
+    font-size: 1.5rem; margin: 0 auto 1.2rem;
 }
-.access-card h2 { color: #b45309; font-size: 1.5rem; margin-bottom: 0.5rem; }
-.access-card p { color: #475569; margin-bottom: 1.8rem; font-size: 0.92rem; line-height: 1.5; }
+.access-card h2 { color: var(--bleu); font-size: 1.5rem; margin-bottom: 0.5rem; font-weight: 800; }
+.access-card p { color: var(--texte-secondaire); margin-bottom: 1.8rem; font-size: 0.92rem; line-height: 1.5; }
 .access-input {
     width: 100%; padding: 0.9rem 1.3rem; border: 2px solid var(--bordure);
     border-radius: 14px; font-family: inherit; font-size: 1rem;
     text-align: center; letter-spacing: 2px; transition: var(--transition); margin-bottom: 1rem;
 }
-.access-input:focus { outline: none; border-color: var(--jaune); box-shadow: 0 0 0 4px rgba(245,158,11,0.15); }
+.access-input:focus { outline: none; border-color: var(--bleu); box-shadow: 0 0 0 4px rgba(11,63,165,0.15); }
 .access-btn {
-    width: 100%; padding: 0.9rem; background: var(--jaune); color: white;
+    width: 100%; padding: 0.9rem; background: var(--bleu); color: white;
     border: none; border-radius: 14px; font-weight: 700; font-size: 1rem;
     font-family: inherit; cursor: pointer; transition: var(--transition);
 }
-.access-btn:hover { background: #d97706; transform: translateY(-2px); }
-.access-error {
-    color: #dc2626; font-size: 0.85rem; margin-top: 0.5rem;
-    display: none; font-weight: 600;
-}
+.access-btn:hover { background: var(--bleu-profond); transform: translateY(-2px); }
+.access-error { color: var(--rouge); font-size: 0.85rem; margin-top: 0.5rem; display: none; font-weight: 600; }
 .access-error.visible { display: block; animation: shake 0.5s ease; }
 @keyframes shake {
     0%,100% { transform: translateX(0); }
     25% { transform: translateX(-8px); }
     75% { transform: translateX(8px); }
 }
-
-/* ===== PROJECTION ===== */
-.presentation-container {
-    display: none; position: fixed; inset: 0; background: #0d1117; z-index: 100;
-}
+.presentation-container { display: none; position: fixed; inset: 0; background: #0d1117; z-index: 100; }
 .presentation-container.active { display: block; }
-.slide-stage {
-    position: absolute; inset: 0;
-    display: flex; align-items: center; justify-content: center;
-}
+.slide-stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
 .slide-content {
     background: white; width: 100%; height: 100%;
     overflow-y: auto; padding: 3rem 4.5rem;
@@ -111,15 +95,12 @@ body {
 }
 .slide-header {
     position: fixed; top: 0; left: 0; right: 0; z-index: 500;
-    background: rgba(255,255,255,0.95);
-    backdrop-filter: blur(8px);
-    padding: 0.6rem 1.5rem;
-    display: flex; justify-content: space-between; align-items: center;
-    border-bottom: 1px solid var(--bordure);
-    font-size: 0.8rem; font-weight: 600;
+    background: rgba(255,255,255,0.95); backdrop-filter: blur(8px);
+    padding: 0.6rem 1.5rem; display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid var(--bordure); font-size: 0.8rem; font-weight: 600;
 }
 .slide-header .bloc-tag {
-    background: var(--jaune); color: white; padding: 0.25rem 0.75rem;
+    background: var(--bleu); color: white; padding: 0.25rem 0.75rem;
     border-radius: 999px; font-size: 0.7rem; letter-spacing: 0.5px;
 }
 .slide-header .type-tag {
@@ -130,15 +111,14 @@ body {
 .type-pratique { background: var(--vert-clair); color: var(--vert); }
 .type-exercice { background: var(--orange-clair); color: var(--orange); }
 .type-synthese { background: var(--violet-clair); color: var(--violet); }
+.type-demo { background: var(--jaune-clair); color: #b45309; }
+.type-prompt { background: #fff7ed; color: #c2410c; }
 .slide-header .num { color: var(--texte-secondaire); }
-
 .nav-hint {
     position: fixed; bottom: 1rem; right: 1rem; z-index: 500;
     color: rgba(255,255,255,0.3); font-size: 0.7rem;
     font-weight: 600; letter-spacing: 0.5px; pointer-events: none;
 }
-
-/* ===== ANIMATIONS ===== */
 .anim-item { opacity: 0; transform: translateY(15px); animation: fadeUp 0.5s ease forwards; }
 .anim-item:nth-child(1) { animation-delay: 0.05s; }
 .anim-item:nth-child(2) { animation-delay: 0.15s; }
@@ -149,91 +129,175 @@ body {
 .anim-item:nth-child(7) { animation-delay: 0.65s; }
 .anim-item:nth-child(8) { animation-delay: 0.75s; }
 @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
-
-/* ===== TYPO ===== */
 h1 { font-size: 3rem; font-weight: 800; letter-spacing: -1px; color: var(--bleu); line-height: 1.1; }
 h2 { font-size: 2.1rem; font-weight: 700; color: var(--bleu); line-height: 1.2; margin-bottom: 1rem; }
 h3 { font-size: 1.4rem; font-weight: 700; color: var(--texte); }
-h4 { font-size: 1.15rem; font-weight: 700; }
-p { font-size: 1.25rem; line-height: 1.55; color: var(--texte); }
-li { font-size: 1.15rem; line-height: 1.65; }
+p { font-size: 1.15rem; line-height: 1.55; color: var(--texte); margin-bottom: 0.8rem; }
 .lead { font-size: 1.4rem; color: var(--texte-secondaire); line-height: 1.5; }
-
-/* ===== SLIDE TITRE ===== */
 .slide-title {
-    background: linear-gradient(135deg, var(--jaune) 0%, #b45309 100%);
+    background: linear-gradient(135deg, var(--bleu) 0%, var(--bleu-profond) 100%);
     color: white; display: flex; flex-direction: column;
     align-items: center; justify-content: center; text-align: center;
 }
-.slide-title h1 { color: white; font-size: 3.4rem; }
+.slide-title h1 { color: white; font-size: 3.2rem; }
 .slide-title .lead { color: rgba(255,255,255,0.9); margin-top: 1rem; }
-.slide-title .meta {
-    color: rgba(255,255,255,0.65); font-size: 1rem; margin-top: 2rem;
-    letter-spacing: 1px;
-}
+.slide-title .meta { color: rgba(255,255,255,0.65); font-size: 1rem; margin-top: 2rem; letter-spacing: 1px; }
 .slide-title .badge-top {
     background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
     padding: 0.4rem 1.1rem; border-radius: 999px; font-size: 0.8rem;
     font-weight: 700; letter-spacing: 1.5px; margin-bottom: 1.5rem;
 }
-
-/* ===== PLAN ===== */
-.bloc-plan {
-    display: grid; grid-template-columns: repeat(4, 1fr);
-    gap: 1rem; margin-top: 2rem;
-}
-.bloc-item {
-    background: #f8fafc; border-radius: 16px; padding: 1.5rem 1.2rem;
-    border-top: 5px solid var(--jaune); text-align: left;
-}
-.bloc-item .num {
-    font-size: 0.75rem; font-weight: 800; color: #b45309;
-    letter-spacing: 1.5px; margin-bottom: 0.5rem;
-}
-.bloc-item h4 { color: var(--texte); margin-bottom: 0.4rem; font-size: 1.05rem; }
-.bloc-item p { font-size: 0.9rem; color: var(--texte-secondaire); }
-.bloc-item .duree {
-    font-size: 0.75rem; font-weight: 700; color: var(--bleu);
-    margin-top: 0.6rem; display: block;
-}
-
-/* ===== COURS ===== */
 .cours-content { max-width: 1050px; margin: 0 auto; }
 .cours-content h2 { margin-bottom: 1.2rem; }
-.cours-content p { margin-bottom: 1rem; }
-.cours-content ul { padding-left: 1.5rem; margin-bottom: 1rem; }
-.cours-content li { margin-bottom: 0.4rem; }
 
-/* ===== CODE ===== */
 pre {
     background: #1e293b; color: #e2e8f0;
-    padding: 1.3rem 1.5rem; border-radius: 12px;
-    font-family: 'Consolas', 'Courier New', monospace;
-    font-size: 1rem; line-height: 1.7;
-    overflow-x: auto; margin: 1rem 0;
-    border-left: 4px solid var(--jaune);
+    padding: 1.2rem 1.4rem; border-radius: 12px;
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 0.88rem; line-height: 1.7;
+    overflow-x: auto; margin: 0.8rem 0;
+    border-left: 4px solid var(--orange);
+    white-space: pre;
+    position: relative;
 }
+pre::before {
+    content: attr(data-lang);
+    position: absolute;
+    top: 6px; right: 12px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #64748b;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+pre .com { color: #64748b; font-style: italic; }
+pre .kw { color: #f472b6; font-weight: 600; }
+pre .sel { color: #f472b6; }
+pre .prop { color: #7dd3fc; }
+pre .str { color: #86efac; }
+pre .num { color: #a5b4fc; }
+pre .fn { color: #fbbf24; }
 pre .tag { color: #7dd3fc; }
 pre .attr { color: #fbbf24; }
 pre .val { color: #86efac; }
 pre .txt { color: #e2e8f0; }
-pre .com { color: #64748b; font-style: italic; }
-pre .sel { color: #f472b6; }
-pre .prop { color: #7dd3fc; }
-pre .kw { color: #f472b6; font-weight: 600; }
-pre .fn { color: #fbbf24; }
-pre .str { color: #86efac; }
-pre .num { color: #a5b4fc; }
+pre .hl { background: rgba(255,107,53,0.25); padding: 0.1rem 0.3rem; border-radius: 4px; }
 code {
     background: #f1f5f9; padding: 0.15rem 0.4rem;
-    border-radius: 4px; font-family: 'Consolas', 'Courier New', monospace;
-    font-size: 0.9em; color: #db2777;
+    border-radius: 4px; font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 0.85em; color: #db2777;
 }
 
-/* ===== BOXES ===== */
+/* PROMPT BOX */
+.prompt-box {
+    background: #fff7ed;
+    border: 2px solid var(--orange);
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    position: relative;
+}
+.prompt-box::before {
+    content: '📋 PROMPT À COPIER DANS DEEPSEEK';
+    position: absolute;
+    top: -12px;
+    left: 20px;
+    background: var(--orange);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    padding: 0.25rem 0.8rem;
+    border-radius: 999px;
+}
+.prompt-box .prompt-content {
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 0.88rem;
+    line-height: 1.75;
+    color: #1e293b;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+.prompt-box .var {
+    background: #fed7aa;
+    color: #c2410c;
+    font-weight: 700;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+}
+
+/* TREE */
+.tree-box {
+    background: #1e293b;
+    color: #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    line-height: 1.9;
+    margin: 1rem 0;
+    border-left: 4px solid var(--jaune);
+    white-space: pre;
+    overflow-x: auto;
+}
+.tree-box .folder { color: #fbbf24; font-weight: 700; }
+.tree-box .file { color: #86efac; }
+.tree-box .file-css { color: #7dd3fc; }
+.tree-box .file-js { color: #f472b6; }
+.tree-box .file-img { color: #a78bfa; }
+.tree-box .note { color: #64748b; font-style: italic; font-size: 0.82rem; }
+
+.connexion-schema {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.5rem;
+    margin: 2rem 0;
+    text-align: center;
+}
+.fichier-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem 1rem;
+    border: 2px solid var(--bordure);
+    transition: transform 0.2s;
+}
+.fichier-card:hover { transform: translateY(-6px); }
+.fichier-card i {
+    font-size: 2.5rem;
+    margin-bottom: 0.8rem;
+    display: block;
+}
+.fichier-card h4 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    margin-bottom: 0.4rem;
+}
+.fichier-card p {
+    font-size: 0.82rem;
+    color: var(--texte-secondaire);
+    margin: 0;
+}
+.fichier-html { border-top: 5px solid #059669; }
+.fichier-html i { color: #059669; }
+.fichier-html h4 { color: #059669; }
+.fichier-css { border-top: 5px solid #0B3FA5; }
+.fichier-css i { color: #0B3FA5; }
+.fichier-css h4 { color: #0B3FA5; }
+.fichier-js { border-top: 5px solid #f59e0b; }
+.fichier-js i { color: #f59e0b; }
+.fichier-js h4 { color: #f59e0b; }
+
+.fleche-connexion {
+    text-align: center;
+    color: var(--orange);
+    font-size: 1.5rem;
+    margin: 1rem 0;
+    font-weight: 700;
+}
+
 .box {
     border-radius: 12px; padding: 1rem 1.4rem; margin: 1rem 0;
-    font-size: 1.05rem; border-left: 5px solid;
+    font-size: 1rem; border-left: 5px solid;
     display: flex; align-items: flex-start; gap: 0.7rem;
 }
 .box i { font-size: 1.2rem; flex-shrink: 0; margin-top: 0.15rem; }
@@ -243,83 +307,43 @@ code {
 .box-warning { background: var(--rouge-clair); border-color: var(--rouge); color: #7f1d1d; }
 .box-info { background: var(--violet-clair); border-color: var(--violet); color: #3b0764; }
 
-/* ===== PRATIQUE ===== */
 .slide-pratique { background: #f0fdf4; }
-.pratique-etapes {
-    background: white; border-radius: 14px; padding: 1.5rem 2rem;
-    border: 2px solid var(--vert); margin-top: 1.2rem;
-}
-.check-item {
-    display: flex; align-items: flex-start; gap: 0.7rem;
-    padding: 0.7rem 0; border-bottom: 1px dashed var(--bordure);
-}
-.check-item:last-child { border-bottom: none; }
-.check-item .num-circle {
-    background: var(--vert); color: white; width: 30px; height: 30px;
-    border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
-}
-.check-item .txt { font-size: 1.05rem; padding-top: 0.15rem; }
-.check-item .txt strong { color: var(--bleu); }
-
-/* ===== EXERCICE ===== */
 .slide-exercice { background: #fff7ed; }
-
-/* ===== SYNTHÈSE ===== */
 .slide-synthese { background: #f5f3ff; }
+.slide-demo { background: #fffbeb; }
+.slide-prompt { background: #fff7ed; }
 
-/* ===== TABLEAU ===== */
 .table-simple {
-    width: 100%; border-collapse: collapse; font-size: 1.05rem;
-    background: white; border-radius: 12px; overflow: hidden;
-    margin: 1rem 0;
+    width: 100%; border-collapse: collapse; font-size: 0.95rem;
+    background: white; border-radius: 12px; overflow: hidden; margin: 1rem 0;
 }
 .table-simple th {
-    background: var(--jaune); color: white; padding: 0.8rem 1.1rem;
-    text-align: left; font-weight: 700; font-size: 1rem;
+    background: var(--bleu); color: white; padding: 0.8rem 1.1rem;
+    text-align: left; font-weight: 700; font-size: 0.9rem;
 }
-.table-simple td { padding: 0.7rem 1.1rem; border-bottom: 1px solid var(--bordure); }
+.table-simple td { padding: 0.65rem 1.1rem; border-bottom: 1px solid var(--bordure); }
 .table-simple tr:last-child td { border-bottom: none; }
 
-/* ===== DÉMO FORM ===== */
-.form-demo {
-    background: #f8fafc; border-radius: 12px; padding: 1.5rem;
-    border: 1px solid var(--bordure); margin: 1rem 0;
-}
-.form-demo label {
-    display: block; font-weight: 600; font-size: 0.95rem;
-    margin-bottom: 0.4rem; color: var(--texte);
-}
-.form-demo input, .form-demo textarea, .form-demo select {
-    width: 100%; padding: 0.7rem 1rem; border: 1px solid var(--bordure);
-    border-radius: 8px; font-family: inherit; font-size: 0.95rem;
-    margin-bottom: 1rem; transition: 0.2s;
-}
-.form-demo input:focus, .form-demo textarea:focus {
-    outline: none; border-color: var(--jaune);
-    box-shadow: 0 0 0 3px rgba(245,158,11,0.15);
-}
-
-/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
     .slide-content { padding: 2rem 1.5rem; }
     h1 { font-size: 1.8rem; }
     h2 { font-size: 1.4rem; }
     p, li { font-size: 1rem; }
-    .bloc-plan { grid-template-columns: 1fr 1fr; }
     .access-card { padding: 2rem 1.5rem; }
-    pre { font-size: 0.85rem; }
+    pre { font-size: 0.72rem; padding: 0.9rem 1rem; }
+    .prompt-box .prompt-content { font-size: 0.75rem; }
     .slide-header { font-size: 0.7rem; padding: 0.5rem 1rem; }
+    .connexion-schema { grid-template-columns: 1fr; }
+    .tree-box { font-size: 0.72rem; padding: 1rem; }
 }
 </style>
 </head>
 <body>
 
-<!-- ACCÈS -->
 <div class="access-overlay" id="accessOverlay">
     <div class="access-card">
-        <div class="logo-symbol"><i class="fas fa-bolt"></i></div>
-        <h2>Jour 6 · Formulaires & JavaScript</h2>
+        <div class="logo-symbol"><i class="fas fa-folder-tree"></i></div>
+        <h2>Jour 6 · Architecture pro</h2>
         <p>Formation CDEJ · NTIC Solution<br>Saisissez le code d'accès.</p>
         <input type="password" class="access-input" id="accessInput" placeholder="Code d'accès" autocomplete="off" />
         <button class="access-btn" id="accessBtn"><i class="fas fa-arrow-right"></i> Commencer</button>
@@ -327,725 +351,767 @@ code {
     </div>
 </div>
 
-<!-- PROJECTION -->
 <div class="presentation-container" id="presentationContainer">
     <div class="slide-header" id="slideHeader" style="display:none;">
         <div>
             <span class="bloc-tag" id="blocTag">BLOC 1</span>
             <span class="type-tag" id="typeTag">Cours</span>
         </div>
-        <div class="num"><span id="slideNum">1</span> / <span id="slideTotal">20</span></div>
+        <div class="num"><span id="slideNum">1</span> / <span id="slideTotal">25</span></div>
     </div>
     <div class="slide-stage" id="slideStage"></div>
     <div class="nav-hint">← → · Échap pour quitter</div>
 </div>
 
 <script>
-// ============================================================
-// SLIDES — JOUR 6 : FORMULAIRES & JAVASCRIPT
-// ============================================================
 const slidesData = [
 
-// ---------- SLIDE 1 : TITRE ----------
+/* SLIDE 1 — TITRE */
 {
     type: 'title',
     bloc: '—',
-    content: `
-        <div class="badge-top"><i class="fas fa-bolt"></i> JOUR 6 · RENDRE LE SITE INTERACTIF</div>
-        <h1>Formulaires & JavaScript</h1>
-        <p class="lead">Votre site va réagir aux actions de l'utilisateur</p>
-        <p class="lead" style="font-size:1.15rem; margin-top:1.5rem;">
-            Formulaire · Contact · DOM · Validation
-        </p>
-        <p class="meta">DURÉE : 2 HEURES · NIVEAU : INTERMÉDIAIRE</p>
-    `,
+    content: [
+        '<div class="badge-top"><i class="fas fa-rocket"></i> JOUR 6 · EXPLOSIF</div>',
+        '<h1>Architecture d\'un site pro</h1>',
+        '<p class="lead">Comment les vrais développeurs structurent leurs projets</p>',
+        '<p class="meta">3 FICHIERS · 1 DOSSIER · 1 SITE PROFESSIONNEL</p>'
+    ].join('\n'),
     className: 'slide-title'
 },
 
-// ---------- SLIDE 2 : PLAN ----------
+/* SLIDE 2 — CE QU'ON VA CONSTRUIRE */
 {
     type: 'cours',
     bloc: '—',
-    content: `
-        <div class="cours-content">
-            <h2 class="anim-item">Programme des 2 heures</h2>
-            <p class="anim-item" style="font-size:1.25rem;">Aujourd'hui, votre site devient <strong>intelligent</strong> : il vérifie ce que l'utilisateur écrit, il réagit à ses clics.</p>
-            <div class="bloc-plan">
-                <div class="bloc-item anim-item">
-                    <div class="num">BLOC 1</div>
-                    <h4>Formulaires HTML</h4>
-                    <p>Champs, labels, boutons d'envoi.</p>
-                    <span class="duree">30 min</span>
-                </div>
-                <div class="bloc-item anim-item">
-                    <div class="num">BLOC 2</div>
-                    <h4>Styles & formulaire</h4>
-                    <p>Rendre le formulaire propre et agréable.</p>
-                    <span class="duree">30 min</span>
-                </div>
-                <div class="bloc-item anim-item">
-                    <div class="num">BLOC 3</div>
-                    <h4>Introduction JavaScript</h4>
-                    <p>Variables, fonctions, réagir aux clics.</p>
-                    <span class="duree">30 min</span>
-                </div>
-                <div class="bloc-item anim-item">
-                    <div class="num">BLOC 4</div>
-                    <h4>Validation & exercice</h4>
-                    <p>Vérifier les champs avant d'envoyer.</p>
-                    <span class="duree">30 min</span>
-                </div>
-            </div>
-            <div class="box box-success anim-item" style="margin-top:1.5rem;">
-                <i class="fas fa-trophy"></i>
-                <div><strong>Promesse de la journée :</strong> votre site aura un <strong>formulaire de contact fonctionnel</strong> avec vérification automatique des champs.</div>
-            </div>
-        </div>
-    `,
+    content: [
+        '<div class="cours-content">',
+        '  <h2 class="anim-item">Ce qu\'on va construire aujourd\'hui</h2>',
+        '  <p class="anim-item">On passe du stade <strong>« site dans un seul fichier »</strong> au stade <strong>« site professionnel structuré »</strong>.</p>',
+        '  <p class="anim-item">À la fin de cette séance, votre dossier ressemblera à ceci :</p>',
+        '  <div class="tree-box anim-item">',
+        '<span class="folder">mon-site/</span>',
+        '│',
+        '├── <span class="file">index.html</span>          <span class="note">← Page d\'accueil</span>',
+        '├── <span class="file">apropos.html</span>        <span class="note">← Page À propos</span>',
+        '├── <span class="file">contact.html</span>        <span class="note">← Page Contact</span>',
+        '│',
+        '├── <span class="file-css">style.css</span>           <span class="note">← Tous les styles</span>',
+        '├── <span class="file-js">script.js</span>           <span class="note">← Tout le JavaScript</span>',
+        '│',
+        '└── <span class="folder">images/</span>',
+        '    ├── <span class="file-img">logo.png</span>',
+        '    ├── <span class="file-img">photo1.jpg</span>',
+        '    └── <span class="file-img">photo2.jpg</span>',
+        '  </div>',
+        '  <div class="box box-info anim-item">',
+        '    <i class="fas fa-info-circle"></i>',
+        '    <div><strong>Voilà à quoi ressemble un vrai projet professionnel.</strong> Un dossier, plusieurs fichiers, chacun a un rôle précis.</div>',
+        '  </div>',
+        '</div>'
+    ].join('\n'),
     className: ''
 },
 
-// ---------- SLIDE 3 : RAPPEL ----------
+/* SLIDE 3 — LE PROBLÈME */
 {
     type: 'cours',
     bloc: 'BLOC 1',
-    content: `
-        <div class="cours-content">
-            <h2 class="anim-item">Où en sommes-nous ?</h2>
-            <p class="anim-item">Rappel express des 5 premiers jours.</p>
-            <table class="table-simple anim-item">
-                <thead><tr><th>Jour</th><th>Ce que vous avez fait</th></tr></thead>
-                <tbody>
-                    <tr><td><strong>J1</strong></td><td>Découverte du Web, VS Code, première page</td></tr>
-                    <tr><td><strong>J2</strong></td><td>HTML approfondi : titres, images, liens, listes</td></tr>
-                    <tr><td><strong>J3</strong></td><td>Création avec DeepSeek + publication GitHub Pages</td></tr>
-                    <tr><td><strong>J4</strong></td><td>Compréhension du code + personnalisation</td></tr>
-                    <tr><td><strong>J5</strong></td><td>Site multi-pages avec menu commun</td></tr>
-                </tbody>
-            </table>
-            <div class="box box-important anim-item">
-                <i class="fas fa-info-circle"></i>
-                <div><strong>Aujourd'hui :</strong> votre site est beau et navigable. Il ne réagit encore à rien. On va lui ajouter un <strong>formulaire</strong> et de l'<strong>interactivité</strong>.</div>
-            </div>
-        </div>
-    `,
+    content: [
+        '<div class="cours-content">',
+        '  <h2 class="anim-item">Le problème du fichier unique</h2>',
+        '  <p class="anim-item">Jusqu\'ici, on mettait tout dans un seul fichier <code>index.html</code>. Voici pourquoi c\'est un problème :</p>',
+        '  <pre class="anim-item" data-lang="HTML"><span class="com">&lt;!-- index.html : TOUT est mélangé --&gt;</span>',
+        '<span class="tag">&lt;!DOCTYPE html&gt;</span>',
+        '<span class="tag">&lt;html&gt;</span>',
+        '<span class="tag">&lt;head&gt;</span>',
+        '  <span class="tag">&lt;style&gt;</span>',
+        '    <span class="com">/* 500 lignes de CSS ici */</span>',
+        '    <span class="sel">body</span> { <span class="prop">background</span>: <span class="val">#fff</span>; }',
+        '    <span class="sel">h1</span> { <span class="prop">color</span>: <span class="val">#333</span>; }',
+        '    <span class="com">/* ... etc. */</span>',
+        '  <span class="tag">&lt;/style&gt;</span>',
+        '<span class="tag">&lt;/head&gt;</span>',
+        '<span class="tag">&lt;body&gt;</span>',
+        '  <span class="tag">&lt;h1&gt;</span><span class="txt">Mon site</span><span class="tag">&lt;/h1&gt;</span>',
+        '  <span class="tag">&lt;script&gt;</span>',
+        '    <span class="com">// 200 lignes de JS ici</span>',
+        '    <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"test"</span>);',
+        '    <span class="com">// ... etc.</span>',
+        '  <span class="tag">&lt;/script&gt;</span>',
+        '<span class="tag">&lt;/body&gt;</span>',
+        '<span class="tag">&lt;/html&gt;</span></pre>',
+        '  <table class="table-simple anim-item">',
+        '    <thead><tr><th>Problème</th><th>Conséquence</th></tr></thead>',
+        '    <tbody>',
+        '      <tr><td>Fichier géant illisible</td><td>On ne trouve pas ce qu\'on cherche</td></tr>',
+        '      <tr><td>Impossible de réutiliser le CSS</td><td>Chaque page doit le recopier</td></tr>',
+        '      <tr><td>Modification à 10 endroits</td><td>Une seule erreur = 10 corrections</td></tr>',
+        '      <tr><td>Le navigateur recharge tout</td><td>Le site est plus lent</td></tr>',
+        '      <tr><td>Travail en équipe impossible</td><td>Une personne fait tout</td></tr>',
+        '    </tbody>',
+        '  </table>',
+        '  <div class="box box-warning anim-item">',
+        '    <i class="fas fa-exclamation-triangle"></i>',
+        '    <div><strong>Un site professionnel ne tient jamais dans un seul fichier.</strong> Aucun développeur au monde ne fait ça.</div>',
+        '  </div>',
+        '</div>'
+    ].join('\n'),
     className: ''
 },
 
-// ---------- SLIDE 4 : QU'EST-CE QU'UN FORMULAIRE ----------
+/* SLIDE 4 — LA SOLUTION */
 {
     type: 'cours',
     bloc: 'BLOC 1',
-    content: `
-        <div class="cours-content">
-            <h2 class="anim-item">Qu'est-ce qu'un formulaire ?</h2>
-            <p class="anim-item">Un formulaire est une zone où l'utilisateur saisit des informations et les envoie.</p>
-            <table class="table-simple anim-item">
-                <thead><tr><th>Usage</th><th>Exemple concret</th></tr></thead>
-                <tbody>
-                    <tr><td>Contact</td><td>Nom, email, message</td></tr>
-                    <tr><td>Inscription</td><td>Identifiant, mot de passe</td></tr>
-                    <tr><td>Commande</td><td>Adresse, quantité</td></tr>
-                    <tr><td>Recherche</td><td>Mot-clé</td></tr>
-                    <tr><td>Sondage</td><td>Choix multiples</td></tr>
-                </tbody>
-            </table>
-            <div class="box box-tip anim-item">
-                <i class="fas fa-lightbulb"></i>
-                <div><strong>Un formulaire a 3 rôles :</strong> recueillir les données, les vérifier, les envoyer. Aujourd'hui, on fait les 2 premiers. L'envoi réel viendra plus tard (PHP).</div>
-            </div>
-        </div>
-    `,
+    content: [
+        '<div class="cours-content">',
+        '  <h2 class="anim-item">La solution : séparer les 3 langages</h2>',
+        '  <p class="anim-item">Chaque langage a son fichier. Chacun son rôle. C\'est la règle universelle.</p>',
+        '  <div class="connexion-schema anim-item">',
+        '    <div class="fichier-card fichier-html">',
+        '      <i class="fas fa-code"></i>',
+        '      <h4>index.html</h4>',
+        '      <p>La <strong>structure</strong> : tout le contenu, les balises, le texte.</p>',
+        '    </div>',
+        '    <div class="fichier-card fichier-css">',
+        '      <i class="fas fa-paint-brush"></i>',
+        '      <h4>style.css</h4>',
+        '      <p>L\'<strong>apparence</strong> : couleurs, polices, marges, disposition.</p>',
+        '    </div>',
+        '    <div class="fichier-card fichier-js">',
+        '      <i class="fas fa-bolt"></i>',
+        '      <h4>script.js</h4>',
+        '      <p>L\'<strong>interactivité</strong> : clics, calculs, animations, formulaires.</p>',
+        '    </div>',
+        '  </div>',
+        '  <div class="fleche-connexion anim-item">',
+        '    <i class="fas fa-link"></i> Reliés entre eux par 2 balises',
+        '  </div>',
+        '  <div class="box box-success anim-item">',
+        '    <i class="fas fa-check-circle"></i>',
+        '    <div><strong>Un fichier CSS pour 10 pages HTML</strong> = une seule couleur à modifier pour tout changer. C\'est l\'avantage principal.</div>',
+        '  </div>',
+        '</div>'
+    ].join('\n'),
     className: ''
 },
 
-// ---------- SLIDE 5 : LA BALISE FORM ----------
+/* SLIDE 5 — STRUCTURE DE DOSSIERS */
 {
     type: 'cours',
     bloc: 'BLOC 1',
-    content: `
-        <div class="cours-content">
-            <h2 class="anim-item">La balise &lt;form&gt; et ses attributs</h2>
-            <p class="anim-item">Tout formulaire est enveloppé dans une balise <code>&lt;form&gt;</code>.</p>
-            <pre class="anim-item"><span class="tag">&lt;form</span> <span class="attr">action</span>=<span class="val">"traitement.php"</span> <span class="attr">method</span>=<span class="val">"post"</span><span class="tag">&gt;</span>
-  <span class="com">&lt;!-- les champs ici --&gt;</span>
-<span class="tag">&lt;/form&gt;</span></pre>
-            <table class="table-simple anim-item">
-                <thead><tr><th>Attribut</th><th>Rôle</th><th>Valeurs</th></tr></thead>
-                <tbody>
-                    <tr><td><code>action</code></td><td>Où envoyer les données</td><td>URL du script</td></tr>
-                    <tr><td><code>method</code></td><td>Comment les envoyer</td><td><code>get</code> ou <code>post</code></td></tr>
-                    <tr><td><code>name</code></td><td>Nom du formulaire</td><td>Optionnel</td></tr>
-                </tbody>
-            </table>
-            <div class="box box-important anim-item">
-                <i class="fas fa-info-circle"></i>
-                <div><strong>Pour l'instant :</strong> mettez <code>action="#"</code> et <code>method="post"</code>. Le traitement réel viendra dans une formation plus avancée.</div>
-            </div>
-        </div>
-    `,
+    content: [
+        '<div class="cours-content">',
+        '  <h2 class="anim-item">La structure de dossiers standard</h2>',
+        '  <p class="anim-item">Voici comment tous les développeurs du monde organisent leurs projets.</p>',
+        '  <div class="tree-box anim-item">',
+        '<span class="folder">mon-site/</span>              <span class="note">← Le dossier principal du projet</span>',
+        '│',
+        '├── <span class="file">index.html</span>          <span class="note">← Toujours en premier (accueil)</span>',
+        '├── <span class="file">apropos.html</span>        <span class="note">← Deuxième page</span>',
+        '├── <span class="file">contact.html</span>        <span class="note">← Troisième page</span>',
+        '│',
+        '├── <span class="file-css">style.css</span>           <span class="note">← UN SEUL CSS pour tout le site</span>',
+        '├── <span class="file-js">script.js</span>           <span class="note">← UN SEUL JS pour tout le site</span>',
+        '│',
+        '└── <span class="folder">images/</span>             <span class="note">← Toutes les images regroupées</span>',
+        '    ├── <span class="file-img">logo.png</span>',
+        '    ├── <span class="file-img">photo1.jpg</span>',
+        '    └── <span class="file-img">photo2.jpg</span>',
+        '  </div>',
+        '  <div class="box box-tip anim-item">',
+        '    <i class="fas fa-lightbulb"></i>',
+        '    <div><strong>Règles d\'or :</strong> tout en minuscules · pas d\'espaces (utiliser des tirets) · pas d\'accents · extension toujours présente.</div>',
+        '  </div>',
+        '</div>'
+    ].join('\n'),
     className: ''
 },
 
-// ---------- SLIDE 6 : LES CHAMPS ----------
-{
-    type: 'cours',
-    bloc: 'BLOC 1',
-    content: `
-        <div class="cours-content">
-            <h2 class="anim-item">Les champs de saisie</h2>
-            <p class="anim-item">La balise <code>&lt;input&gt;</code> crée un champ. Son attribut <code>type</code> définit la nature du champ.</p>
-            <table class="table-simple anim-item">
-                <thead><tr><th>Type</th><th>Usage</th><th>Exemple</th></tr></thead>
-                <tbody>
-                    <tr><td><code>text</code></td><td>Texte court</td><td>Nom, prénom</td></tr>
-                    <tr><td><code>email</code></td><td>Adresse email</td><td>vous@exemple.com</td></tr>
-                    <tr><td><code>password</code></td><td>Mot de passe masqué</td><td>••••••</td></tr>
-                    <tr><td><code>number</code></td><td>Nombre</td><td>Âge, quantité</td></tr>
-                    <tr><td><code>tel</code></td><td>Téléphone</td><td>+226 05 58 58 68</td></tr>
-                    <tr><td><code>date</code></td><td>Date</td><td>01/01/2026</td></tr>
-                    <tr><td><code>file</code></td><td>Fichier</td><td>Photo, document</td></tr>
-                </tbody>
-            </table>
-            <div class="box box-tip anim-item">
-                <i class="fas fa-lightbulb"></i>
-                <div><strong>input</strong> est auto-fermante : <code>&lt;input type="text"&gt;</code>, jamais <code>&lt;/input&gt;</code>.</div>
-            </div>
-        </div>
-    `,
-    className: ''
-},
-
-// ---------- SLIDE 7 : LES LABELS ----------
-{
-    type: 'cours',
-    bloc: 'BLOC 1',
-    content: `
-        <div class="cours-content">
-            <h2 class="anim-item">Les labels : essentiels et obligatoires</h2>
-            <p class="anim-item">Un <code>&lt;label&gt;</code> décrit un champ. Il améliore l'accessibilité et le confort d'utilisation.</p>
-            <pre class="anim-item"><span class="tag">&lt;label</span> <span class="attr">for</span>=<span class="val">"nom"</span><span class="tag">&gt;</span><span class="txt">Votre nom</span><span class="tag">&lt;/label&gt;</span>
-<span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="val">"text"</span> <span class="attr">id</span>=<span class="val">"nom"</span> <span class="attr">name</span>=<span class="val">"nom"</span><span class="tag">&gt;</span></pre>
-            <table class="table-simple anim-item">
-                <thead><tr><th>Attribut</th><th>Rôle</th></tr></thead>
-                <tbody>
-                    <tr><td><code>for</code> du label</td><td>Doit correspondre à l'<code>id</code> du champ</td></tr>
-                    <tr><td><code>id</code> du champ</td><td>Identifiant unique</td></tr>
-                    <tr><td><code>name</code> du champ</td><td>Nom utilisé lors de l'envoi des données</td></tr>
-                </tbody>
-            </table>
-            <div class="box box-tip anim-item">
-                <i class="fas fa-lightbulb"></i>
-                <div><strong>Astuce :</strong> quand un label est bien relié, cliquer dessus place le curseur dans le champ. Pratique sur mobile.</div>
-            </div>
-        </div>
-    `,
-    className: ''
-},
-
-// ---------- SLIDE 8 : TEXTAREA, SELECT, BOUTONS ----------
-{
-    type: 'cours',
-    bloc: 'BLOC 1',
-    content: `
-        <div class="cours-content">
-            <h2 class="anim-item">textarea, select et boutons</h2>
-            <p class="anim-item">Trois balises pour compléter un formulaire.</p>
-            <pre class="anim-item"><span class="com">&lt;!-- Zone de texte long --&gt;</span>
-<span class="tag">&lt;textarea</span> <span class="attr">id</span>=<span class="val">"message"</span> <span class="attr">name</span>=<span class="val">"message"</span> <span class="attr">rows</span>=<span class="val">"5"</span><span class="tag">&gt;&lt;/textarea&gt;</span>
-
-<span class="com">&lt;!-- Liste déroulante --&gt;</span>
-<span class="tag">&lt;select</span> <span class="attr">id</span>=<span class="val">"sujet"</span> <span class="attr">name</span>=<span class="val">"sujet"</span><span class="tag">&gt;</span>
-  <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="val">""</span><span class="tag">&gt;</span><span class="txt">Choisir…</span><span class="tag">&lt;/option&gt;</span>
-  <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="val">"info"</span><span class="tag">&gt;</span><span class="txt">Information</span><span class="tag">&lt;/option&gt;</span>
-<span class="tag">&lt;/select&gt;</span>
-
-<span class="com">&lt;!-- Bouton d'envoi --&gt;</span>
-<span class="tag">&lt;button</span> <span class="attr">type</span>=<span class="val">"submit"</span><span class="tag">&gt;</span><span class="txt">Envoyer</span><span class="tag">&lt;/button&gt;</span></pre>
-            <table class="table-simple anim-item">
-                <thead><tr><th>Élément</th><th>Rôle</th></tr></thead>
-                <tbody>
-                    <tr><td><code>&lt;textarea&gt;</code></td><td>Zone de saisie multi-lignes</td></tr>
-                    <tr><td><code>&lt;select&gt;</code> + <code>&lt;option&gt;</code></td><td>Liste déroulante</td></tr>
-                    <tr><td><code>&lt;button type="submit"&gt;</code></td><td>Envoie le formulaire</td></tr>
-                </tbody>
-            </table>
-        </div>
-    `,
-    className: ''
-},
-
-// ---------- SLIDE 9 : PRATIQUE — FORMULAIRE DE CONTACT ----------
-{
-    type: 'pratique',
-    bloc: 'BLOC 1',
-    content: `
-        <div class="cours-content">
-            <h2 class="anim-item">Pratique : créez un formulaire de contact</h2>
-            <div class="pratique-etapes anim-item">
-                <div class="check-item">
-                    <div class="num-circle">1</div>
-                    <div class="txt">Ouvrez <code>contact.html</code>. Dans le <code>&lt;main&gt;</code>, ajoutez un <code>&lt;h1&gt;</code> « Nous contacter ».</div>
-                </div>
-                <div class="check-item">
-                    <div class="num-circle">2</div>
-                    <div class="txt">Sous le titre, ouvrez un <code>&lt;form action="#" method="post"&gt;</code>.</div>
-                </div>
-                <div class="check-item">
-                    <div class="num-circle">3</div>
-                    <div class="txt">Ajoutez un champ « Nom » : <code>&lt;label for="nom"&gt;</code> + <code>&lt;input type="text" id="nom" name="nom"&gt;</code>.</div>
-                </div>
-                <div class="check-item">
-                    <div class="num-circle">4</div>
-                    <div class="txt">Ajoutez un champ « Email » : <code>&lt;input type="email" id="email" name="email"&gt;</code>.</div>
-                </div>
-                <div class="check-item">
-                    <div class="num-circle">5</div>
-                    <div class="txt">Ajoutez un champ « Message » : <code>&lt;textarea id="message" name="message"&gt;&lt;/textarea&gt;</code>.</div>
-                </div>
-                <div class="check-item">
-                    <div class="num-circle">6</div>
-                    <div class="txt">Ajoutez un <code>&lt;button type="submit"&gt;Envoyer&lt;/button&gt;</code>.</div>
-                </div>
-            </div>
-            <div class="box box-success anim-item" style="margin-top:1.2rem;">
-                <i class="fas fa-check-circle"></i>
-                <div><strong>Formulaire en place.</strong> Il fonctionne mais reste brut visuellement — c'est l'objet du prochain bloc.</div>
-            </div>
-        </div>
-    `,
-    className: 'slide-pratique'
-},
-
-// ---------- SLIDE 10 : STYLISER UN FORMULAIRE ----------
+/* SLIDE 6 — RELIER LE CSS */
 {
     type: 'cours',
     bloc: 'BLOC 2',
-    content: `
-        <div class="cours-content">
-            <h2 class="anim-item">Styliser un formulaire en CSS</h2>
-            <p class="anim-item">Un formulaire bien stylisé inspire confiance et donne envie de le remplir.</p>
-            <pre class="anim-item"><span class="sel">form</span> {
-  <span class="prop">max-width</span>: <span class="val">600px</span>;
-  <span class="prop">margin</span>: <span class="val">0 auto</span>;
-}
-
-<span class="sel">form label</span> {
-  <span class="prop">display</span>: <span class="val">block</span>;
-  <span class="prop">margin-bottom</span>: <span class="val">6px</span>;
-  <span class="prop">font-weight</span>: <span class="val">600</span>;
-}
-
-<span class="sel">form input, form textarea</span> {
-  <span class="prop">width</span>: <span class="val">100%</span>;
-  <span class="prop">padding</span>: <span class="val">12px 16px</span>;
-  <span class="prop">border</span>: <span class="val">1px solid #ddd</span>;
-  <span class="prop">border-radius</span>: <span class="val">8px</span>;
-  <span class="prop">margin-bottom</span>: <span class="val">16px</span>;
-  <span class="prop">font-family</span>: <span class="val">inherit</span>;
-}</pre>
-            <div class="box box-tip anim-item">
-                <i class="fas fa-lightbulb"></i>
-                <div><strong>Détail important :</strong> <code>font-family: inherit</code> — sans ça, les champs utilisent la police par défaut du navigateur, différente du reste du site.</div>
-            </div>
-        </div>
-    `,
+    content: [
+        '<div class="cours-content">',
+        '  <h2 class="anim-item">Relier le CSS : la balise <code>&lt;link&gt;</code></h2>',
+        '  <p class="anim-item">Dans le <code>&lt;head&gt;</code> de chaque page HTML, on ajoute <strong>une seule ligne</strong> pour relier le fichier <code>style.css</code>.</p>',
+        '  <pre class="anim-item" data-lang="HTML"><span class="tag">&lt;head&gt;</span>',
+        '  <span class="tag">&lt;meta</span> <span class="attr">charset</span>=<span class="val">"UTF-8"</span><span class="tag">&gt;</span>',
+        '  <span class="tag">&lt;title&gt;</span><span class="txt">Mon site</span><span class="tag">&lt;/title&gt;</span>',
+        '',
+        '  <span class="hl"><span class="tag">&lt;link</span> <span class="attr">rel</span>=<span class="val">"stylesheet"</span> <span class="attr">href</span>=<span class="val">"style.css"</span><span class="tag">&gt;</span></span>',
+        '<span class="tag">&lt;/head&gt;</span></pre>',
+        '  <table class="table-simple anim-item">',
+        '    <thead><tr><th>Attribut</th><th>Valeur</th><th>Signification</th></tr></thead>',
+        '    <tbody>',
+        '      <tr><td><code>rel</code></td><td><code>"stylesheet"</code></td><td>Type de fichier relié (feuille de style)</td></tr>',
+        '      <tr><td><code>href</code></td><td><code>"style.css"</code></td><td>Chemin vers le fichier CSS</td></tr>',
+        '    </tbody>',
+        '  </table>',
+        '  <div class="box box-important anim-item">',
+        '    <i class="fas fa-info-circle"></i>',
+        '    <div><strong>Cette ligne est à copier dans CHAQUE page HTML</strong> du site. Sans elle, la page n\'a aucun style.</div>',
+        '  </div>',
+        '</div>'
+    ].join('\n'),
     className: ''
 },
 
-// ---------- SLIDE 11 : PRATIQUE — HABILLER LE FORMULAIRE ----------
+/* SLIDE 7 — RELIER LE JS */
 {
-    type: 'pratique',
+    type: 'cours',
     bloc: 'BLOC 2',
-    content: `
-        <div class="cours-content">
-            <h2 class="anim-item">Pratique : habillez le formulaire</h2>
-            <div class="pratique-etapes anim-item">
-                <div class="check-item">
-                    <div class="num-circle">1</div>
-                    <div class="txt">Dans le <code>&lt;style&gt;</code> de <code>contact.html</code>, ajoutez la règle <code>form</code>.</div>
-                </div>
-                <div class="check-item">
-                    <div class="num-circle">2</div>
-                    <div class="txt">Style des labels : <code>display: block</code> + <code>margin-bottom: 6px</code>.</div>
-                </div>
-                <div class="check-item">
-                    <div class="num-circle">3</div>
-                    <div class="txt">Style des champs : largeur 100%, padding, bordure, coins arrondis, <code>font-family: inherit</code>.</div>
-                </div>
-                <div class="check-item">
-                    <div class="num-circle">4</div>
-                    <div class="txt">Ajoutez l'effet <code>:focus</code> : bordure colorée + ombre légère.</div>
-                </div>
-                <div class="check-item">
-                    <div class="num-circle">5</div>
-                    <div class="txt">Style du bouton submit : fond coloré, blanc, padding, coins arrondis, curseur main.</div>
-                </div>
-                <div class="check-item">
-                    <div class="num-circle">6</div>
-                    <div class="txt">Testez : le formulaire est propre, lisible, avec un retour visuel au focus.</div>
-                </div>
-            </div>
-            <div class="box box-success anim-item" style="margin-top:1.2rem;">
-                <i class="fas fa-check-circle"></i>
-                <div><strong>Formulaire professionnel.</strong> Il ressemble maintenant à ceux des sites commerciaux.</div>
-            </div>
-        </div>
-    `,
-    className: 'slide-pratique'
-},
-
-// ---------- SLIDE 12 : INTRODUCTION JAVASCRIPT ----------
-{
-    type: 'cours',
-    bloc: 'BLOC 3',
-    content: `
-        <div class="cours-content">
-            <h2 class="anim-item">Introduction à JavaScript</h2>
-            <p class="anim-item">HTML structure. CSS habille. <strong>JavaScript fait agir</strong> : réactions, calculs, validations, animations.</p>
-            <table class="table-simple anim-item">
-                <thead><tr><th>Langage</th><th>Rôle</th><th>Analogie</th></tr></thead>
-                <tbody>
-                    <tr><td>HTML</td><td>Structure</td><td>Le squelette</td></tr>
-                    <tr><td>CSS</td><td>Apparence</td><td>La peau, les vêtements</td></tr>
-                    <tr><td>JavaScript</td><td>Comportement</td><td>Les muscles, le cerveau</td></tr>
-                </tbody>
-            </table>
-            <p class="anim-item">JavaScript permet de :</p>
-            <ul class="anim-item">
-                <li>Réagir aux clics, saisies, survols</li>
-                <li>Valider un formulaire avant envoi</li>
-                <li>Modifier le contenu d'une page sans recharger</li>
-                <li>Créer des animations, des menus, des carrousels</li>
-            </ul>
-            <div class="box box-tip anim-item">
-                <i class="fas fa-lightbulb"></i>
-                <div><strong>Aujourd'hui :</strong> les bases. Vous ne deviendrez pas expert JS en 30 minutes. Mais vous saurez écrire du code simple et utile.</div>
-            </div>
-        </div>
-    `,
+    content: [
+        '<div class="cours-content">',
+        '  <h2 class="anim-item">Relier le JavaScript : la balise <code>&lt;script&gt;</code></h2>',
+        '  <p class="anim-item">À la <strong>fin du <code>&lt;body&gt;</code></strong>, juste avant <code>&lt;/body&gt;</code>, on ajoute une ligne pour relier <code>script.js</code>.</p>',
+        '  <pre class="anim-item" data-lang="HTML"><span class="tag">&lt;body&gt;</span>',
+        '  <span class="tag">&lt;h1&gt;</span><span class="txt">Mon site</span><span class="tag">&lt;/h1&gt;</span>',
+        '  <span class="tag">&lt;p&gt;</span><span class="txt">Contenu de la page...</span><span class="tag">&lt;/p&gt;</span>',
+        '',
+        '  <span class="hl"><span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="val">"script.js"</span><span class="tag">&gt;&lt;/script&gt;</span></span>',
+        '<span class="tag">&lt;/body&gt;</span></pre>',
+        '  <div class="box box-warning anim-item">',
+        '    <i class="fas fa-exclamation-triangle"></i>',
+        '    <div><strong>Pourquoi à la fin du body ?</strong> Parce que le JavaScript a besoin que tout le HTML soit chargé avant de fonctionner. Sinon, il ne trouve pas les éléments.</div>',
+        '  </div>',
+        '  <div class="box box-tip anim-item">',
+        '    <i class="fas fa-lightbulb"></i>',
+        '    <div><strong>Bonne nouvelle :</strong> cette ligne est aussi à copier dans chaque page. Une seule fois par page.</div>',
+        '  </div>',
+        '</div>'
+    ].join('\n'),
     className: ''
 },
 
-// ---------- SLIDE 13 : VARIABLES ET FONCTIONS ----------
+/* SLIDE 8 — RELIER LES IMAGES */
 {
     type: 'cours',
-    bloc: 'BLOC 3',
-    content: `
-        <div class="cours-content">
-            <h2 class="anim-item">Variables et fonctions</h2>
-            <p class="anim-item">Les deux briques de base de tout code JavaScript.</p>
-            <pre class="anim-item"><span class="com">// Variable : stocke une valeur</span>
-<span class="kw">let</span> nom = <span class="str">"Awa"</span>;
-<span class="kw">let</span> age = <span class="num">25</span>;
-<span class="kw">const</span> PI = <span class="num">3.14</span>;
-
-<span class="com">// Fonction : bloc de code réutilisable</span>
-<span class="kw">function</span> <span class="fn">saluer</span>(prenom) {
-  <span class="kw">return</span> <span class="str">"Bonjour "</span> + prenom;
-}
-
-<span class="com">// Appel de la fonction</span>
-<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">saluer</span>(<span class="str">"Awa"</span>));   <span class="com">// Affiche : Bonjour Awa</span></pre>
-            <table class="table-simple anim-item">
-                <thead><tr><th>Mot-clé</th><th>Rôle</th></tr></thead>
-                <tbody>
-                    <tr><td><code>let</code></td><td>Variable modifiable</td></tr>
-                    <tr><td><code>const</code></td><td>Constante (ne change pas)</td></tr>
-                    <tr><td><code>function</code></td><td>Déclare une fonction réutilisable</td></tr>
-                    <tr><td><code>console.log()</code></td><td>Affiche dans la console (F12)</td></tr>
-                </tbody>
-            </table>
-            <div class="box box-tip anim-item">
-                <i class="fas fa-lightbulb"></i>
-                <div><strong>console.log</strong> est votre meilleur ami : il affiche des informations dans la console (F12) pour comprendre ce qui se passe.</div>
-            </div>
-        </div>
-    `,
+    bloc: 'BLOC 2',
+    content: [
+        '<div class="cours-content">',
+        '  <h2 class="anim-item">Relier les images : chemins relatifs</h2>',
+        '  <p class="anim-item">Les images sont dans un sous-dossier <code>images/</code>. On les appelle avec un <strong>chemin relatif</strong>.</p>',
+        '  <pre class="anim-item" data-lang="HTML"><span class="com">&lt;!-- Image à la racine du projet --&gt;</span>',
+        '<span class="tag">&lt;img</span> <span class="attr">src</span>=<span class="val">"logo.png"</span> <span class="attr">alt</span>=<span class="val">"Logo"</span><span class="tag">&gt;</span>',
+        '',
+        '<span class="com">&lt;!-- Image dans le sous-dossier images/ --&gt;</span>',
+        '<span class="hl"><span class="tag">&lt;img</span> <span class="attr">src</span>=<span class="val">"images/logo.png"</span> <span class="attr">alt</span>=<span class="val">"Logo"</span><span class="tag">&gt;</span></span>',
+        '',
+        '<span class="com">&lt;!-- Image dans un dossier plus profond --&gt;</span>',
+        '<span class="tag">&lt;img</span> <span class="attr">src</span>=<span class="val">"images/produits/pagne.jpg"</span> <span class="attr">alt</span>=<span class="val">"Pagne"</span><span class="tag">&gt;</span></pre>',
+        '  <table class="table-simple anim-item">',
+        '    <thead><tr><th>Chemin</th><th>Signification</th></tr></thead>',
+        '    <tbody>',
+        '      <tr><td><code>logo.png</code></td><td>Fichier dans le même dossier</td></tr>',
+        '      <tr><td><code>images/logo.png</code></td><td>Fichier dans le sous-dossier <code>images/</code></td></tr>',
+        '      <tr><td><code>../logo.png</code></td><td>Remonter d\'un niveau (dossier parent)</td></tr>',
+        '      <tr><td><code>C:\\Users\\...</code></td><td>❌ À NE JAMAIS FAIRE (chemin absolu)</td></tr>',
+        '    </tbody>',
+        '  </table>',
+        '  <div class="box box-warning anim-item">',
+        '    <i class="fas fa-exclamation-triangle"></i>',
+        '    <div><strong>Le slash est <code>/</code>, pas <code>\\</code>.</strong> Windows utilise <code>\\</code>, mais le Web utilise toujours <code>/</code>.</div>',
+        '  </div>',
+        '</div>'
+    ].join('\n'),
     className: ''
 },
 
-// ---------- SLIDE 14 : PREMIER SCRIPT ----------
+/* SLIDE 9 — RELIER LES PAGES */
+{
+    type: 'cours',
+    bloc: 'BLOC 2',
+    content: [
+        '<div class="cours-content">',
+        '  <h2 class="anim-item">Relier les pages : le menu de navigation</h2>',
+        '  <p class="anim-item">Le menu relie les pages entre elles. Chaque lien pointe vers un fichier HTML du même dossier.</p>',
+        '  <pre class="anim-item" data-lang="HTML"><span class="tag">&lt;nav&gt;</span>',
+        '  <span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"index.html"</span><span class="tag">&gt;</span><span class="txt">Accueil</span><span class="tag">&lt;/a&gt;</span>',
+        '  <span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"apropos.html"</span><span class="tag">&gt;</span><span class="txt">À propos</span><span class="tag">&lt;/a&gt;</span>',
+        '  <span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"contact.html"</span><span class="tag">&gt;</span><span class="txt">Contact</span><span class="tag">&lt;/a&gt;</span>',
+        '<span class="tag">&lt;/nav&gt;</span></pre>',
+        '  <div class="box box-important anim-item">',
+        '    <i class="fas fa-info-circle"></i>',
+        '    <div><strong>Ce même bloc <code>&lt;nav&gt;</code> est copié à l\'identique dans chaque page.</strong> Une seule modification = à répercuter dans toutes les pages.</div>',
+        '  </div>',
+        '  <table class="table-simple anim-item">',
+        '    <thead><tr><th>Depuis</th><th>Vers</th><th>href à écrire</th></tr></thead>',
+        '    <tbody>',
+        '      <tr><td>index.html</td><td>À propos</td><td><code>apropos.html</code></td></tr>',
+        '      <tr><td>apropos.html</td><td>Accueil</td><td><code>index.html</code></td></tr>',
+        '      <tr><td>contact.html</td><td>À propos</td><td><code>apropos.html</code></td></tr>',
+        '    </tbody>',
+        '  </table>',
+        '</div>'
+    ].join('\n'),
+    className: ''
+},
+
+/* SLIDE 10 — DÉMO */
+{
+    type: 'demo',
+    bloc: 'BLOC 2',
+    content: [
+        '<div class="cours-content">',
+        '  <h2 class="anim-item" style="color:#b45309;">🎬 Démonstration en direct</h2>',
+        '  <p class="anim-item" style="font-size:1.2rem;">Regardez bien. Dans 5 minutes, vous ferez la même chose.</p>',
+        '  <div style="background:white; border-radius:14px; padding:1.5rem 2rem; border:2px solid var(--jaune); margin-top:1.2rem;">',
+        '    <h3 style="color:#b45309; margin-bottom:1rem;"><i class="fas fa-play"></i> Ce que je vais montrer à l\'écran</h3>',
+        '    <ol style="padding-left:1.5rem; line-height:2; font-size:1.05rem;">',
+        '      <li>J\'ouvre le dossier <code>mon-site</code> dans l\'explorateur Windows</li>',
+        '      <li>Je montre les 6 fichiers : <code>index.html</code>, <code>apropos.html</code>, <code>contact.html</code>, <code>style.css</code>, <code>script.js</code>, dossier <code>images/</code></li>',
+        '      <li>J\'ouvre <code>index.html</code> dans VS Code : <strong>3 lignes seulement</strong> dans le head et une ligne dans le body</li>',
+        '      <li>Je clique sur <code>style.css</code> : on voit <strong>tous les styles</strong> du site</li>',
+        '      <li>Je clique sur <code>script.js</code> : on voit <strong>tout le JavaScript</strong></li>',
+        '      <li>Je lance Live Server : le site s\'affiche correctement</li>',
+        '      <li>Je clique sur « À propos » : la nouvelle page s\'ouvre, même style, même menu</li>',
+        '      <li>Je modifie la couleur dans <code>style.css</code> : <strong>toutes les pages changent instantanément</strong></li>',
+        '    </ol>',
+        '  </div>',
+        '  <div class="box box-important anim-item" style="margin-top:1.5rem;">',
+        '    <i class="fas fa-lightbulb"></i>',
+        '    <div><strong>Regardez bien la dernière étape.</strong> C\'est ça, la puissance de séparer les fichiers : une seule modification change tout le site.</div>',
+        '  </div>',
+        '</div>'
+    ].join('\n'),
+    className: 'slide-demo'
+},
+
+/* SLIDE 11 — PROMPT SITE COMPLET */
+{
+    type: 'prompt',
+    bloc: 'BLOC 3',
+    content: [
+        '<div class="cours-content">',
+        '  <h2 class="anim-item">Le prompt complet pour générer le site pro</h2>',
+        '  <p class="anim-item">Voici le prompt à copier dans DeepSeek. Il génère un site professionnel structuré en 3 fichiers.</p>',
+        '  <div class="prompt-box anim-item">',
+        '    <div class="prompt-content">Tu es un développeur web senior spécialisé en HTML5, CSS3 et JavaScript pur.',
+        '',
+        'Contexte : je crée un site vitrine pour une association chrétienne protestante au Burkina Faso appelée <span class="var">[NOM DU CDEJ]</span>. Le site doit être moderne, responsive et professionnel.',
+        '',
+        'Crée le site complet avec 3 PAGES :',
+        '1. <span class="var">index.html</span> — Page d\'accueil (mission, activités, appel au don)',
+        '2. <span class="var">apropos.html</span> — Page à propos (histoire, valeurs, équipe)',
+        '3. <span class="var">contact.html</span> — Page contact (formulaire, coordonnées)',
+        '',
+        'STRUCTURE DE CHAQUE PAGE :',
+        '- Header avec logo et menu de navigation (liens vers les 3 pages)',
+        '- Section hero avec image de fond et titre',
+        '- Contenu principal adapté à chaque page',
+        '- Footer à 3 colonnes (à propos, contact, réseaux sociaux)',
+        '',
+        'DESIGN :',
+        '- Palette : bleu #0B3FA5, orange #FF6B35, vert #059669, blanc',
+        '- Police : Plus Jakarta Sans (Google Fonts)',
+        '- Coins arrondis 12 à 24px',
+        '- Ombres douces multi-niveaux',
+        '',
+        'FONCTIONNALITÉS :',
+        '- Menu hamburger sur mobile (< 768px)',
+        '- Menu identique sur les 3 pages',
+        '- Bouton WhatsApp flottant',
+        '- Animations au scroll',
+        '',
+        'CONTRAINTES :',
+        '- HTML5, CSS3 et JavaScript pur UNIQUEMENT',
+        '- Aucun framework',
+        '- TOUT LE CSS doit être dans un seul fichier style.css',
+        '- TOUT LE JS doit être dans un seul fichier script.js',
+        '- Chaque page HTML doit contenir :',
+        '  - Dans le head : &lt;link rel="stylesheet" href="style.css"&gt;',
+        '  - Avant &lt;/body&gt; : &lt;script src="script.js"&gt;&lt;/script&gt;',
+        '',
+        'LIVRAISON :',
+        'Donne-moi les 3 fichiers HTML, le fichier CSS et le fichier JS.',
+        'Sépare-les clairement avec des titres : === index.html ===, === apropos.html ===, === style.css ===, === script.js ===',
+        'Aucune explication.</div>',
+        '  </div>',
+        '  <div class="box box-important anim-item">',
+        '    <i class="fas fa-lightbulb"></i>',
+        '    <div><strong>Remplacez</strong> <code>[NOM DU CDEJ]</code> par le nom réel de votre association avant d\'envoyer à DeepSeek.</div>',
+        '  </div>',
+        '</div>'
+    ].join('\n'),
+    className: 'slide-prompt'
+},
+
+/* SLIDE 12 — PROMPT PAGE 2 */
+{
+    type: 'prompt',
+    bloc: 'BLOC 3',
+    content: [
+        '<div class="cours-content">',
+        '  <h2 class="anim-item">Le prompt pour ajouter une page « À propos »</h2>',
+        '  <p class="anim-item">Si vous voulez une page À propos plus riche, utilisez ce prompt dans la même conversation DeepSeek.</p>',
+        '  <div class="prompt-box anim-item">',
+        '    <div class="prompt-content">Ajoute au site une page <span class="var">apropos.html</span> complète et détaillée.',
+        '',
+        'La page doit contenir dans cet ordre :',
+        '1. Un header avec le même menu que les autres pages',
+        '2. Un titre principal H1 : "À propos de nous"',
+        '3. Une section "Notre histoire" (2 paragraphes)',
+        '4. Une section "Notre mission" (3 paragraphes)',
+        '5. Une section "Nos valeurs" avec 4 cartes :',
+        '   - Foi (icône prière)',
+        '   - Espérance (icône cœur)',
+        '   - Amour (icône mains)',
+        '   - Service (icône aide)',
+        '6. Une section "Notre équipe" avec 3 membres (photo, nom, rôle)',
+        '7. Le même footer que les autres pages',
+        '',
+        'Le fichier doit :',
+        '- Relier le même style.css dans le head',
+        '- Relier le même script.js avant &lt;/body&gt;',
+        '- Avoir exactement la même structure de header et footer',
+        '',
+        'Livraison : donne-moi UNIQUEMENT le code complet de apropos.html.',
+        'Aucune explication.</div>',
+        '  </div>',
+        '  <div class="box box-tip anim-item">',
+        '    <i class="fas fa-lightbulb"></i>',
+        '    <div><strong>DeepSeek garde le contexte.</strong> Dans la même conversation, il connaît déjà votre style et votre structure. La nouvelle page sera cohérente automatiquement.</div>',
+        '  </div>',
+        '</div>'
+    ].join('\n'),
+    className: 'slide-prompt'
+},
+
+/* SLIDE 13 — PROMPT PAGE 3 */
+{
+    type: 'prompt',
+    bloc: 'BLOC 3',
+    content: [
+        '<div class="cours-content">',
+        '  <h2 class="anim-item">Le prompt pour ajouter une page « Contact »</h2>',
+        '  <p class="anim-item">Même principe pour la 3ᵉ page, avec un formulaire fonctionnel.</p>',
+        '  <div class="prompt-box anim-item">',
+        '    <div class="prompt-content">Ajoute au site une page <span class="var">contact.html</span> complète.',
+        '',
+        'La page doit contenir :',
+        '1. Le même header et menu que les autres pages',
+        '2. Un titre H1 : "Nous contacter"',
+        '3. Une section avec 2 colonnes :',
+        '   - À gauche : coordonnées (adresse, téléphone, WhatsApp, email)',
+        '   - À droite : un formulaire avec les champs :',
+        '     * Nom complet (obligatoire)',
+        '     * Email (obligatoire, type email)',
+        '     * Sujet (liste déroulante : Information, Don, Bénévolat, Autre)',
+        '     * Message (textarea, obligatoire)',
+        '     * Bouton "Envoyer"',
+        '4. Une carte Google Maps intégrée (iframe)',
+        '5. Le même footer que les autres pages',
+        '',
+        'Le formulaire doit :',
+        '- Être validé en JavaScript pur (script.js)',
+        '- Vérifier que les champs obligatoires sont remplis',
+        '- Vérifier le format de l\'email',
+        '- Afficher un message d\'erreur sous chaque champ invalide',
+        '- Envoyer un message pré-rempli sur WhatsApp quand tout est bon',
+        '',
+        'Fichiers à modifier :',
+        '- Créer contact.html',
+        '- Ajouter le CSS nécessaire dans style.css',
+        '- Ajouter le JS de validation dans script.js',
+        '',
+        'Livraison : donne-moi les 3 fichiers modifiés séparément.',
+        'Aucune explication.</div>',
+        '  </div>',
+        '  <div class="box box-important anim-item">',
+        '    <i class="fas fa-info-circle"></i>',
+        '    <div><strong>Notez la précision du prompt.</strong> On demande un envoi WhatsApp, la validation JS, la carte Maps. C\'est ça, un prompt de développeur.</div>',
+        '  </div>',
+        '</div>'
+    ].join('\n'),
+    className: 'slide-prompt'
+},
+
+/* SLIDE 14 — PRATIQUE 1 */
 {
     type: 'pratique',
-    bloc: 'BLOC 3',
-    content: `
-        <div class="cours-content">
-            <h2 class="anim-item">Pratique : votre premier script JavaScript</h2>
-            <p class="anim-item">On ajoute un script à votre page pour voir l'effet.</p>
-            <div class="pratique-etapes anim-item">
-                <div class="check-item">
-                    <div class="num-circle">1</div>
-                    <div class="txt">Dans <code>contact.html</code>, tout en bas du <code>&lt;body&gt;</code>, ajoutez :<br><code>&lt;script&gt; ... &lt;/script&gt;</code></div>
-                </div>
-                <div class="check-item">
-                    <div class="num-circle">2</div>
-                    <div class="txt">À l'intérieur, écrivez :<br><code>console.log("Bonjour depuis JavaScript !");</code></div>
-                </div>
-                <div class="check-item">
-                    <div class="num-circle">3</div>
-                    <div class="txt">Enregistrez et rechargez la page avec Live Server.</div>
-                </div>
-                <div class="check-item">
-                    <div class="num-circle">4</div>
-                    <div class="txt">Appuyez sur <strong>F12</strong> → onglet <strong>Console</strong>.</div>
-                </div>
-                <div class="check-item">
-                    <div class="num-circle">5</div>
-                    <div class="txt">Vous devez voir « Bonjour depuis JavaScript ! ».</div>
-                </div>
-            </div>
-            <div class="box box-success anim-item" style="margin-top:1.2rem;">
-                <i class="fas fa-check-circle"></i>
-                <div><strong>Votre premier script fonctionne.</strong> La console est votre fenêtre d'observation.</div>
-            </div>
-        </div>
-    `,
-    className: 'slide-pratique'
-},
-
-// ---------- SLIDE 15 : LE DOM ----------
-{
-    type: 'cours',
-    bloc: 'BLOC 3',
-    content: `
-        <div class="cours-content">
-            <h2 class="anim-item">Le DOM : interagir avec la page</h2>
-            <p class="anim-item">Le DOM est la représentation en mémoire de votre page. JavaScript peut la lire et la modifier.</p>
-            <pre class="anim-item"><span class="com">// Sélectionner un élément par son id</span>
-<span class="kw">const</span> titre = <span class="fn">document</span>.<span class="fn">getElementById</span>(<span class="str">"monTitre"</span>);
-
-<span class="com">// Modifier son texte</span>
-titre.textContent = <span class="str">"Nouveau titre"</span>;
-
-<span class="com">// Modifier son style</span>
-titre.style.color = <span class="str">"red"</span>;
-
-<span class="com">// Réagir à un clic</span>
-titre.<span class="fn">addEventListener</span>(<span class="str">"click"</span>, <span class="kw">function</span>() {
-  <span class="fn">alert</span>(<span class="str">"Vous avez cliqué !"</span>);
-});</pre>
-            <table class="table-simple anim-item">
-                <thead><tr><th>Méthode</th><th>Ce qu'elle fait</th></tr></thead>
-                <tbody>
-                    <tr><td><code>getElementById("id")</code></td><td>Sélectionne un élément par son ID</td></tr>
-                    <tr><td><code>.textContent</code></td><td>Lit ou modifie le texte</td></tr>
-                    <tr><td><code>.style.propriete</code></td><td>Modifie le style en direct</td></tr>
-                    <tr><td><code>addEventListener()</code></td><td>Réagit à un événement (clic, saisie…)</td></tr>
-                </tbody>
-            </table>
-            <div class="box box-tip anim-item">
-                <i class="fas fa-lightbulb"></i>
-                <div><strong>Le DOM est vivant :</strong> les modifications sont immédiates, sans rechargement de la page.</div>
-            </div>
-        </div>
-    `,
-    className: ''
-},
-
-// ---------- SLIDE 16 : PRATIQUE — CHANGER UN TEXTE ----------
-{
-    type: 'pratique',
-    bloc: 'BLOC 3',
-    content: `
-        <div class="cours-content">
-            <h2 class="anim-item">Pratique : changez un texte au clic</h2>
-            <p class="anim-item">On ajoute un bouton qui modifie le titre de la page.</p>
-            <div class="pratique-etapes anim-item">
-                <div class="check-item">
-                    <div class="num-circle">1</div>
-                    <div class="txt">Dans <code>contact.html</code>, donnez un <code>id="titreContact"</code> à votre <code>&lt;h1&gt;</code>.</div>
-                </div>
-                <div class="check-item">
-                    <div class="num-circle">2</div>
-                    <div class="txt">Ajoutez un bouton : <code>&lt;button id="btnChanger"&gt;Changer le titre&lt;/button&gt;</code>.</div>
-                </div>
-                <div class="check-item">
-                    <div class="num-circle">3</div>
-                    <div class="txt">Dans le <code>&lt;script&gt;</code>, écrivez :<br><code>const btn = document.getElementById("btnChanger");</code></div>
-                </div>
-                <div class="check-item">
-                    <div class="num-circle">4</div>
-                    <div class="txt">Ajoutez l'écouteur :<br><code>btn.addEventListener("click", function() { ... });</code></div>
-                </div>
-                <div class="check-item">
-                    <div class="num-circle">5</div>
-                    <div class="txt">Dans la fonction :<br><code>document.getElementById("titreContact").textContent = "Merci de nous contacter !";</code></div>
-                </div>
-                <div class="check-item">
-                    <div class="num-circle">6</div>
-                    <div class="txt">Enregistrez. Cliquez sur le bouton : le titre change.</div>
-                </div>
-            </div>
-            <div class="box box-success anim-item" style="margin-top:1.2rem;">
-                <i class="fas fa-check-circle"></i>
-                <div><strong>Vous venez de créer votre première interaction.</strong> C'est le principe de base de toutes les applications web.</div>
-            </div>
-        </div>
-    `,
-    className: 'slide-pratique'
-},
-
-// ---------- SLIDE 17 : VALIDATION FORMULAIRE ----------
-{
-    type: 'cours',
     bloc: 'BLOC 4',
-    content: `
-        <div class="cours-content">
-            <h2 class="anim-item">La validation de formulaire</h2>
-            <p class="anim-item">Avant d'envoyer les données, on vérifie qu'elles sont correctes.</p>
-            <table class="table-simple anim-item">
-                <thead><tr><th>Type</th><th>Où</th><th>Exemple</th></tr></thead>
-                <tbody>
-                    <tr><td>HTML natif</td><td>Attributs <code>required</code>, <code>type="email"</code></td><td>Le navigateur vérifie seul</td></tr>
-                    <tr><td>JavaScript</td><td>Au moment de l'envoi</td><td>Longueur, format personnalisé</td></tr>
-                    <tr><td>Côté serveur</td><td>PHP, Python…</td><td>Sécurité finale (formation avancée)</td></tr>
-                </tbody>
-            </table>
-            <pre class="anim-item"><span class="com">&lt;!-- Validation HTML native --&gt;</span>
-<span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="val">"email"</span> <span class="attr">id</span>=<span class="val">"email"</span> <span class="attr">required</span><span class="tag">&gt;</span>
-<span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="val">"text"</span> <span class="attr">id</span>=<span class="val">"nom"</span> <span class="attr">required</span> <span class="attr">minlength</span>=<span class="val">"2"</span><span class="tag">&gt;</span></pre>
-            <div class="box box-important anim-item">
-                <i class="fas fa-info-circle"></i>
-                <div><strong>Toujours valider côté serveur aussi.</strong> JavaScript côté client peut être contourné. La validation JS sert au confort, pas à la sécurité.</div>
-            </div>
-        </div>
-    `,
-    className: ''
-},
-
-// ---------- SLIDE 18 : PRATIQUE — VALIDER EN JS ----------
-{
-    type: 'pratique',
-    bloc: 'BLOC 4',
-    content: `
-        <div class="cours-content">
-            <h2 class="anim-item">Pratique : validez le formulaire en JavaScript</h2>
-            <p class="anim-item">On intercepte l'envoi pour vérifier les champs.</p>
-            <div class="pratique-etapes anim-item">
-                <div class="check-item">
-                    <div class="num-circle">1</div>
-                    <div class="txt">Dans <code>contact.html</code>, donnez un <code>id="formContact"</code> au <code>&lt;form&gt;</code>.</div>
-                </div>
-                <div class="check-item">
-                    <div class="num-circle">2</div>
-                    <div class="txt">Dans le <code>&lt;script&gt;</code>, sélectionnez le formulaire :<br><code>const form = document.getElementById("formContact");</code></div>
-                </div>
-                <div class="check-item">
-                    <div class="num-circle">3</div>
-                    <div class="txt">Ajoutez un écouteur :<br><code>form.addEventListener("submit", function(e) { ... });</code></div>
-                </div>
-                <div class="check-item">
-                    <div class="num-circle">4</div>
-                    <div class="txt">Dans la fonction, récupérez la valeur du nom :<br><code>const nom = document.getElementById("nom").value;</code></div>
-                </div>
-                <div class="check-item">
-                    <div class="num-circle">5</div>
-                    <div class="txt">Vérifiez : si <code>nom.length &lt; 2</code>, <code>e.preventDefault()</code> et <code>alert("Nom trop court")</code>.</div>
-                </div>
-                <div class="check-item">
-                    <div class="num-circle">6</div>
-                    <div class="txt">Testez : remplissez mal, cliquez Envoyer. L'alerte apparaît.</div>
-                </div>
-            </div>
-            <div class="box box-success anim-item" style="margin-top:1.2rem;">
-                <i class="fas fa-check-circle"></i>
-                <div><strong>Votre formulaire est vérifié côté client.</strong> Les données invalides sont bloquées avant envoi.</div>
-            </div>
-        </div>
-    `,
+    content: [
+        '<div class="cours-content">',
+        '  <h2 class="anim-item">Pratique 1 : créez l\'arborescence</h2>',
+        '  <p class="anim-item">On commence par préparer le dossier du projet.</p>',
+        '  <pre class="anim-item" data-lang="ÉTAPES"><span class="com">// Sur votre Bureau Windows :</span>',
+        '',
+        '1. Clic droit → Nouveau → Dossier',
+        '2. Nommez-le : <span class="hl">mon-site-pro</span>',
+        '3. Double-cliquez pour l\'ouvrir',
+        '4. À l\'intérieur, créez un sous-dossier : <span class="hl">images</span>',
+        '5. Copiez vos images dedans (logo.png, photo1.jpg, photo2.jpg)</pre>',
+        '  <div class="box box-success anim-item">',
+        '    <i class="fas fa-check-circle"></i>',
+        '    <div><strong>Vous venez de créer l\'arborescence de base.</strong> Maintenant, on va y mettre les fichiers.</div>',
+        '  </div>',
+        '</div>'
+    ].join('\n'),
     className: 'slide-pratique'
 },
 
-// ---------- SLIDE 19 : EXERCICE FINAL ----------
+/* SLIDE 15 — PRATIQUE 2 */
+{
+    type: 'pratique',
+    bloc: 'BLOC 4',
+    content: [
+        '<div class="cours-content">',
+        '  <h2 class="anim-item">Pratique 2 : générez le site avec DeepSeek</h2>',
+        '  <p class="anim-item">On utilise le prompt de la slide 11 pour générer les 3 fichiers.</p>',
+        '  <pre class="anim-item" data-lang="ÉTAPES"><span class="com">// Dans DeepSeek :</span>',
+        '',
+        '1. Ouvrez une NOUVELLE conversation sur chat.deepseek.com',
+        '2. Collez le prompt complet de la slide 11',
+        '3. Remplacez <span class="hl">[NOM DU CDEJ]</span> par le nom de votre association',
+        '4. Envoyez et attendez la génération (peut prendre 1-2 minutes)',
+        '5. DeepSeek va vous donner 4 fichiers :',
+        '   - index.html',
+        '   - apropos.html',
+        '   - contact.html',
+        '   - style.css + script.js (combinés ou séparés)',
+        '',
+        '<span class="com">// Dans VS Code, dossier mon-site-pro ouvert :</span>',
+        '',
+        '6. Créez chaque fichier et copiez son contenu dedans',
+        '7. Enregistrez tout (Ctrl+S)',
+        '8. Ouvrez index.html avec Live Server</pre>',
+        '  <div class="box box-warning anim-item">',
+        '    <i class="fas fa-exclamation-triangle"></i>',
+        '    <div><strong>Si DeepSeek donne tout dans un seul bloc</strong>, cherchez les séparateurs (=== index.html ===, etc.) et copiez chaque partie dans le bon fichier.</div>',
+        '  </div>',
+        '</div>'
+    ].join('\n'),
+    className: 'slide-pratique'
+},
+
+/* SLIDE 16 — PRATIQUE 3 */
+{
+    type: 'pratique',
+    bloc: 'BLOC 4',
+    content: [
+        '<div class="cours-content">',
+        '  <h2 class="anim-item">Pratique 3 : corrigez les chemins des images</h2>',
+        '  <p class="anim-item">DeepSeek met parfois des chemins absolus. Il faut les corriger.</p>',
+        '  <pre class="anim-item" data-lang="ÉTAPES"><span class="com">// Dans chaque page HTML :</span>',
+        '',
+        '1. Faites Ctrl+F pour chercher <span class="hl">&lt;img</span>',
+        '2. Pour chaque image, vérifiez le <span class="hl">src</span> :',
+        '',
+        '   ❌ <span class="hl">src="C:\\Users\\...\\logo.png"</span>',
+        '   ✅ <span class="hl">src="images/logo.png"</span>',
+        '',
+        '3. Vérifiez que le nom du fichier correspond EXACTEMENT',
+        '   (minuscules, tirets, extension)',
+        '',
+        '4. Enregistrez et rechargez Live Server',
+        '5. Ouvrez F12 → Console pour vérifier qu\'il n\'y a plus d\'erreur 404</pre>',
+        '  <div class="box box-success anim-item">',
+        '    <i class="fas fa-check-circle"></i>',
+        '    <div><strong>Test :</strong> toutes les images doivent s\'afficher. Si l\'une d\'elles est cassée, ouvrez F12 → Console : vous verrez le nom exact du fichier introuvable.</div>',
+        '  </div>',
+        '</div>'
+    ].join('\n'),
+    className: 'slide-pratique'
+},
+
+/* SLIDE 17 — PRATIQUE 4 : RELIER LES PAGES */
+{
+    type: 'pratique',
+    bloc: 'BLOC 4',
+    content: [
+        '<div class="cours-content">',
+        '  <h2 class="anim-item">Pratique 4 : vérifiez la navigation entre les 3 pages</h2>',
+        '  <p class="anim-item">Le menu doit être identique sur les 3 pages, avec les bons liens.</p>',
+        '  <pre class="anim-item" data-lang="ÉTAPES"><span class="com">// Vérification page par page :</span>',
+        '',
+        '1. Ouvrez <span class="hl">index.html</span> avec Live Server',
+        '2. Cliquez sur « À propos » → la page apropos.html doit s\'ouvrir',
+        '3. Cliquez sur « Contact » → la page contact.html doit s\'ouvrir',
+        '4. Depuis apropos.html, cliquez sur « Accueil » → retour à index.html',
+        '5. Depuis contact.html, cliquez sur « À propos » → apropos.html',
+        '',
+        '<span class="com">// Si un lien ne fonctionne pas :</span>',
+        '',
+        '6. Vérifiez le href du lien : <span class="hl">href="apropos.html"</span>',
+        '7. Vérifiez que le fichier existe bien dans le dossier',
+        '8. Vérifiez les majuscules/minuscules (casse sensible !)</pre>',
+        '  <div class="box box-tip anim-item">',
+        '    <i class="fas fa-lightbulb"></i>',
+        '    <div><strong>Astuce :</strong> le bloc <code>&lt;nav&gt;</code> doit être <strong>strictement identique</strong> dans les 3 pages. Copiez-collez-le pour être sûr.</div>',
+        '  </div>',
+        '</div>'
+    ].join('\n'),
+    className: 'slide-pratique'
+},
+
+/* SLIDE 18 — PRATIQUE 5 : TEST FINAL */
+{
+    type: 'pratique',
+    bloc: 'BLOC 4',
+    content: [
+        '<div class="cours-content">',
+        '  <h2 class="anim-item">Pratique 5 : test final du site pro</h2>',
+        '  <p class="anim-item">Vérifiez que tout fonctionne avant de passer à la publication.</p>',
+        '  <pre class="anim-item" data-lang="CHECKLIST"><span class="com">// Test 1 : Structure</span>',
+        '✓ Le dossier contient : index.html, apropos.html, contact.html',
+        '✓ Le dossier contient : style.css, script.js',
+        '✓ Le dossier contient : images/ avec les images dedans',
+        '',
+        '<span class="com">// Test 2 : Liaisons</span>',
+        '✓ Chaque HTML a &lt;link rel="stylesheet" href="style.css"&gt; dans le head',
+        '✓ Chaque HTML a &lt;script src="script.js"&gt;&lt;/script&gt; avant &lt;/body&gt;',
+        '✓ Toutes les images utilisent images/nom.jpg',
+        '',
+        '<span class="com">// Test 3 : Navigation</span>',
+        '✓ Depuis chaque page, on peut aller vers les 2 autres',
+        '✓ Le menu est identique dans les 3 pages',
+        '',
+        '<span class="com">// Test 4 : Style et JS</span>',
+        '✓ Le style est appliqué sur les 3 pages',
+        '✓ Le menu hamburger fonctionne sur mobile',
+        '✓ Aucune erreur dans la console (F12)</pre>',
+        '  <div class="box box-success anim-item">',
+        '    <i class="fas fa-trophy"></i>',
+        '    <div><strong>Site validé.</strong> Il est prêt à être publié sur GitHub Pages.</div>',
+        '  </div>',
+        '</div>'
+    ].join('\n'),
+    className: 'slide-pratique'
+},
+
+/* SLIDE 19 — EXERCICE */
 {
     type: 'exercice',
     bloc: 'BLOC 4',
-    content: `
-        <div class="cours-content">
-            <h2 class="anim-item">Exercice final : formulaire complet avec validation</h2>
-            <p class="anim-item">Vous allez produire un formulaire professionnel avec 4 champs et une validation JS complète.</p>
-            <div class="pratique-etapes anim-item" style="border-color:var(--orange);">
-                <div class="check-item">
-                    <div class="num-circle" style="background:var(--orange);">1</div>
-                    <div class="txt">Champs obligatoires : <strong>Nom</strong>, <strong>Email</strong>, <strong>Sujet</strong> (liste déroulante), <strong>Message</strong>.</div>
-                </div>
-                <div class="check-item">
-                    <div class="num-circle" style="background:var(--orange);">2</div>
-                    <div class="txt">Tous les champs ont un <code>label</code> correctement relié par <code>for</code> / <code>id</code>.</div>
-                </div>
-                <div class="check-item">
-                    <div class="num-circle" style="background:var(--orange);">3</div>
-                    <div class="txt">Attributs HTML : <code>required</code> sur tous, <code>type="email"</code> pour l'email.</div>
-                </div>
-                <div class="check-item">
-                    <div class="num-circle" style="background:var(--orange);">4</div>
-                    <div class="txt">Validation JS : nom ≥ 2 caractères, email valide, message ≥ 10 caractères.</div>
-                </div>
-                <div class="check-item">
-                    <div class="num-circle" style="background:var(--orange);">5</div>
-                    <div class="txt">Si tout est correct, afficher un message de confirmation à l'écran (pas une alerte).</div>
-                </div>
-                <div class="check-item">
-                    <div class="num-circle" style="background:var(--orange);">6</div>
-                    <div class="txt">Uploadez votre <code>contact.html</code> modifié sur GitHub. Testez en ligne.</div>
-                </div>
-            </div>
-            <div class="box box-important anim-item" style="margin-top:1.2rem;">
-                <i class="fas fa-trophy"></i>
-                <div><strong>Durée :</strong> 15 minutes. Postez le lien de votre site dans le groupe WhatsApp à la fin.</div>
-            </div>
-        </div>
-    `,
+    content: [
+        '<div class="cours-content">',
+        '  <h2 class="anim-item">Exercice final : votre site pro complet</h2>',
+        '  <p class="anim-item">Vous allez créer votre site professionnel en autonomie, du début à la fin.</p>',
+        '  <div style="background:white; border-radius:14px; padding:1.5rem 2rem; border:2px solid var(--orange); margin-top:1.2rem;">',
+        '    <h3 style="color:var(--orange); margin-bottom:1rem;"><i class="fas fa-tasks"></i> Votre mission</h3>',
+        '    <ol style="padding-left:1.5rem; line-height:2;">',
+        '      <li>Créer le dossier <code>mon-site-pro</code> sur le Bureau</li>',
+        '      <li>Créer le sous-dossier <code>images/</code> et y copier 3 images</li>',
+        '      <li>Ouvrir DeepSeek et coller le prompt complet (slide 11)</li>',
+        '      <li>Créer les 3 fichiers HTML dans VS Code</li>',
+        '      <li>Créer <code>style.css</code> et y coller le CSS</li>',
+        '      <li>Créer <code>script.js</code> et y coller le JS</li>',
+        '      <li>Corriger les chemins des images</li>',
+        '      <li>Tester la navigation entre les 3 pages</li>',
+        '      <li>Vérifier le menu hamburger sur mobile</li>',
+        '      <li>Publier le tout sur GitHub Pages</li>',
+        '    </ol>',
+        '  </div>',
+        '  <div class="box box-success anim-item" style="margin-top:1.5rem;">',
+        '    <i class="fas fa-trophy"></i>',
+        '    <div><strong>Durée :</strong> 40 minutes. À la fin, vous avez un site professionnel en ligne, structuré comme ceux des agences.</div>',
+        '  </div>',
+        '</div>'
+    ].join('\n'),
     className: 'slide-exercice'
 },
 
-// ---------- SLIDE 20 : SYNTHÈSE ----------
+/* SLIDE 20 — BONNES PRATIQUES */
+{
+    type: 'cours',
+    bloc: 'BLOC 5',
+    content: [
+        '<div class="cours-content">',
+        '  <h2 class="anim-item">Les bonnes pratiques de nommage</h2>',
+        '  <p class="anim-item">Un nom mal choisi casse un site. Ces règles évitent 99 % des problèmes.</p>',
+        '  <table class="table-simple anim-item">',
+        '    <thead><tr><th>Règle</th><th>✅ Correct</th><th>❌ Incorrect</th></tr></thead>',
+        '    <tbody>',
+        '      <tr><td>Tout en minuscules</td><td><code>index.html</code></td><td><code>Index.HTML</code></td></tr>',
+        '      <tr><td>Pas d\'espaces</td><td><code>mon-site.html</code></td><td><code>mon site.html</code></td></tr>',
+        '      <tr><td>Pas d\'accents</td><td><code>apropos.html</code></td><td><code>à-propos.html</code></td></tr>',
+        '      <tr><td>Pas de caractères spéciaux</td><td><code>photo-1.jpg</code></td><td><code>photo#1.jpg</code></td></tr>',
+        '      <tr><td>Extension présente</td><td><code>style.css</code></td><td><code>style</code></td></tr>',
+        '      <tr><td>Tiret au lieu de souligné</td><td><code>mon-logo.png</code></td><td><code>mon_logo.png</code></td></tr>',
+        '      <tr><td>Nom explicite</td><td><code>contact.html</code></td><td><code>page3.html</code></td></tr>',
+        '    </tbody>',
+        '  </table>',
+        '  <div class="box box-tip anim-item">',
+        '    <i class="fas fa-lightbulb"></i>',
+        '    <div><strong>Astuce :</strong> si vous devez avoir plusieurs mots, utilisez le tiret : <code>mon-super-site.html</code>. C\'est plus lisible et compatible partout.</div>',
+        '  </div>',
+        '</div>'
+    ].join('\n'),
+    className: ''
+},
+
+/* SLIDE 21 — CHEMINS RELATIFS VS ABSOLUS */
+{
+    type: 'cours',
+    bloc: 'BLOC 5',
+    content: [
+        '<div class="cours-content">',
+        '  <h2 class="anim-item">Les chemins relatifs vs absolus</h2>',
+        '  <p class="anim-item">La <strong>cause n°1 des images cassées</strong> sur un site. Comprendre ça évite 90 % des problèmes.</p>',
+        '  <pre class="anim-item" data-lang="HTML"><span class="com">&lt;!-- ✅ CHEMIN RELATIF (correct) --&gt;</span>',
+        '<span class="tag">&lt;img</span> <span class="attr">src</span>=<span class="val">"images/logo.png"</span><span class="tag">&gt;</span>',
+        '',
+        '<span class="com">&lt;!-- ❌ CHEMIN ABSOLU (incorrect) --&gt;</span>',
+        '<span class="tag">&lt;img</span> <span class="attr">src</span>=<span class="val">"C:\\Users\\HP\\Bureau\\mon-site\\images\\logo.png"</span><span class="tag">&gt;</span>',
+        '',
+        '<span class="com">&lt;!-- ✅ URL EN LIGNE (correct mais moins fiable) --&gt;</span>',
+        '<span class="tag">&lt;img</span> <span class="attr">src</span>=<span class="val">"https://exemple.com/logo.png"</span><span class="tag">&gt;</span></pre>',
+        '  <table class="table-simple anim-item">',
+        '    <thead><tr><th>Type</th><th>Exemple</th><th>Portable ?</th></tr></thead>',
+        '    <tbody>',
+        '      <tr><td>Relatif</td><td><code>images/photo.jpg</code></td><td>✅ Oui, partout</td></tr>',
+        '      <tr><td>Absolu</td><td><code>C:\\Users\\HP\\...</code></td><td>❌ Non, casse ailleurs</td></tr>',
+        '      <tr><td>URL complète</td><td><code>https://...</code></td><td>⚠️ Dépend d\'Internet</td></tr>',
+        '    </tbody>',
+        '  </table>',
+        '  <div class="box box-warning anim-item">',
+        '    <i class="fas fa-exclamation-triangle"></i>',
+        '    <div><strong>Si vous voyez un carré gris à la place d\'une image sur votre site en ligne</strong>, c\'est presque toujours un chemin absolu qui n\'a pas été corrigé.</div>',
+        '  </div>',
+        '</div>'
+    ].join('\n'),
+    className: ''
+},
+
+/* SLIDE 22 — SYNTHÈSE */
 {
     type: 'synthese',
     bloc: '—',
-    content: `
-        <div class="cours-content">
-            <h2 class="anim-item">Ce que vous savez faire maintenant</h2>
-            <ul class="anim-item" style="font-size:1.15rem; line-height:1.7;">
-                <li>Créer un formulaire HTML avec <code>&lt;form&gt;</code>, <code>&lt;input&gt;</code>, <code>&lt;textarea&gt;</code>, <code>&lt;select&gt;</code></li>
-                <li>Relier labels et champs avec <code>for</code> et <code>id</code></li>
-                <li>Utiliser les types de champs : text, email, password, number, date…</li>
-                <li>Styliser un formulaire en CSS avec focus et ergonomie</li>
-                <li>Écrire du JavaScript dans une balise <code>&lt;script&gt;</code></li>
-                <li>Déclarer des variables (<code>let</code>, <code>const</code>) et des fonctions</li>
-                <li>Manipuler le DOM : sélectionner, modifier texte et style</li>
-                <li>Réagir à un événement avec <code>addEventListener</code></li>
-                <li>Valider un formulaire côté client avec JavaScript</li>
-            </ul>
-            <div class="box box-important anim-item" style="margin-top:1.5rem;">
-                <i class="fas fa-tasks"></i>
-                <div><strong>Pour le Jour 7 (dernier jour) :</strong> nous allons <strong>finaliser votre site</strong>, le peaufiner, l'optimiser et vous préparer à le <strong>présenter au groupe</strong>. Apportez votre site complet.</div>
-            </div>
-            <div class="box box-tip anim-item">
-                <i class="fas fa-lightbulb"></i>
-                <div><strong>Conseil entre les séances :</strong> testez votre formulaire sur mobile. Le clavier tactile doit proposer le bon type de saisie (email, nombre…).</div>
-            </div>
-        </div>
-    `,
+    content: [
+        '<div class="cours-content">',
+        '  <h2 class="anim-item">Ce que vous savez faire maintenant</h2>',
+        '  <ul class="anim-item" style="font-size:1.1rem; line-height:1.9;">',
+        '    <li>Créer une <strong>arborescence de projet</strong> professionnelle</li>',
+        '    <li><strong>Séparer</strong> HTML, CSS et JavaScript en 3 fichiers</li>',
+        '    <li>Relier le CSS avec <code>&lt;link rel="stylesheet"&gt;</code></li>',
+        '    <li>Relier le JS avec <code>&lt;script src="..."&gt;&lt;/script&gt;</code></li>',
+        '    <li>Utiliser les <strong>chemins relatifs</strong> pour les images</li>',
+        '    <li><strong>Relier plusieurs pages</strong> entre elles par le menu</li>',
+        '    <li>Comprendre la différence <strong>chemin relatif / absolu</strong></li>',
+        '    <li>Appliquer les <strong>bonnes pratiques de nommage</strong></li>',
+        '    <li>Rédiger un <strong>prompt complet</strong> pour générer un site multi-pages</li>',
+        '    <li>Structurer un site comme le font les <strong>développeurs professionnels</strong></li>',
+        '  </ul>',
+        '  <div class="box box-success anim-item" style="margin-top:1.5rem;">',
+        '    <i class="fas fa-graduation-cap"></i>',
+        '    <div><strong>Vous venez d\'apprendre ce qu\'aucun tutoriel YouTube ne montre correctement.</strong> Cette structure est utilisée par tous les développeurs pros du monde.</div>',
+        '  </div>',
+        '</div>'
+    ].join('\n'),
     className: 'slide-synthese'
 }
 
 ];
 
-// ============================================================
-// ÉTAT
-// ============================================================
 let currentSlide = 0;
 const totalSlides = slidesData.length;
 
-// ============================================================
-// AFFICHAGE
-// ============================================================
 function renderSlide(index) {
     const stage = document.getElementById('slideStage');
     const slide = slidesData[index];
-    stage.innerHTML = `<div class="slide-content ${slide.className || ''}">${slide.content}</div>`;
+    stage.innerHTML = '<div class="slide-content ' + (slide.className || '') + '">' + slide.content + '</div>';
 
     const header = document.getElementById('slideHeader');
     if (slide.type === 'title') {
@@ -1061,7 +1127,9 @@ function renderSlide(index) {
             'cours': 'Cours',
             'pratique': 'Pratique',
             'exercice': 'Exercice',
-            'synthese': 'Synthèse'
+            'synthese': 'Synthèse',
+            'demo': 'Démonstration',
+            'prompt': 'Prompt'
         };
         typeTag.textContent = typeLabels[slide.type] || 'Cours';
         typeTag.className = 'type-tag type-' + (slide.type || 'cours');
@@ -1082,14 +1150,12 @@ function goPrev() {
     }
 }
 
-// ============================================================
-// CODE D'ACCÈS — WEB2026 (base64 : V0VCMjAyNg==)
-// ============================================================
 function checkAccess() {
     const input = document.getElementById('accessInput');
     const error = document.getElementById('accessError');
     const expected = 'V0VCMjAyNg==';
     const entered = btoa(input.value.trim());
+
     if (entered === expected) {
         document.getElementById('accessOverlay').classList.add('hidden');
         document.getElementById('presentationContainer').classList.add('active');
@@ -1098,7 +1164,9 @@ function checkAccess() {
         error.classList.add('visible');
         input.value = '';
         input.focus();
-        setTimeout(() => error.classList.remove('visible'), 2500);
+        setTimeout(function() {
+            error.classList.remove('visible');
+        }, 2500);
     }
 }
 
@@ -1107,9 +1175,6 @@ document.getElementById('accessInput').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') checkAccess();
 });
 
-// ============================================================
-// NAVIGATION CLAVIER
-// ============================================================
 document.addEventListener('keydown', function(e) {
     const container = document.getElementById('presentationContainer');
     if (!container.classList.contains('active')) return;
@@ -1135,9 +1200,6 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-// ============================================================
-// NAVIGATION TACTILE
-// ============================================================
 let touchStartX = 0;
 document.addEventListener('touchstart', function(e) {
     touchStartX = e.changedTouches[0].screenX;
